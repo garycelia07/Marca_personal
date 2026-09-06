@@ -2,25 +2,152 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #24231f;
+  --ink-soft: #6b685e;
+  --danger: #b3422f;
+  --paper: #fffefa;
+  --line: rgba(36, 35, 31, 0.1);
+  --forest: #2d2c27;
+  --forest-deep: #171713;
+  --copper: #f4c542;
+  --copper-soft: #f4c542;
+  --lime: #fff8dc;
+  --hero-outer: #f3f6f8;
+  --hero-surface: #ffffff;
+  --hero-chip: rgba(255, 255, 255, 0.85);
+  --hero-chip-border: rgba(36, 35, 31, 0.08);
+  --hero-shadow: rgba(30, 42, 55, 0.12);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Trebuchet MS", sans-serif;
+  --font-mono: "Courier New", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --background: #171713;
+  --foreground: #fffdf4;
+  --ink-soft: #c8c3b1;
+  --danger: #f18d7b;
+  --paper: #211f18;
+  --line: rgba(255, 253, 244, 0.14);
+  --forest: #f4c542;
+  --forest-deep: #ffe8a2;
+  --copper: #f4c542;
+  --copper-soft: #f4c542;
+  --lime: #41391c;
+  --hero-outer: #11110f;
+  --hero-surface: #211f18;
+  --hero-chip: rgba(33, 31, 24, 0.9);
+  --hero-chip-border: rgba(255, 253, 244, 0.16);
+  --hero-shadow: rgba(0, 0, 0, 0.35);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Trebuchet MS", sans-serif;
+  margin: 0;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+::selection { background: var(--copper); color: var(--foreground); }
+
+:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 4px;
+}
+
+.display-font {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.04em;
+}
+
+.script-font {
+  font-family: "Brush Script MT", "Segoe Script", cursive;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.hero-portrait-bg {
+  background:
+    radial-gradient(circle at 52% 28%, rgba(244, 197, 66, 0.3), transparent 42%),
+    radial-gradient(circle at 86% 82%, rgba(244, 197, 66, 0.16), transparent 30%),
+    linear-gradient(145deg, var(--hero-surface) 0%, var(--hero-outer) 52%, var(--line) 100%);
+}
+
+.hero-panel-in {
+  animation: hero-panel-in 1200ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.hero-copy > *,
+.hero-image-in,
+.hero-chips-in > * {
+  animation: hero-rise-in 1000ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.hero-copy > :nth-child(1) { animation-delay: 260ms; }
+.hero-copy > :nth-child(2) { animation-delay: 380ms; }
+.hero-copy > :nth-child(3) { animation-delay: 500ms; }
+.hero-copy > :nth-child(4) { animation-delay: 620ms; }
+.hero-copy > :nth-child(5) { animation-delay: 740ms; }
+.hero-copy > :nth-child(6) { animation-delay: 860ms; }
+.hero-image-in { animation-delay: 320ms; }
+.hero-chips-in > :nth-child(1) { animation-delay: 760ms; }
+.hero-chips-in > :nth-child(2) { animation-delay: 900ms; }
+.hero-chips-in > :nth-child(3) { animation-delay: 1040ms; }
+
+@keyframes hero-panel-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes hero-rise-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.eyebrow {
+  color: var(--copper);
+  font-family: "Courier New", monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.hairline { border-color: var(--line); }
+
+.editorial-link {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.75rem;
+  transition: color 180ms ease, gap 180ms ease;
+}
+
+.editorial-link::after { color: var(--copper); content: "↗"; font-size: 1.1rem; }
+.editorial-link:hover { color: var(--copper); gap: 1rem; }
+
+button, a { -webkit-tap-highlight-color: transparent; }
+
+.reveal { animation: reveal 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.delay-1 { animation-delay: 100ms; }
+.delay-2 { animation-delay: 180ms; }
+.delay-3 { animation-delay: 260ms; }
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal,
+  .hero-panel-in,
+  .hero-copy > *,
+  .hero-image-in,
+  .hero-chips-in > * { animation: none; }
 }
