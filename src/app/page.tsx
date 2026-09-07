@@ -3,8 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SocialIcon, type SocialIconName } from "@/components/footer";
+import { socialHref } from "@/lib/site";
 import { LeadForm } from "@/components/lead-form";
 import { FeaturedCourses } from "@/components/featured-courses";
+import { SiteImage } from "@/components/site-image";
 import { SectionLabel, SiteShell } from "@/components/site-shell";
 const projects = [
   {

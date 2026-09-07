@@ -7,6 +7,31 @@ function parsePositiveInt(value: string | null, fallback: number): number {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+/** Convierte el paginado del backend { data, meta } al shape plano { items, page, limit, total, totalPages }. */
+function normalizeListPayload(payload: unknown, page: number, limit: number) {
+    if (!payload || typeof payload !== "object") {
+        return { items: [], page, limit, total: 0, totalPages: 0 };
+    }
+    const p = payload as { data?: unknown; meta?: { total?: unknown; limit?: unknown; totalPages?: unknown } };
+    const list = Array.isArray(payload)
+        ? payload
+        : Array.isArray(p.data)
+            ? p.data
+            : Array.isArray((payload as { items?: unknown }).items)
+                ? (payload as { items: unknown[] }).items
+                : [];
+    const total = typeof p.meta?.total === "number"
+        ? p.meta.total
+        : typeof (payload as { total?: unknown }).total === "number"
+            ? (payload as { total: number }).total
+            : list.length;
+    const effectiveLimit = limit > 0 ? limit : (typeof p.meta?.limit === "number" ? p.meta.limit : 20);
+    const totalPages = typeof p.meta?.totalPages === "number"
+        ? p.meta.totalPages
+        : (effectiveLimit > 0 ? Math.max(1, Math.ceil(total / effectiveLimit)) : 1);
+    return { items: list, page, limit: effectiveLimit, total, totalPages };
+}
+
 /** GET /api/courses/admin?page=1&limit=20 — lista todos los cursos (vista admin). */
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -22,7 +47,7 @@ export async function GET(request: Request) {
                 : "No fue posible obtener los cursos.";
             return NextResponse.json({ message }, { status: response.status });
         }
-        return NextResponse.json(payload ?? { items: [], page, limit, total: 0, totalPages: 0 });
+        return NextResponse.json(normalizeListPayload(payload ?? null, page, limit));
     } catch {
         return NextResponse.json({ message: "No fue posible conectar con el servidor." }, { status: 503 });
     }

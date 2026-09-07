@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { LoginInput, LoginResponse } from "@/lib/api/auth";
+import { ACCESS_TOKEN_COOKIE } from "@/lib/api/auth";
 
 const backendUrl = process.env.BACKEND_API_URL ?? "http://localhost:3000/api/v1";
 
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     const cookieOptions = remember ? { maxAge: 60 * 60 * 24 * 7 } : {};
 
     const result = NextResponse.json({ user });
-    result.cookies.set("aurea_access_token", payload.accessToken, {
+    result.cookies.set(ACCESS_TOKEN_COOKIE, payload.accessToken, {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",

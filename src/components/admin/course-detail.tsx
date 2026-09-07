@@ -6,6 +6,10 @@ import {
     addLesson,
     addModule,
     getCourse,
+    updateCourse,
+    deleteCourse,
+    uploadLessonVideo,
+    deleteLessonVideo,
     type Course,
     type Module,
 } from "@/lib/api/courses";
@@ -114,6 +118,31 @@ export function CourseDetail({ courseId }: { courseId: string }) {
         }
     }
 
+    async function handleLessonVideo(lessonId: string, file: File) {
+        setBusy(true);
+        try {
+            await uploadLessonVideo(lessonId, file);
+            pushToast("success", "Video subido (o reemplazado) correctamente. Recuerda: máx. 10 min.");
+            void load();
+        } catch (err) {
+            pushToast("error", errorMessage(err, "No se pudo subir el video (máx. 10 min)."));
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function handleDeleteLessonVideo(lessonId: string) {
+        setBusy(true);
+        try {
+            await deleteLessonVideo(lessonId);
+            pushToast("success", "Video eliminado de la lección.");
+        } catch (err) {
+            pushToast("error", errorMessage(err, "No se pudo eliminar el video."));
+        } finally {
+            setBusy(false);
+        }
+    }
+
     const sortedModules = [...(course?.modules ?? [])].sort((a, b) => a.order - b.order);
 
     if (loading) {
@@ -191,7 +220,20 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                                         <li key={lesson.id} className="px-5 py-3 sm:px-6">
                                             <div className="flex items-center gap-3">
                                                 <span className="text-xs text-[var(--copper)]">▶</span>
-                                                <p className="text-sm font-semibold">{lesson.title}</p>
+                                                <p className="text-sm font-semibold">{lesson.title}
+                                                    {lesson.videoUrl ? <span className="ml-2 rounded-full bg-[var(--lime)] px-2 py-0.5 text-[10px] font-bold text-[var(--copper)]">✦ video mp4</span> : null}
+                                                </p>
+                                            </div>
+                                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                                                <label className="cursor-pointer rounded-full border hairline px-3 py-1.5 text-xs font-semibold text-[var(--forest-deep)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
+                                                    {busy ? "…" : "Subir / reemplazar video (≤10 min)"}
+                                                    <input type="file" accept="video/mp4,video/webm" className="sr-only"
+                                                        disabled={busy}
+                                                        onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleLessonVideo(lesson.id, f); e.target.value = ""; }} />
+                                                </label>
+                                                <button type="button" onClick={() => void handleDeleteLessonVideo(lesson.id)} disabled={busy} className="rounded-full border hairline px-3 py-1.5 text-xs font-semibold text-[var(--danger)] transition hover:border-[var(--danger)]">
+                                                    Quitar video
+                                                </button>
                                             </div>
                                         </li>
                                     ))}
@@ -218,6 +260,25 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                             </article>
                         ))
                     )}
+                </div>
+            </div>
+
+            <div className="mt-10 border-t hairline pt-8">
+                <div className="flex flex-wrap items-center gap-3">
+                    <p className="text-sm text-[var(--ink-soft)]">Cursos: máx. 20 videos (lecciones) por curso · cada video hasta 10 min.</p>
+                    <div className="ml-auto">
+                        <button type="button"
+                            onClick={() => {
+                                if (window.confirm(`¿Eliminar el curso "${course.title}" y todo su contenido?`)) {
+                                    void deleteCourse(course.id)
+                                        .then(() => { window.location.href = "/admin/cursos"; })
+                                        .catch(() => pushToast("error", "No se pudo eliminar el curso."));
+                                }
+                            }}
+                            disabled={busy}
+                            className="rounded-full bg-[var(--danger)] px-4 py-2 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                        >Eliminar curso</button>
+                    </div>
                 </div>
             </div>
 

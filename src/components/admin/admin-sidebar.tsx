@@ -11,6 +11,8 @@ const adminLinks: { label: string; href: string; icon: NavIcon }[] = [
     { label: "Estudiantes", href: "/admin/estudiantes", icon: UsersGroupIcon },
     { label: "Cursos", href: "/admin/cursos", icon: BookIcon },
     { label: "Materiales", href: "/admin/materiales", icon: AttachmentIcon },
+    { label: "Proyectos", href: "/admin/proyectos", icon: EditIcon },
+    { label: "Servicios", href: "/admin/servicios", icon: EditIcon },
     { label: "Contenido", href: "/admin/contenido", icon: EditIcon },
     { label: "Contactos", href: "/admin/contactos", icon: MailIcon },
 ];

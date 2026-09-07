@@ -25,10 +25,35 @@ export async function GET(request: Request) {
             return NextResponse.json({ message }, { status: response.status });
         }
 
-        return NextResponse.json(payload ?? { items: [], page, limit, total: 0, totalPages: 0 });
+        return NextResponse.json(normalizePayload(payload ?? null, page, limit));
     } catch {
         return NextResponse.json({ message: "No fue posible conectar con el servidor." }, { status: 503 });
     }
+}
+
+/** Convierte el paginado del backend { data, meta } al shape plano { items, page, limit, total, totalPages }. */
+function normalizePayload(payload: unknown, page: number, limit: number) {
+    if (!payload || typeof payload !== "object") {
+        return { items: [], page, limit, total: 0, totalPages: 0 };
+    }
+    const p = payload as { data?: unknown; meta?: { total?: unknown; page?: unknown; limit?: unknown; totalPages?: unknown } };
+    const list = Array.isArray(payload)
+        ? payload
+        : Array.isArray(p.data)
+            ? p.data
+            : Array.isArray((payload as { items?: unknown }).items)
+                ? (payload as { items: unknown[] }).items
+                : [];
+    const total = typeof p.meta?.total === "number"
+        ? p.meta.total
+        : typeof (payload as { total?: unknown }).total === "number"
+            ? (payload as { total: number }).total
+            : list.length;
+    const pLimit = limit > 0 ? limit : (typeof p.meta?.limit === "number" ? p.meta.limit : 20);
+    const totalPages = typeof p.meta?.totalPages === "number"
+        ? p.meta.totalPages
+        : (pLimit > 0 ? Math.max(1, Math.ceil(total / pLimit)) : 1);
+    return { items: list, page, limit: pLimit, total, totalPages };
 }
 
 /** POST /api/students — crea un estudiante. */

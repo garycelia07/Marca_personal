@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { listPublishedCourses, type Course } from "@/lib/api/courses";
 
-function formatModulesCount(count: number): string {
+function formatModulesCount(count: number | undefined): string {
     if (!count) return "Sin módulos";
     return `${count} ${count === 1 ? "módulo" : "módulos"}`;
 }

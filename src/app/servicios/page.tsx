@@ -1,14 +1,26 @@
-import Image from "next/image";
 import Link from "next/link";
-import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
+import { PageIntro, SiteShell } from "@/components/site-shell";
+import { siteConfig, whatsappHref } from "@/lib/site";
+import { fetchAllContent, pickSection, serviceItems, serviceTitle } from "@/lib/cms";
+import { ServicesGrid } from "@/components/services-grid";
 
-const services = [
-  ["01", "Conferencias", "Ideas que abren conversaciones nuevas sobre liderazgo, dinero y el futuro del trabajo."],
-  ["02", "Mentoría", "Acompañamiento cercano para ordenar decisiones, desbloquear movimiento y sostener el proceso."],
-  ["03", "Formación inmobiliaria", "El lenguaje, los números y el criterio para convertir una propiedad en una estrategia."],
-  ["04", "Talleres corporativos", "Experiencias para equipos que quieren liderar con más autonomía, contexto y visión."],
-  ["05", "Consultoría de inversión", "Una segunda mirada para leer oportunidades, riesgos y escenarios con serenidad."],
-  ["06", "Cursos online", "Rutas de aprendizaje a tu ritmo para que la educación financiera pase a la acción."],
-];
+export const dynamic = "force-dynamic";
 
-export default function Servicios() { return <SiteShell><PageIntro eyebrow="Servicios / 04" title="Tu siguiente movimiento, con más criterio." description="No hay una fórmula única para crecer. Diseñamos el formato que mejor responde a tu momento, tus preguntas y la escala de tu ambición." /><section className="mx-auto max-w-[1440px] px-5 pb-16 sm:px-8 lg:px-12"><div className="relative min-h-[280px] overflow-hidden rounded-2xl bg-[var(--forest)] sm:min-h-[360px]"><Image src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=85" alt="Equipo colaborando alrededor de una mesa" fill sizes="(max-width: 1024px) 100vw, 90vw" className="object-cover opacity-75" /><div className="absolute inset-0 bg-gradient-to-r from-[var(--forest)] via-[var(--forest)]/65 to-transparent" /><div className="relative flex h-full max-w-xl flex-col justify-end p-8 text-[var(--background)] sm:p-12"><p className="eyebrow text-[var(--copper-soft)]">Una forma de avanzar</p><p className="display-font mt-4 text-4xl leading-none sm:text-5xl">Acompañamiento para decisiones que sí importan.</p></div></div></section><section className="mx-auto max-w-[1440px] px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28"><div className="grid gap-px bg-[var(--line)] md:grid-cols-2 lg:grid-cols-3">{services.map(([number, title, text]) => <article key={number} className="group min-h-[300px] bg-[var(--background)] p-8 transition hover:-translate-y-1 hover:bg-[var(--lime)] sm:p-10"><SectionLabel number={number}>Acompañamiento</SectionLabel><h2 className="display-font mt-20 text-3xl leading-none sm:text-4xl">{title}</h2><p className="mt-5 max-w-xs text-sm leading-6 text-[var(--ink-soft)]">{text}</p><span className="mt-8 block text-xl text-[var(--copper)] transition group-hover:translate-x-2">↗</span></article>)}</div></section><section className="bg-[var(--forest)] text-[var(--background)]"><div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-5 py-16 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-12 lg:py-20"><div><p className="eyebrow text-[var(--copper-soft)]">¿Por dónde empezamos?</p><p className="display-font mt-4 max-w-2xl text-4xl leading-none sm:text-5xl">Una buena conversación ya es una forma de avanzar.</p></div><Link href="/iniciar-sesion" className="rounded-full bg-[var(--copper)] px-6 py-3 text-center text-sm font-semibold text-[var(--paper)] transition hover:bg-[var(--copper-soft)]">Solicitar orientación</Link></div></section></SiteShell>; }
+export default async function Servicios() {
+  const content = await fetchAllContent();
+  const services = pickSection(content, "SERVICES");
+
+  return (
+    <SiteShell>
+      <PageIntro eyebrow="Servicios / 05" title={serviceTitle(services)}
+        description="Formatos pensados para llevar el liderazgo y la educación financiera a la acción." />
+      <section className="mx-auto max-w-[1440px] px-5 pb-20 sm:px-8 lg:px-12">
+        <ServicesGrid items={serviceItems(services)} />
+        <div className="mt-10 flex flex-wrap gap-4">
+          <a href={whatsappHref()} target="_blank" rel="noreferrer" className="rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-105">Pedir información por WhatsApp</a>
+          <Link href="/nosotros" className="rounded-full border hairline px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">Conócenos {siteConfig.brand}</Link>
+        </div>
+      </section>
+    </SiteShell>
+  );
+}

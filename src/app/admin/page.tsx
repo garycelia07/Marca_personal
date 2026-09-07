@@ -1,30 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/auth";
+import { backendFetch } from "@/lib/api/backend";
 import { SectionLabel } from "@/components/site-shell";
-import { ChartIcon, UsersGroupIcon, BookIcon, MailIcon, AttachmentIcon, EditIcon } from "@/components/admin/admin-icons";
-
-const stats = [
-    { label: "Usuarios activos", value: "1.284", icon: UsersGroupIcon },
-    { label: "Programas activos", value: "6", icon: BookIcon },
-    { label: "Ingresos del mes", value: "€ 18.240", icon: ChartIcon },
-    { label: "Sesiones esta semana", value: "312", icon: UsersGroupIcon },
-];
-
-const recentActivity = [
-    { who: "Lucía Ferrer", what: "Verificó su identidad", when: "hace 2 min" },
-    { who: "Miguel Ángel R.", what: "Inscribió a Programa Patrimonio", when: "hace 18 min" },
-    { who: "Julieta Paz", what: "Completó el módulo 3", when: "hace 1 h" },
-    { who: "Nicolás Varas", what: "Solicitó una mentoría", when: "hace 3 h" },
-];
+import { UsersGroupIcon, BookIcon, MailIcon, AttachmentIcon, EditIcon } from "@/components/admin/admin-icons";
 
 const quickLinks = [
     { title: "Gestionar estudiantes", href: "/admin/estudiantes", desc: "Crea, edita y ajusta la vigencia de acceso de estudiantes.", icon: UsersGroupIcon },
     { title: "Gestionar cursos", href: "/admin/cursos", desc: "Crea y publica cursos, módulos y lecciones.", icon: BookIcon },
     { title: "Gestionar materiales", href: "/admin/materiales", desc: "Sube PDFs e imágenes al VPS.", icon: AttachmentIcon },
     { title: "Editar contenido", href: "/admin/contenido", desc: "Actualiza las secciones del landing page.", icon: EditIcon },
-    { title: "Ver contactos", href: "/admin/contactos", desc: "Prospectos capturados del landing.", icon: MailIcon },
-    { title: "Métricas", href: "/admin", desc: "Explora el detalle de ingresos y conversiones.", icon: ChartIcon },
 ];
 
 export default async function AdminDashboard() {
@@ -46,6 +31,33 @@ export default async function AdminDashboard() {
         .map((part) => part[0]?.toUpperCase() ?? "")
         .join("");
 
+    let metrics: {
+        students?: { total?: number; active?: number };
+        courses?: { total?: number; published?: number };
+        enrollments?: { total?: number };
+        leads?: { total?: number; recent?: { id: string; email?: string; name?: string; message?: string | null }[] };
+    } = {};
+    try {
+        const res = await backendFetch("/dashboard/stats");
+        if (res.ok) metrics = await res.json();
+    } catch {
+        metrics = {};
+    }
+
+    const cards = [
+        { label: "Estudiantes registrados", value: metrics.students?.total ?? 0, icon: UsersGroupIcon },
+        { label: "Estudiantes activos", value: metrics.students?.active ?? 0, icon: UsersGroupIcon },
+        { label: "Cursos publicados", value: metrics.courses?.published ?? 0, icon: BookIcon },
+        { label: "Contactos de la web", value: metrics.leads?.total ?? 0, icon: MailIcon },
+    ];
+
+    const recent = (metrics.leads?.recent ?? []).map((lead) => ({
+        key: lead.id,
+        who: lead.name || lead.email || "Contacto",
+        what: (lead.message || "Solicitó información").slice(0, 60),
+        when: "nuevo",
+    }));
+
     return (
         <section>
             <header className="mb-8 border-b hairline pb-6">
@@ -65,7 +77,7 @@ export default async function AdminDashboard() {
             </header>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat) => {
+                {cards.map((stat) => {
                     const Icon = stat.icon;
                     return (
                         <article key={stat.label} className="rounded-xl border hairline bg-[var(--paper)] p-5 transition hover:border-[var(--copper)]">
@@ -103,13 +115,17 @@ export default async function AdminDashboard() {
                 <section>
                     <SectionLabel number="02">Actividad reciente</SectionLabel>
                     <ul className="mt-6 space-y-3">
-                        {recentActivity.map((entry) => (
-                            <li key={entry.who} className="rounded-xl border hairline bg-[var(--paper)] p-4 transition hover:border-[var(--copper)]">
+                        {recent.length === 0 ? (
+                            <li className="rounded-xl border hairline bg-[var(--paper)] p-4 text-sm text-[var(--ink-soft)]">Aún no hay contactos recientes.</li>
+                        ) : (
+                        recent.map((entry) => (
+                            <li key={entry.key} className="rounded-xl border hairline bg-[var(--paper)] p-4 transition hover:border-[var(--copper)]">
                                 <p className="text-sm font-semibold">{entry.who}</p>
                                 <p className="mt-1 text-sm text-[var(--ink-soft)]">{entry.what}</p>
                                 <p className="mt-2 text-xs text-[var(--ink-soft)]">{entry.when}</p>
                             </li>
-                        ))}
+                        ))
+                        )}
                     </ul>
                 </section>
             </div>

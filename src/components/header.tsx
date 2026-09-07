@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { siteConfig } from "@/lib/site";
 
 const navigation = [
     { label: "Inicio", href: "/" },
@@ -12,6 +13,7 @@ const navigation = [
     { label: "Proyectos", href: "/proyectos" },
     { label: "Servicios", href: "/servicios" },
 ];
+
 
 const USER_STORAGE_KEY = "aurea_user";
 
@@ -50,7 +52,7 @@ function ThemeToggle() {
     function toggleTheme() {
         const nextDark = !dark;
         document.documentElement.classList.toggle("dark", nextDark);
-        window.localStorage.setItem("aurea-theme", nextDark ? "dark" : "light");
+        window.localStorage.setItem("mp-theme", nextDark ? "dark" : "light");
         setDark(nextDark);
     }
 

@@ -1,13 +1,27 @@
-import Image from "next/image";
 import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
+import { fetchAllContent, pickSection, storyData } from "@/lib/cms";
 
-const milestones = [
-  ["2009", "El primer sí", "Un proyecto pequeño, una libreta llena de preguntas y la certeza de que aprender a invertir también era aprender a liderar."],
-  ["2014", "La primera piedra", "Nace la primera inversión inmobiliaria y con ella una nueva forma de entender el riesgo: con números, no con impulsos."],
-  ["2019", "Compartir el mapa", "La experiencia se convierte en mentoría. Más de 300 personas empiezan a ordenar sus decisiones y a moverse con criterio."],
-  ["2026", "Áurea", "Una plataforma para llevar esa conversación más lejos: patrimonio, educación y crecimiento personal en un mismo lugar."],
-];
+export const dynamic = "force-dynamic";
 
-export default function MiHistoria() {
-  return <SiteShell><section className="relative overflow-hidden bg-[var(--forest)] text-[var(--background)]"><div className="absolute inset-0 opacity-25"><Image src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1600&q=85" alt="Libreta abierta junto a una taza de café" fill priority sizes="100vw" className="object-cover" /></div><div className="relative mx-auto grid min-h-[430px] max-w-[1440px] items-end gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-12 lg:py-20"><SectionLabel number="02">Mi historia</SectionLabel><div><h1 className="display-font max-w-4xl text-5xl leading-[0.95] sm:text-7xl">Todo gran cambio empieza en privado.</h1><p className="mt-7 max-w-xl text-base leading-7 text-[var(--copper-soft)]">Antes de acompañar a otros, tuve que aprender a hacerme mejores preguntas.</p></div></div></section><section className="border-y hairline bg-[var(--paper)]"><div className="mx-auto max-w-[1100px] px-5 py-16 sm:px-8 lg:py-24">{milestones.map(([year, title, text], index) => <article key={year} className="grid gap-6 border-b hairline py-10 first:pt-0 last:border-0 sm:grid-cols-[160px_220px_1fr] sm:gap-10"><span className="display-font text-4xl text-[var(--copper)]">{year}</span><h2 className="display-font text-3xl leading-none">{title}</h2><p className="max-w-lg leading-7 text-[var(--ink-soft)]">{text}</p><span className="hidden sm:block" aria-hidden="true">{index === milestones.length - 1 ? "" : ""}</span></article>)}</div></section><section className="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-12 lg:py-28"><div className="relative min-h-[320px] overflow-hidden rounded-2xl"><Image src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=85" alt="Libreta abierta junto a una taza de café" fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" /></div><div className="flex flex-col justify-center"><SectionLabel number="03">Una idea que permanece</SectionLabel><blockquote className="display-font mt-10 max-w-4xl text-4xl leading-[1.05] sm:text-6xl">“La riqueza más importante es la capacidad de elegir cómo quieres usar tu tiempo.”</blockquote></div></section></SiteShell>;
+export default async function MiHistoria() {
+  const content = await fetchAllContent();
+  const story = storyData(pickSection(content, "STORY"));
+
+  return (
+    <SiteShell>
+      <section className="relative overflow-hidden bg-[var(--forest)] text-[var(--background)]">
+        <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
+          <SectionLabel number="03">Mi historia</SectionLabel>
+          <h1 className="display-font mt-6 max-w-3xl text-5xl leading-[0.98] sm:text-7xl">
+            {story.title ?? "Una trayectoria de liderazgo e inversión."}
+          </h1>
+          <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--copper-soft)]">
+            {story.body ?? ""}
+          </p>
+        </div>
+      </section>
+      <PageIntro eyebrow="Mi historia / 03" title="El camino."
+        description="Notas, hitos y la intención detrás de este proyecto." />
+    </SiteShell>
+  );
 }

@@ -46,14 +46,25 @@ function buildQuery(params: LeadListParams): string {
 }
 
 function normalizeList(payload: unknown, page: number, limit: number): LeadPagination {
-    const items = Array.isArray(payload) ? payload : (payload && typeof payload === "object" && Array.isArray((payload as { items?: unknown }).items)
-        ? (payload as { items: unknown[] }).items
-        : []);
-    const total = payload && typeof payload === "object" && typeof (payload as { total?: unknown }).total === "number"
-        ? (payload as { total: number }).total
-        : (Array.isArray(payload) ? payload.length : 0);
-    const totalPages = limit > 0 ? Math.max(1, Math.ceil(total / limit)) : 1;
-    return { items: items as Lead[], page, limit, total, totalPages };
+    const hasDataMeta = payload && typeof payload === "object" && Array.isArray((payload as { data?: unknown }).data);
+    const items = hasDataMeta
+        ? (payload as { data: unknown[] }).data
+        : Array.isArray(payload)
+            ? payload
+            : (payload && typeof payload === "object" && Array.isArray((payload as { items?: unknown }).items)
+                ? (payload as { items: unknown[] }).items
+                : []);
+    const meta = (payload && typeof payload === "object" ? (payload as { meta?: { total?: unknown; page?: unknown; limit?: unknown; totalPages?: unknown } }).meta : undefined) ?? {};
+    const total = hasDataMeta && typeof meta.total === "number"
+        ? meta.total
+        : (payload && typeof payload === "object" && typeof (payload as { total?: unknown }).total === "number"
+            ? (payload as { total: number }).total
+            : items.length);
+    const effectiveLimit = limit > 0 ? limit : (typeof meta.limit === "number" ? meta.limit : 20);
+    const totalPages = hasDataMeta && typeof meta.totalPages === "number"
+        ? meta.totalPages
+        : (effectiveLimit > 0 ? Math.max(1, Math.ceil(total / effectiveLimit)) : 1);
+    return { items: items as Lead[], page, limit: effectiveLimit, total, totalPages };
 }
 
 async function toApiError(response: Response): Promise<ApiError> {

@@ -72,3 +72,24 @@ export async function saveContentSection(section: ContentSection, data: Record<s
         body: JSON.stringify({ data }),
     })) as ContentEntry;
 }
+
+/** GET data JSON (no tipado) de una sección; útil para estructuras anidadas (PROJECTS con items). */
+export async function getContentJson(section: ContentSection): Promise<Record<string, unknown>> {
+    const payload = await requestJson(`/api/content/${section}`, { method: "GET" }) as
+        | { data?: Record<string, unknown> }
+        | Record<string, unknown>
+        | null;
+    if (payload && typeof payload === "object" && "data" in payload && payload.data && typeof payload.data === "object") {
+        return payload.data as Record<string, unknown>;
+    }
+    return (payload && typeof payload === "object" ? payload : {}) as Record<string, unknown>;
+}
+
+/** PUT JSON anidado (data) de una sección (proxy → PUT /api/content/{section}). */
+export async function saveContentJson(section: ContentSection, data: Record<string, unknown>): Promise<unknown> {
+    return requestJson(`/api/content/${section}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data }),
+    });
+}
