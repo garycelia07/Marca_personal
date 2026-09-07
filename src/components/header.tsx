@@ -55,7 +55,7 @@ export function SiteHeader() {
                     ))}
                     <div className="ml-6 flex items-center gap-4 border-l hairline pb-0.5 pl-6">
                         <Link href="/iniciar-sesion" className="rounded-md border border-[var(--forest)] px-4 py-2 text-base font-semibold text-[var(--forest)] transition hover:bg-[var(--forest)] hover:text-[var(--background)]">
-                            Iniciar sesión
+                            Login
                         </Link>
                         <ThemeToggle />
                     </div>
@@ -78,7 +78,7 @@ export function SiteHeader() {
                             </Link>
                         ))}
                         <Link href="/iniciar-sesion" onClick={() => setOpen(false)} className="text-lg text-[var(--ink-soft)] transition hover:text-[var(--copper)]">
-                            Iniciar sesión
+                            Login
                         </Link>
                     </div>
                 </nav>
