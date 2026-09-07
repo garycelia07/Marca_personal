@@ -115,9 +115,14 @@ export default function MiHistoria() {
               </ol>
             </div>
 
-            {/* IMAGEN + CITA */}
+            {/* CITA + IMAGEN GRANDE + NOMBRE */}
             <div className="flex flex-col">
-              <div className="overflow-hidden rounded-2xl border border-[var(--line)]">
+              <blockquote className="display-font text-2xl italic leading-snug text-[var(--foreground)] sm:text-[1.65rem]">
+                “La disciplina convierte el propósito en resultado; cada paso,
+                aunque pequeño, es parte de una visión más grande.”
+              </blockquote>
+
+              <div className="relative mt-8 aspect-[4/5] w-full overflow-hidden rounded-2xl lg:mt-10">
                 <img
                   src="/gary.avif"
                   alt="Gary Mayhua brindando una conferencia"
@@ -125,23 +130,9 @@ export default function MiHistoria() {
                 />
               </div>
 
-              <figure className="mt-8 lg:mt-10">
-                <blockquote className="display-font text-2xl italic leading-snug text-[var(--foreground)] sm:text-[1.65rem]">
-                  “La disciplina convierte el propósito en resultado; cada
-                  paso, aunque pequeño, es parte de una visión más grande.”
-                </blockquote>
-                <figcaption className="mt-5 flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/foto.avif"
-                    alt="Gary Mayhua"
-                    className="h-12 w-12 rounded-full border border-[var(--copper)]/50 object-cover sm:h-14 sm:w-14"
-                  />
-                  <span className="display-font text-lg font-semibold leading-none text-[var(--copper)] sm:text-xl">
-                    Gary Mayhua
-                  </span>
-                </figcaption>
-              </figure>
+              <span className="display-font mt-6 block text-lg font-semibold leading-none text-[var(--copper)] sm:text-xl">
+                — Gary Mayhua
+              </span>
             </div>
           </div>
         </div>
