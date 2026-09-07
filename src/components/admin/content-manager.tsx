@@ -7,6 +7,13 @@ import {
     saveContentSection,
     type ContentSection,
 } from "@/lib/api/content";
+import { SectionImageUploader } from "@/components/admin/section-image-uploader";
+
+const SECTION_SLOT: Partial<Record<ContentSection, "hero" | "proyectos" | "servicios">> = {
+    HERO: "hero",
+    PROJECTS: "proyectos",
+    SERVICES: "servicios",
+};
 
 type ToastVariant = "success" | "error";
 type Toast = { id: number; variant: ToastVariant; message: string };
@@ -110,7 +117,13 @@ return (
                         <span className="text-sm">Cargando contenido…</span>
                     </div>
                 ) : (
-                    <div className="divide-y hairline">
+                    <div>
+                        {SECTION_SLOT[section] && (
+                            <div className="border-b hairline px-5 py-5 sm:px-8">
+                                <SectionImageUploader slot={SECTION_SLOT[section]} />
+                            </div>
+                        )}
+                        <div className="divide-y hairline">
                         {fields.length === 0 && <p className="px-5 py-6 text-sm text-[var(--ink-soft)]">Esta sección aún no tiene campos. Agrega el primero abajo.</p>}
                         {fields.map((field, index) => (
                             <div key={`${field.key}-${index}`} className="grid gap-3 px-5 py-4 sm:grid-cols-[minmax(140px,220px)_1fr_auto] sm:items-center sm:px-8">
@@ -141,6 +154,7 @@ return (
                                 className="w-48 rounded-full border hairline bg-transparent px-4 py-2 text-sm outline-none transition placeholder:text-[var(--ink-soft)] focus:border-[var(--copper)]"
                             />
                             <button type="button" onClick={addField} className="rounded-full border hairline px-5 py-2 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">+ Campo</button>
+                        </div>
                         </div>
                     </div>
                 )}
