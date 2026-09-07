@@ -131,7 +131,7 @@ export default function MiHistoria() {
                 />
               </div>
 
-              <div className="mt-8 flex justify-end pr-6 lg:mt-10 sm:pr-8">
+              <div className="mt-8 flex justify-center lg:mt-10">
                 <span className="display-font text-lg font-semibold text-[var(--copper)] sm:text-xl">
                   — Gary Mayhua
                 </span>
