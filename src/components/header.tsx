@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { siteConfig } from "@/lib/site";
 
 const navigation = [
     { label: "Inicio", href: "/" },
@@ -12,7 +13,8 @@ const navigation = [
     { label: "Servicios", href: "/servicios" },
 ];
 
-const USER_STORAGE_KEY = "aurea_user";
+
+const USER_STORAGE_KEY = "mp_user";
 
 type StoredUser = {
     id: string;
@@ -49,7 +51,7 @@ function ThemeToggle() {
     function toggleTheme() {
         const nextDark = !dark;
         document.documentElement.classList.toggle("dark", nextDark);
-        window.localStorage.setItem("aurea-theme", nextDark ? "dark" : "light");
+        window.localStorage.setItem("mp-theme", nextDark ? "dark" : "light");
         setDark(nextDark);
     }
 
@@ -116,8 +118,8 @@ export function SiteHeader() {
         <header className="sticky top-0 z-20 border-b hairline bg-[color:var(--background)]/90 backdrop-blur-md">
             <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
                 <Link href="/" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--forest)] font-serif text-lg text-[var(--background)]">A</span>
-                    <span className="display-font text-xl font-semibold tracking-normal">Áurea<span className="text-[var(--copper)]">.</span></span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--forest)] font-serif text-lg text-[var(--background)]">{siteConfig.brand.slice(0, 1).toUpperCase()}</span>
+                    <span className="display-font text-xl font-semibold tracking-normal">{siteConfig.brand}<span className="text-[var(--copper)]">.</span></span>
                 </Link>
                 <nav className="hidden items-center gap-7 lg:flex" aria-label="Navegación principal">
                     {navigation.map((item) => (

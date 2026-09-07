@@ -18,28 +18,22 @@ export type LoginResponse = {
 export type LoginInput = {
     email: string;
     password: string;
-    /** Si es false, la cookie de acceso es de sesión (expira al cerrar el navegador). */
     remember?: boolean;
 };
 
-/** Decoded JWT claims (Base64Url payload, unverified). */
 export type JwtPayload = {
-    /** Standard JWT subject — preferred user id. */
     sub?: unknown;
-    /** Fallback user id claim. */
     userId?: unknown;
     email?: unknown;
     name?: unknown;
     fullName?: unknown;
     role?: unknown;
     accessExpiresAt?: unknown;
-    /** Standard JWT expiration (seconds since epoch). */
     exp?: unknown;
     [claim: string]: unknown;
 };
 
-/** HttpOnly cookie that holds the backend access token. */
-export const ACCESS_TOKEN_COOKIE = "aurea_access_token";
+export const ACCESS_TOKEN_COOKIE = "mp_access_token";
 
 function normalizeRole(value: unknown): UserRole | null {
     if (value === "ADMIN" || value === "STUDENT") return value as UserRole;
@@ -47,25 +41,13 @@ function normalizeRole(value: unknown): UserRole | null {
 }
 
 function decodeBase64(value: string): string {
-    if (typeof atob === "function") {
-        try {
-            return atob(value);
-        } catch {
-            // Buffer padding/url-encoding edge cases — fall through.
-        }
-    }
+    const padded = value.padEnd(Math.ceil(value.length / 4) * 4, "=");
     if (typeof Buffer !== "undefined") {
-        return Buffer.from(value, "base64").toString("utf-8");
+        return Buffer.from(padded, "base64").toString("utf-8");
     }
-    throw new Error("No Base64 decoder available for the JWT payload.");
+    return atob(padded);
 }
 
-/**
- * Decodes the payload of a JWT WITHOUT verifying its signature.
- * Good for reading non-sensitive, client-displayable claims (e.g. the role
- * used to pick the dashboard). Server-side authorization must always be
- * re-validated against the trusted backend.
- */
 export function decodeJwtToken(token: string): JwtPayload | null {
     if (!token || typeof token !== "string") return null;
     const parts = token.split(".");
@@ -79,11 +61,6 @@ export function decodeJwtToken(token: string): JwtPayload | null {
     }
 }
 
-/**
- * Returns the authenticated user for the current request by reading the
- * HttpOnly `aurea_access_token` cookie. Server-only — import from Server
- * Components, Route Handlers or Server Actions, never from Client Components.
- */
 export async function getCurrentUser(): Promise<AuthUser | null> {
     try {
         const cookieStore = await cookies();
@@ -115,7 +92,6 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     }
 }
 
-/** Default landing page for a role, used right after login. */
 export function dashboardForRole(role: UserRole): string {
     return role === "ADMIN" ? "/admin" : "/estudiante";
 }

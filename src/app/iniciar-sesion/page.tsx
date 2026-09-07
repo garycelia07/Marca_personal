@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import type { AuthUser } from "@/lib/api/auth";
+import { siteConfig } from "@/lib/site";
 
-const USER_STORAGE_KEY = "aurea_user";
+const USER_STORAGE_KEY = "mp_user";
 
 type LoginResponseBody = { user?: AuthUser; message?: string };
 type Field = "email" | "password";
@@ -96,9 +97,9 @@ export default function IniciarSesion() {
             <main className="grid min-h-[calc(100vh-170px)] lg:grid-cols-[0.9fr_1.1fr]">
                 <section className="flex flex-col justify-between bg-[var(--forest)] p-8 text-[var(--background)] sm:p-12 lg:p-16">
                     <div>
-                        <Link href="/" className="display-font text-2xl">Áurea<span className="text-[var(--copper-soft)]">.</span></Link>
-                        <p className="eyebrow mt-24 text-[var(--copper-soft)]">Tu espacio de crecimiento</p>
-                        <h1 className="display-font mt-5 max-w-md text-5xl leading-[0.92] sm:text-7xl">Vuelve a tu próxima decisión.</h1>
+                        <Link href="/" className="display-font text-2xl">{siteConfig.brand}<span className="text-[var(--copper-soft)]">.</span></Link>
+                        <p className="eyebrow mt-24 text-[var(--copper-soft)]">{siteConfig.byline}</p>
+                        <h1 className="display-font mt-5 max-w-md text-5xl leading-[0.92] sm:text-7xl">Accede a tu formación.</h1>
                     </div>
                     <div className="space-y-5">
                         <p className="max-w-sm text-sm leading-6 text-[var(--copper-soft)]">Accede a tus programas, recursos y conversaciones en curso.</p>
@@ -195,8 +196,9 @@ export default function IniciarSesion() {
                         {process.env.NODE_ENV !== "production" && (
                             <div className="mt-8 rounded-md border hairline bg-[var(--paper)] p-4 text-xs leading-5 text-[var(--ink-soft)]">
                                 <p className="font-semibold text-[var(--copper)]">Entorno de prueba</p>
-                                <p>Admin · <span className="font-mono">admin@aurea.test</span> / <span className="font-mono">admin123</span></p>
-                                <p>Estudiante · <span className="font-mono">estudiante@aurea.test</span> / <span className="font-mono">estudiante123</span></p>
+                                <p>Las credenciales válidas se crean en la base de datos (backend/.env).</p>
+                                <p>Admin semilla · <span className="font-mono">admin@garymayhua.com</span> — contraseña en <span className="font-mono">ADMIN_SEED_PASSWORD</span></p>
+                                <p>Los estudiantes los registra el admin en el panel via el backend.</p>
                             </div>
                         )}
                     </div>
