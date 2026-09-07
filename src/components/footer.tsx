@@ -1,4 +1,5 @@
 import { WhatsAppLeadButton } from "@/components/whatsapp-lead-button";
+import { socialHref } from "@/lib/site";
 
 export type SocialIconName = "facebook" | "instagram" | "linkedin" | "youtube" | "tiktok" | "whatsapp";
 
@@ -26,11 +27,11 @@ export function SocialIcon({ name }: { name: SocialIconName }) {
     return <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current"><path d="M19.1 4.9A9.9 9.9 0 0 0 12 2a10 10 0 0 0-8.7 15l-1.1 4 4.1-1.1A10 10 0 0 0 12 22h.1a10 10 0 0 0 7-17.1ZM12 20a8 8 0 0 1-4.1-1.1l-.3-.2-2.4.7.7-2.3-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.7.9-.1.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.3.2-.3.6-1.1.1-.2.1-.3 0-.5l-.7-1.7c-.2-.4-.4-.3-.5-.3h-.5c-.2 0-.5.1-.7.3-.7.7-.9 1.6-.2 2.6 1.2 2.4 3.1 4.2 5.6 5.1.9.3 1.6.2 2.2-.1.6-.3.9-.8 1-1.2.1-.2.1-.4-.1-.5Z" /></svg>;
 }
 
-const socialLinks: { label: string; href: string; icon: SocialIconName }[] = [
-    { label: "Instagram", href: "https://www.instagram.com/", icon: "instagram" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/", icon: "linkedin" },
-    { label: "YouTube", href: "https://www.youtube.com/", icon: "youtube" },
-    { label: "TikTok", href: "https://www.tiktok.com/", icon: "tiktok" },
+const socialLinks: { label: string; icon: SocialIconName }[] = [
+    { label: "Facebook", icon: "facebook" },
+    { label: "TikTok", icon: "tiktok" },
+    { label: "Instagram", icon: "instagram" },
+    { label: "YouTube", icon: "youtube" },
 ];
 
 export function SiteFooter() {
@@ -46,7 +47,7 @@ export function SiteFooter() {
                     <div className="flex flex-col justify-between gap-8 lg:items-end">
                         <p className="max-w-xs text-sm leading-6 text-[var(--ink-soft)] lg:text-right">Construir patrimonio. Multiplicar posibilidades. Encontrarnos también es parte del proceso.</p>
                         <div className="flex flex-wrap gap-5 text-sm font-semibold" aria-label="Redes sociales">
-                            {socialLinks.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={`Visitar ${social.label}`} className="flex items-center gap-2 transition hover:text-[var(--copper)]"><SocialIcon name={social.icon} /><span>{social.label}</span></a>)}
+                            {socialLinks.map((social) => <a key={social.label} href={socialHref(social.icon)} target="_blank" rel="noreferrer" aria-label={`Visitar ${social.label}`} className="flex items-center gap-2 transition hover:text-[var(--copper)]"><SocialIcon name={social.icon} /><span>{social.label}</span></a>)}
                         </div>
                     </div>
                 </div>

@@ -10,7 +10,7 @@ function errorMessage(error: unknown, fallback: string): string {
     return fallback;
 }
 
-export function LeadForm() {
+export function LeadForm({ courseName, submitLabel, onSubmitted }: { courseName?: string; submitLabel?: string; onSubmitted?: (ok: boolean) => void }) {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -27,13 +27,12 @@ export function LeadForm() {
         }
         setSending(true);
         setFeedback(null);
+        const full = courseName ? `Quiero inscribirme al curso: ${courseName}.` + (message ? `\n${message}` : "") : message;
         try {
-            await createLead({ name, email, phone, message, channel: "CONTACT_FORM" });
-            setFeedback({ variant: "success", message: "Gracias. Te contactaremos muy pronto." });
-            setName("");
-            setEmail("");
-            setPhone("");
-            setMessage("");
+            await createLead({ name, email, phone, message: full, channel: "CONTACT_FORM" });
+            setFeedback({ variant: "success", message: "¡Listo! Te contactaremos para coordinar la inscripción." });
+            setName(""); setEmail(""); setPhone(""); setMessage("");
+            onSubmitted?.(true);
         } catch (error) {
             setFeedback({ variant: "error", message: errorMessage(error, "No fue posible enviar tu mensaje.") });
         } finally {
@@ -70,7 +69,7 @@ export function LeadForm() {
 
             <button type="submit" disabled={sending} className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-7 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] disabled:opacity-50">
                 {sending && <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--background)] border-t-transparent" aria-hidden="true" />}
-                {sending ? "Enviando…" : "Enviar mensaje"}
+                {sending ? "Enviando…" : submitLabel ?? "Enviar mensaje"}
             </button>
         </form>
     );

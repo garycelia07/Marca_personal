@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SocialIcon, type SocialIconName } from "@/components/footer";
+import { socialHref } from "@/lib/site";
 import { LeadForm } from "@/components/lead-form";
 import { FeaturedCourses } from "@/components/featured-courses";
 import { SiteImage } from "@/components/site-image";
@@ -14,11 +15,11 @@ const projects = [
     { number: "03", type: "Digital", title: "Mapa de Futuro", text: "Herramientas para convertir una intención en un plan medible.", image: "https://images.unsplash.com/photo-1558619452581-d810042a5e13?auto=format&fit=crop&w=800&h=900", alt: "Interfaz digital con gráficos de proyección" },
 ];
 
-const heroSocials: { label: string; href: string; icon: SocialIconName }[] = [
-    { label: "Facebook", href: "https://www.facebook.com/", icon: "facebook" },
-    { label: "TikTok", href: "https://www.tiktok.com/", icon: "tiktok" },
-    { label: "Instagram", href: "https://www.instagram.com/", icon: "instagram" },
-    { label: "YouTube", href: "https://www.youtube.com/", icon: "youtube" },
+const heroSocials: { label: string; icon: SocialIconName }[] = [
+    { label: "Facebook", icon: "facebook" },
+    { label: "TikTok", icon: "tiktok" },
+    { label: "Instagram", icon: "instagram" },
+    { label: "YouTube", icon: "youtube" },
 ];
 
 export default function Home() {
@@ -33,7 +34,7 @@ export default function Home() {
                         <p className="mt-8 max-w-md text-2xl leading-tight sm:text-3xl">Los grandes sueños comienzan siendo un simple sueño.</p>
                         <p className="mt-5 max-w-sm text-sm leading-6 text-[var(--ink-soft)]">Acompañamos a personas que quieren crecer con intención, invertir con claridad y construir una vida con más posibilidades.</p>
                         <div className="mt-8 flex flex-wrap items-center gap-5"><Link href="/servicios" className="rounded-md bg-[var(--copper)] px-5 py-3 text-sm font-semibold text-[var(--forest-deep)] transition hover:brightness-110">Explorar acompañamiento</Link><Link href="/mi-historia" className="editorial-link text-sm font-semibold">Mi historia</Link></div>
-                        <div className="mt-9 flex items-center gap-3" aria-label="Redes sociales">{heroSocials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label} className="flex h-9 w-9 items-center justify-center rounded-full border border-black/15 text-[var(--foreground)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]"><SocialIcon name={social.icon} /></a>)}</div>
+                        <div className="mt-9 flex items-center gap-3" aria-label="Redes sociales">{heroSocials.map((social) => <a key={social.label} href={socialHref(social.icon)} target="_blank" rel="noreferrer" aria-label={social.label} className="flex h-9 w-9 items-center justify-center rounded-full border border-black/15 text-[var(--foreground)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]"><SocialIcon name={social.icon} /></a>)}</div>
                     </div>
                     <div className="hero-image-in group relative order-1 min-h-[430px] overflow-hidden lg:order-2 lg:min-h-[590px]"><SiteImage slot="hero" fallbackSrc="/foto.avif" alt="Retrato profesional de un mentor y líder" priority className="absolute inset-0 h-full w-full object-contain object-[10%_bottom] grayscale-[8%] transition-[filter] duration-500 group-hover:brightness-110" /><div className="hero-chips-in absolute bottom-5 right-4 z-10 flex flex-col items-end gap-3 sm:right-8 lg:bottom-10 lg:right-6"><div className="flex w-fit items-center gap-2 rounded-full border border-[var(--hero-chip-border)] bg-[var(--hero-chip)] px-3 py-2 shadow-[0_8px_20px_var(--hero-shadow)] backdrop-blur-sm"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--lime)] text-xs text-[var(--copper)]">↗</span><p className="text-xs font-semibold text-[var(--foreground)]">Mentoría</p></div><div className="mr-4 flex w-fit items-center gap-2 rounded-full border border-[var(--hero-chip-border)] bg-[var(--hero-chip)] px-3 py-2 shadow-[0_8px_20px_var(--hero-shadow)] backdrop-blur-sm"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--lime)] text-xs text-[var(--copper)]">◈</span><p className="text-xs font-semibold text-[var(--foreground)]">Patrimonio</p></div><div className="mr-8 flex w-fit items-center gap-2 rounded-full border border-[var(--hero-chip-border)] bg-[var(--hero-chip)] px-3 py-2 shadow-[0_8px_20px_var(--hero-shadow)] backdrop-blur-sm"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--lime)] text-xs text-[var(--copper)]">✦</span><p className="text-xs font-semibold text-[var(--foreground)]">Educación financiera</p></div></div></div>
                 </div>

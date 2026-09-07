@@ -49,7 +49,14 @@ export async function fetchAllContent(): Promise<ContentBlock[]> {
     try {
         const res = await backendFetch("/content");
         if (!res.ok) return [];
-        return (await res.json()).data as ContentBlock[];
+
+        const payload = await res.json();
+        // El backend puede devolver el listado en `.data` o directamente en la raíz.
+        const list = Array.isArray(payload)
+            ? payload
+            : (payload as { data?: unknown })?.data;
+        if (list === undefined || list === null) return [];
+        return Array.isArray(list) ? (list as ContentBlock[]) : [];
     } catch {
         return [];
     }
@@ -68,6 +75,34 @@ export function projectsData(block?: ContentBlock): ProjectsData {
     const d = as<ProjectsData>(block?.data);
     return { title: d.title, items: Array.isArray(d.items) ? (d.items as ItemData[]) : [] };
 }
+
+export type ProjectItemExt = {
+    name?: string;
+    slug?: string;
+    tagline?: string;
+    description?: string;
+    link?: string;
+};
+
+/** Extrae los ítems crudos de PROJECTS sin perder campos extra (slug, tagline, link). */
+export function projectItems(block?: ContentBlock): ProjectItemExt[] {
+    const d = as<{ items?: unknown }>(block?.data);
+    if (!Array.isArray(d.items)) return [];
+    return d.items as ProjectItemExt[];
+}
+export function projectTitle(block?: ContentBlock): string {
+    return as<{ title?: string }>(block?.data).title ?? "Proyectos.";
+}
+
+/** Items de la sección SERVICES con campos editables (name, tagline, description). */
+export function serviceItems(block?: ContentBlock): Omit<ProjectItemExt, "link">[] {
+    const d = as<{ items?: unknown }>(block?.data);
+    if (!Array.isArray(d.items)) return [];
+    return d.items as Omit<ProjectItemExt, "link">[];
+}
+export function serviceTitle(block?: ContentBlock): string {
+    return as<{ title?: string }>(block?.data).title ?? "Servicios y formación.";
+}
 export function servicesData(block?: ContentBlock): ServicesData {
     const d = as<ServicesData>(block?.data);
     return { title: d.title, items: Array.isArray(d.items) ? (d.items as ItemData[]) : [] };
@@ -78,7 +113,7 @@ export function socialLinksData(block?: ContentBlock): SocialLinksData {
 
 /* Permite seleccionar sobre el contenido ya descargado sin token. */
 export function pickSection(blocks: ContentBlock[], section: ContentSection): ContentBlock | undefined {
-    return blocks.find((b) => b.section === section);
+    return Array.isArray(blocks) ? blocks.find((b) => b.section === section) : undefined;
 }
 
 /**

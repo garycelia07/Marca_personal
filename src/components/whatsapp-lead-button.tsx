@@ -1,12 +1,11 @@
 "use client";
 
 import { SocialIcon } from "@/components/footer";
-
-const WHATSAPP_URL = "https://wa.me/?text=Hola%2C%20me%20gustar%C3%ADa%20conocer%20m%C3%A1s%20sobre%20%C3%81urea.";
+import { whatsappHref } from "@/lib/site";
 
 /**
  * Botón flotante de WhatsApp que además registra el contacto como lead
- * (channel: WHATSAPP) antes de abrir la conversación.
+ * (channel: WHATSAPP) antes de abrir la conversación en el número configurado.
  */
 export function WhatsAppLeadButton() {
     function handleClick() {
@@ -21,7 +20,7 @@ export function WhatsAppLeadButton() {
 
     return (
         <a
-            href={WHATSAPP_URL}
+            href={whatsappHref()}
             target="_blank"
             rel="noreferrer"
             onClick={handleClick}

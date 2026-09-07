@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { PageIntro, SiteShell } from "@/components/site-shell";
 import { getCourse } from "@/lib/api/courses";
+import { EnrollCourseButton } from "@/components/course-enroll";
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -108,8 +109,9 @@ export default async function CursoDetallePage({ params }: Props) {
                                     </dd>
                                 </div>
                             </dl>
-                            <Link href="/iniciar-sesion" className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]">
-                                Iniciar sesión para acceder
+                            <EnrollCourseButton courseTitle={course.title} />
+                            <Link href="/iniciar-sesion" className="mt-3 inline-flex w-full items-center justify-center rounded-full border hairline px-6 py-3 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
+                                Ya tengo acceso · Iniciar sesión
                             </Link>
                             <Link href="/cursos" className="mt-3 inline-flex w-full items-center justify-center rounded-full border hairline px-6 py-3 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
                                 Ver más cursos
