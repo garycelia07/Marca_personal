@@ -1,3 +1,5 @@
+import { WhatsAppLeadButton } from "@/components/whatsapp-lead-button";
+
 export type SocialIconName = "facebook" | "instagram" | "linkedin" | "youtube" | "tiktok" | "whatsapp";
 
 export function SocialIcon({ name }: { name: SocialIconName }) {
@@ -24,19 +26,12 @@ export function SocialIcon({ name }: { name: SocialIconName }) {
     return <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current"><path d="M19.1 4.9A9.9 9.9 0 0 0 12 2a10 10 0 0 0-8.7 15l-1.1 4 4.1-1.1A10 10 0 0 0 12 22h.1a10 10 0 0 0 7-17.1ZM12 20a8 8 0 0 1-4.1-1.1l-.3-.2-2.4.7.7-2.3-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.3-.7-1.5-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.7.9-.1.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.3.2-.3.6-1.1.1-.2.1-.3 0-.5l-.7-1.7c-.2-.4-.4-.3-.5-.3h-.5c-.2 0-.5.1-.7.3-.7.7-.9 1.6-.2 2.6 1.2 2.4 3.1 4.2 5.6 5.1.9.3 1.6.2 2.2-.1.6-.3.9-.8 1-1.2.1-.2.1-.4-.1-.5Z" /></svg>;
 }
 
-import { siteConfig, socialUrl, whatsappHref } from "@/lib/site";
-
-const socialCandidates: { label: string; icon: SocialIconName; name: string }[] = [
-    { label: "Instagram", icon: "instagram", name: "instagram" },
-    { label: "LinkedIn", icon: "linkedin", name: "linkedin" },
-    { label: "YouTube", icon: "youtube", name: "youtube" },
-    { label: "TikTok", icon: "tiktok", name: "tiktok" },
-    { label: "Facebook", icon: "facebook", name: "facebook" },
+const socialLinks: { label: string; href: string; icon: SocialIconName }[] = [
+    { label: "Instagram", href: "https://www.instagram.com/", icon: "instagram" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/", icon: "linkedin" },
+    { label: "YouTube", href: "https://www.youtube.com/", icon: "youtube" },
+    { label: "TikTok", href: "https://www.tiktok.com/", icon: "tiktok" },
 ];
-
-function visibleSocials() {
-    return socialCandidates.filter((s) => socialUrl(s.name).length > 0);
-}
 
 export function SiteFooter() {
     return (
@@ -45,30 +40,22 @@ export function SiteFooter() {
                 <div className="grid gap-12 border-b hairline pb-14 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20">
                     <div>
                         <p className="eyebrow">Hablemos de lo que sigue</p>
-                        <h2 className="display-font mt-5 max-w-2xl text-4xl leading-none sm:text-6xl">Liderazgo, formación e inversión con criterio.</h2>
-                        <a href={`mailto:${siteConfig.contactEmail}`} className="editorial-link mt-8 text-sm font-semibold">{siteConfig.contactEmail}</a>
+                        <h2 className="display-font mt-5 max-w-2xl text-4xl leading-none sm:text-6xl">Una conversación puede cambiar la dirección.</h2>
+                        <a href="mailto:hola@aurea.com" className="editorial-link mt-8 text-sm font-semibold">hola@aurea.com</a>
                     </div>
                     <div className="flex flex-col justify-between gap-8 lg:items-end">
-                        <p className="max-w-xs text-sm leading-6 text-[var(--ink-soft)] lg:text-right">
-                            {siteConfig.brand} — {siteConfig.byline}.
-                        </p>
-                        {visibleSocials().length > 0 && (
-                            <div className="flex flex-wrap gap-5 text-sm font-semibold" aria-label="Redes sociales">
-                                {visibleSocials().map((social) => <a key={social.name} href={socialUrl(social.name)} target="_blank" rel="noreferrer" aria-label={`Visitar ${social.label}`} className="flex items-center gap-2 transition hover:text-[var(--copper)]"><SocialIcon name={social.icon} /><span>{social.label}</span></a>)}
-                            </div>
-                        )}
+                        <p className="max-w-xs text-sm leading-6 text-[var(--ink-soft)] lg:text-right">Construir patrimonio. Multiplicar posibilidades. Encontrarnos también es parte del proceso.</p>
+                        <div className="flex flex-wrap gap-5 text-sm font-semibold" aria-label="Redes sociales">
+                            {socialLinks.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={`Visitar ${social.label}`} className="flex items-center gap-2 transition hover:text-[var(--copper)]"><SocialIcon name={social.icon} /><span>{social.label}</span></a>)}
+                        </div>
                     </div>
                 </div>
                 <div className="flex flex-col gap-5 pt-8 text-sm text-[var(--ink-soft)] sm:flex-row sm:items-center sm:justify-between">
-                    <span className="display-font text-xl text-[var(--foreground)]">{siteConfig.brand}<span className="text-[var(--copper)]">.</span></span>
-                    <span>© {new Date().getFullYear()} {siteConfig.brand}</span>
+                    <span className="display-font text-xl text-[var(--foreground)]">Áurea<span className="text-[var(--copper)]">.</span></span>
+                    <span>© 2026 Áurea</span>
                 </div>
             </div>
-            {siteConfig.whatsapp ? (
-                <a href={whatsappHref()} target="_blank" rel="noreferrer" aria-label="Escribir por WhatsApp" title="Escribir por WhatsApp" className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-xs font-bold text-white shadow-lg shadow-black/20 transition hover:scale-105 hover:bg-[#1da851] sm:bottom-8 sm:right-8">
-                    <SocialIcon name="whatsapp" />
-                </a>
-            ) : null}
+            <WhatsAppLeadButton />
         </footer>
     );
 }

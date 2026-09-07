@@ -1,4 +1,5 @@
-import { backendGetJson, backendApiBase } from "@/lib/api/backend";
+import { backendFetch } from "@/lib/api/backend";
+
 
 
 export type ContentSection =
@@ -45,7 +46,13 @@ function as<T>(value: unknown): T {
 }
 
 export async function fetchAllContent(): Promise<ContentBlock[]> {
-    return backendGetJson<ContentBlock[]>("/content").catch(() => []);
+    try {
+        const res = await backendFetch("/content");
+        if (!res.ok) return [];
+        return (await res.json()).data as ContentBlock[];
+    } catch {
+        return [];
+    }
 }
 
 export function heroData(block?: ContentBlock): HeroData {
@@ -79,11 +86,9 @@ export function pickSection(blocks: ContentBlock[], section: ContentSection): Co
  */
 export async function postLead(input: LeadInput): Promise<{ id: string } | null> {
     try {
-        const res = await fetch(`${backendApiBase()}/leads`, {
+        const res = await backendFetch("/leads", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(input),
-            cache: "no-store",
+            body: input,
         });
         if (!res.ok) return null;
         return (await res.json()) as { id: string };

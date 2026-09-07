@@ -1,24 +1,21 @@
 import { NextResponse } from "next/server";
-import { backendApiBase, tokenFromCookies } from "@/lib/api/backend";
+import { backendFetch } from "@/lib/api/backend";
 
 export async function GET(
     _request: Request,
     ctx: { params: Promise<{ id: string }> }
 ) {
     const { id } = await ctx.params;
-    const token = await tokenFromCookies();
-    if (!token) {
-        return NextResponse.json({ message: "No autenticado." }, { status: 401 });
-    }
 
     try {
-        const upstream = await fetch(`${backendApiBase()}/materials/${encodeURIComponent(id)}/file`, {
-            headers: { Authorization: `Bearer ${token}` },
-            cache: "no-store",
-        });
+        const upstream = await backendFetch(`/materials/${encodeURIComponent(id)}/file`);
 
         if (!upstream.ok) {
-            return NextResponse.json({ message: "Material no disponible." }, { status: upstream.status });
+            const isAuth = upstream.status === 401 || upstream.status === 403;
+            return NextResponse.json(
+                { message: isAuth ? "No autenticado." : "Material no disponible." },
+                { status: upstream.status }
+            );
         }
 
         const contentType = upstream.headers.get("content-type") ?? "application/octet-stream";

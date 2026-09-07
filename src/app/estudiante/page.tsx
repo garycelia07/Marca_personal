@@ -1,60 +1,45 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/auth";
-import { backendGetJson, tokenFromCookies, type Paginated } from "@/lib/api/backend";
+import { backendFetch } from "@/lib/api/backend";
+import type { Enrollment } from "@/lib/api/enrollments";
 import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
 
-type CourseRef = {
-    id: string;
-    title: string;
-    slug: string;
-    description?: string | null;
-    coverImageUrl?: string | null;
-};
+const progress = [
+    { label: "FUNDAMENTOS", value: 100, note: "Completado" },
+    { label: "PATRIMONIO", value: 64, note: "En curso" },
+    { label: "INVERSIÓN", value: 30, note: "En curso" },
+];
 
-type EnrollmentRow = {
-    id: string;
-    courseId: string;
-    expiresAt?: string | null;
-    progressPercent: number;
-    course: CourseRef;
-};
-
-type CourseDetail = CourseRef & {
-    modules?: {
-        id: string;
-        title: string;
-        order: number;
-        lessons?: { id: string; title: string; videoUrl?: string | null }[];
-    }[];
-    materials?: { id: string; title: string; mimeType: string; isPublic: boolean }[];
-};
-
-function fmtDate(value?: string | null): string {
-    if (!value) return "Sin fecha de vencimiento";
-    return new Date(value).toLocaleDateString("es-ES", { year: "numeric", month: "short", day: "numeric" });
-}
+const nextLessons = [
+    { title: "Presupuesto que respira", module: "Fundamentos · Lección 4", time: "15 min" },
+    { title: "El costo de oportunidad", module: "Inversión · Lección 2", time: "20 min" },
+    { title: "Deuda buena vs. deuda mala", module: "Patrimonio · Lección 3", time: "18 min" },
+];
 
 export default async function EstudianteDashboard() {
     const user = await getCurrentUser();
-    if (!user) redirect("/iniciar-sesion");
-    if (user.role !== "STUDENT") redirect("/admin");
 
-    const token = await tokenFromCookies();
-    const myCatalog = await backendGetJson<Paginated<EnrollmentRow>>("/enrollments/me", token).catch(() => null);
-    const enrollments = myCatalog?.data ?? [];
-
-    const details: CourseDetail[] = [];
-    for (const row of enrollments) {
-        const detail = await backendGetJson<CourseDetail>(`/courses/${row.courseId}`, token).catch(() => null);
-        if (detail) details.push(detail);
+    if (!user) {
+        redirect("/iniciar-sesion");
     }
 
-    const expired = enrollments.filter(
-        (e) => e.expiresAt && new Date(e.expiresAt).getTime() < Date.now()
-    ).length;
+    if (user.role !== "STUDENT") {
+        redirect("/admin");
+    }
 
-    const initials = (user.fullName || "G")
+    let myEnrollments: Enrollment[] = [];
+    try {
+        const response = await backendFetch("/enrollments/me?page=1&limit=20");
+        const payload = await response.json().catch(() => null) as { items?: Enrollment[] } | null;
+        if (response.ok && payload?.items) {
+            myEnrollments = payload.items;
+        }
+    } catch {
+        // Los cursos asignados no bloquean el resto del panel.
+    }
+
+    const initials = user.fullName
         .split(/\s+/)
         .filter(Boolean)
         .slice(0, 2)
@@ -65,12 +50,12 @@ export default async function EstudianteDashboard() {
         <SiteShell>
             <PageIntro
                 eyebrow="Panel estudiantil"
-                title="Tu espacio de aprendizaje."
-                description={`Hola, ${user.fullName}. Estas son las rutas y materiales a los que tienes acceso desde la plataforma.`}
+                title="Tu espacio de crecimiento."
+                description={`Hola, ${user.fullName}. Sigue tu avance, retoma donde lo dejaste y accede a los recursos de tu programa.`}
             />
-            <section className="mx-auto max-w-[1440px] px-5 pb-20 sm:px-8 lg:px-12">
+            <section className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
                 <div className="flex flex-wrap items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--forest)] text-base text-[var(--background)]">{initials}</span>
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--forest)] text-base text-[var(--background)]">{initials || "A"}</span>
                     <div>
                         <p className="text-sm font-semibold">{user.fullName}</p>
                         <p className="text-xs text-[var(--ink-soft)]">{user.email}</p>
@@ -78,105 +63,64 @@ export default async function EstudianteDashboard() {
                     <span className="ml-auto rounded-full border hairline bg-[var(--lime)] px-3 py-1 text-xs font-semibold text-[var(--forest-deep)]">ESTUDIANTE</span>
                 </div>
 
-                {expired > 0 && (
-                    <p className="mt-6 rounded-md border border-[var(--danger)] bg-[var(--lime)] px-4 py-3 text-sm text-[var(--danger)]">
-                        Tienes {expired} curso(s) con acceso vencido. Contacta a soporte para renovarlo.
-                    </p>
-                )}
-
-                <div className="mt-12 grid gap-8 lg:grid-cols-[0.75fr_1.6fr]">
+                <div className="mt-14 grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
                     <section>
-                        <SectionLabel number="01">Resumen</SectionLabel>
-                        <ul className="mt-6 space-y-3 text-sm">
-                            <li className="flex items-center justify-between border hairline bg-[var(--paper)] px-4 py-3">
-                                <span className="text-[var(--ink-soft)]">Cursos inscritos</span>
-                                <span className="display-font text-2xl">{enrollments.length}</span>
-                            </li>
-                            {enrollments.slice(0, 6).map((row) => (
-                                <li key={row.id} className="border hairline bg-[var(--paper)] px-4 py-3">
-                                    <p className="font-semibold">{row.course.title}</p>
-                                    <p className="mt-1 text-xs text-[var(--ink-soft)]">
-                                        Progreso {row.progressPercent}% · Vence: {fmtDate(row.expiresAt)}
-                                    </p>
+                        <SectionLabel number="01">Tu avance</SectionLabel>
+                        <ul className="mt-8 space-y-5">
+                            {progress.map((item) => (
+                                <li key={item.label} className="rounded-md border hairline bg-[var(--paper)] p-5">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <p className="text-sm font-semibold">{item.label}</p>
+                                        <p className="text-xs text-[var(--ink-soft)]">{item.value}%</p>
+                                    </div>
+                                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--line)]">
+                                        <div className="h-full bg-[var(--copper)]" style={{ width: `${item.value}%` }} />
+                                    </div>
+                                    <p className="mt-2 text-xs text-[var(--ink-soft)]">{item.note}</p>
                                 </li>
                             ))}
                         </ul>
                     </section>
 
                     <section>
-                        <div className="flex items-center justify-between">
-                            <SectionLabel number="02">Contenido asignado</SectionLabel>
-                            <Link href="/" className="editorial-link text-sm font-semibold">Volver al inicio</Link>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                            <SectionLabel number="02">Continúa donde lo dejaste</SectionLabel>
+                            <Link href="/mi-historia" className="editorial-link text-sm font-semibold">Mi historia</Link>
                         </div>
-                        {details.length === 0 ? (
-                            <p className="mt-10 rounded-md border hairline bg-[var(--paper)] px-5 py-8 text-sm text-[var(--ink-soft)]">
-                                Aún no tienes cursos asignados en esta cuenta.
-                            </p>
-                        ) : (
-                            <div className="mt-8 grid gap-5 md:grid-cols-1">
-                                {details.map((course) => {
-                                    const moduleCount = course.modules?.length ?? 0;
-                                    const lessonCount =
-                                        course.modules?.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0) ?? 0;
-                                    const materialCount = course.materials?.length ?? 0;
-                                    return (
-                                        <article key={course.id} className="border hairline bg-[var(--background)] p-6 sm:p-8">
-                                            <div className="flex flex-wrap items-center justify-between gap-3">
-                                                <SectionLabel number="03">Curso</SectionLabel>
-                                                <span className="text-xs text-[var(--ink-soft)]">
-                                                    {moduleCount} mód. · {lessonCount} lec. · {materialCount} materi.
-                                                </span>
-                                            </div>
-                                            <h2 className="display-font mt-4 text-3xl leading-none">{course.title}</h2>
-                                            {course.description && (
-                                                <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>
-                                            )}
+                        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                            {nextLessons.map((lesson) => (
+                                <Link key={lesson.title} href="/mi-historia" className="group rounded-md border hairline bg-[var(--background)] p-6 transition duration-500 hover:-translate-y-1 hover:border-[var(--copper)] hover:bg-[var(--lime)]">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-full border hairline text-[var(--copper)] transition group-hover:rotate-45">▶</span>
+                                    <h3 className="display-font mt-12 text-3xl">{lesson.title}</h3>
+                                    <p className="mt-4 text-sm text-[var(--ink-soft)]">{lesson.module}</p>
+                                    <p className="mt-2 text-xs text-[var(--ink-soft)]">{lesson.time}</p>
+                                </Link>
+                            ))}
+                            <Link href="/servicios" className="flex items-center justify-center rounded-md border border-dashed hairline bg-transparent p-6 text-sm font-semibold text-[var(--ink-soft)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
+                                Ver más recursos ↗
+                            </Link>
+                        </div>
 
-                                            {course.modules && course.modules.length > 0 && (
-                                                <div className="mt-6 border-t hairline pt-5">
-                                                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-soft)]">Módulos y lecciones</p>
-                                                    <ul className="mt-3 space-y-3">
-                                                        {course.modules.map((mod) => (
-                                                            <li key={mod.id}>
-                                                                <p className="text-sm font-semibold">{mod.title}</p>
-                                                                {mod.lessons && mod.lessons.length > 0 && (
-                                                                    <ul className="mt-2 space-y-1 pl-4">
-                                                                        {mod.lessons.map((lesson) => (
-                                                                            <li key={lesson.id} className="flex items-start justify-between gap-4 rounded-md bg-[var(--paper)] px-3 py-2">
-                                                                                <span className="text-sm text-[var(--ink-soft)]">{lesson.title}</span>
-                                                                                {lesson.videoUrl ? (
-                                                                                    <a href={lesson.videoUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[var(--copper)] hover:underline">Ver video</a>
-                                                                                ) : null}
-                                                                            </li>
-                                                                        ))}
-                                                                    </ul>
-                                                                )}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
+                        <div className="mt-10 flex flex-wrap gap-4">
+                            <Link href="/mi-historia" className="rounded-full bg-[var(--forest)] px-7 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]">Continuar aprendiendo</Link>
+                            <Link href="https://wa.me/?text=Hola%2C%20me%20gustar%C3%ADa%20agendar%20una%20mentor%C3%ADa." target="_blank" rel="noreferrer" className="rounded-full border hairline px-7 py-3 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">Agendar una mentoría</Link>
+                        </div>
+                    </section>
 
-                                            {course.materials && course.materials.length > 0 && (
-                                                <div className="mt-6 border-t hairline pt-5">
-                                                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-soft)]">Materiales del curso</p>
-                                                    <ul className="mt-3 space-y-2">
-                                                        {course.materials.map((material) => (
-                                                            <li key={material.id} className="flex items-center justify-between gap-4 rounded-md border hairline px-4 py-2">
-                                                                <span className="text-sm">{material.title}</span>
-                                                                <a href={`/api/file/${material.id}`} className="shrink-0 text-sm font-semibold text-[var(--copper)] hover:underline" target="_blank" rel="noreferrer">
-                                                                    Descargar ↗
-                                                                </a>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                        </article>
-                                    );
-                                })}
-                            </div>
-                        )}
+                    <section>
+                        <SectionLabel number="03">Mis cursos asignados</SectionLabel>
+                        <ul className="mt-8 space-y-4">
+                            {myEnrollments.length === 0 ? (
+                                <li className="rounded-md border hairline bg-[var(--paper)] px-4 py-6 text-sm text-[var(--ink-soft)]">Aún no tienes cursos asignados. Cuando tu mentor te matricule, aparecerán aquí.</li>
+                            ) : (
+                                myEnrollments.map((enrollment) => (
+                                    <li key={enrollment.id} className="rounded-md border hairline bg-[var(--paper)] p-4">
+                                        <p className="text-sm font-semibold">{enrollment.course?.title ?? "Curso"}</p>
+                                        {enrollment.expiresAt && <p className="mt-1 text-xs text-[var(--ink-soft)]">Acceso hasta: {new Date(enrollment.expiresAt).toLocaleDateString("es-ES")}</p>}
+                                    </li>
+                                ))
+                            )}
+                        </ul>
                     </section>
                 </div>
             </section>

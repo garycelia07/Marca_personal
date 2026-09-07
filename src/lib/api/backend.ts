@@ -1,62 +1,40 @@
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_COOKIE } from "@/lib/api/auth";
 
-export function backendPublicBase(): string {
-    return (process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:3000").replace(/\/$/, "");
-}
+/** Base URL del backend real. Se sobreescribe con la env `BACKEND_API_URL`. */
+export const backendUrl = process.env.BACKEND_API_URL ?? "http://localhost:3000/api/v1";
 
-export function backendApiBase(): string {
-    return (process.env.BACKEND_API_URL ?? "http://localhost:3000/api/v1").replace(/\/$/, "");
-}
-
-export async function tokenFromCookies(): Promise<string | null> {
-    try {
-        const store = await cookies();
-        return store.get(ACCESS_TOKEN_COOKIE)?.value ?? null;
-    } catch {
-        return null;
-    }
-}
-
-export async function backendGetJson<T>(path: string, token?: string | null): Promise<T> {
-    const headers: Record<string, string> = { Accept: "application/json" };
-    if (token) headers.Authorization = `Bearer ${token}`;
-    const res = await fetch(`${backendApiBase()}${path}`, { headers, cache: "no-store" });
-    if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`Backend ${res.status} en ${path}${text ? `: ${text.slice(0, 200)}` : ""}`);
-    }
-    return (await res.json()) as T;
-}
-
-export type Paginated<T> = {
-    data: T[];
-    meta: { total: number; page: number; limit: number; totalPages: number };
-};
-
-export async function backendMutation<T>(
+/**
+ * Realiza una petición al backend real añadiendo automáticamente el token de
+ * acceso (cookie HttpOnly `aurea_access_token`) como `Authorization: Bearer`.
+ * Server-only — úsalo en Route Handlers y Server Actions, nunca en cliente.
+ */
+export async function backendFetch(
     path: string,
-    options: {
-        method?: "POST" | "PATCH" | "PUT" | "DELETE";
+    init?: {
+        method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
         body?: unknown;
-        token?: string | null;
-    } = {},
-): Promise<T> {
-    const { method = "POST", body, token } = options;
-    const headers: Record<string, string> = { Accept: "application/json" };
-    if (token) headers.Authorization = `Bearer ${token}`;
-    if (body !== undefined) headers["Content-Type"] = "application/json";
-    const res = await fetch(`${backendApiBase()}${path}`, {
-        method,
+        headers?: HeadersInit;
+    }
+): Promise<Response> {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+
+    const headers = new Headers(init?.headers);
+    const isMultipart = init?.body instanceof FormData;
+
+    if (!isMultipart) {
+        headers.set("Content-Type", "application/json");
+    }
+    if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return fetch(`${backendUrl}${path}`, {
+        method: init?.method ?? "GET",
         headers,
-        body: body !== undefined ? JSON.stringify(body) : undefined,
+        // FormData se pasa directo para que fetch genere el boundary multipart.
+        body: init?.body === undefined ? undefined : isMultipart ? (init.body as FormData) : JSON.stringify(init.body),
         cache: "no-store",
     });
-    if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`Backend ${res.status} en ${path}${text ? `: ${text.slice(0, 200)}` : ""}`);
-    }
-    const contentType = res.headers.get("content-type") ?? "";
-    if (contentType.includes("application/json")) return (await res.json()) as T;
-    return undefined as T;
 }

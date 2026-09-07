@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import type { AuthUser } from "@/lib/api/auth";
-import { siteConfig } from "@/lib/site";
 
-const USER_STORAGE_KEY = "mp_user";
+const USER_STORAGE_KEY = "aurea_user";
 
 type LoginResponseBody = { user?: AuthUser; message?: string };
 type Field = "email" | "password";
@@ -95,11 +94,17 @@ export default function IniciarSesion() {
     return (
         <SiteShell>
             <main className="grid min-h-[calc(100vh-170px)] lg:grid-cols-[0.9fr_1.1fr]">
-                <section className="flex flex-col justify-between bg-[var(--forest)] p-8 text-[var(--background)] sm:p-12 lg:p-16">
-                    <div>
-                        <Link href="/" className="display-font text-2xl">{siteConfig.brand}<span className="text-[var(--copper-soft)]">.</span></Link>
-                        <p className="eyebrow mt-24 text-[var(--copper-soft)]">{siteConfig.byline}</p>
-                        <h1 className="display-font mt-5 max-w-md text-5xl leading-[0.92] sm:text-7xl">Accede a tu formación.</h1>
+                <section className="auth-panel flex flex-col justify-between p-8 text-[var(--background)] sm:p-12 lg:p-16">
+                    <div className="flex items-center gap-2">
+                        <span aria-hidden="true" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--copper-soft)]/40 bg-[var(--forest-deep)] text-lg font-bold text-[var(--copper-soft)]">A</span>
+                        <Link href="/" className="display-font text-2xl">Áurea<span className="text-[var(--copper-soft)]">.</span></Link>
+                    </div>
+                    <div className="max-w-md">
+                        <p className="eyebrow text-[var(--copper-soft)]">Tu espacio de crecimiento</p>
+                        <h1 className="display-font mt-7 text-5xl leading-[0.92] sm:text-7xl">
+                            Vuelve a tu <em className="script-font text-[var(--copper-soft)]">próxima</em> decisión.
+                        </h1>
+                        <p aria-hidden="true" className="mt-10 h-[1px] w-14 bg-[var(--copper-soft)]" />
                     </div>
                     <div className="space-y-5">
                         <p className="max-w-sm text-sm leading-6 text-[var(--copper-soft)]">Accede a tus programas, recursos y conversaciones en curso.</p>
@@ -184,23 +189,15 @@ export default function IniciarSesion() {
                                 <button
                                     type="submit"
                                     disabled={!canSubmit}
-                                    className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-7 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] disabled:pointer-events-none disabled:opacity-50"
+                                    className="group inline-flex items-center gap-2.5 rounded-full bg-[var(--forest)] px-8 py-3.5 text-sm font-bold text-[var(--background)] shadow-[0_10px_22px_-6px_rgba(23,23,19,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--copper)] hover:text-[#211f1b] hover:shadow-[0_16px_30px_-6px_rgba(36,35,31,0.6)] active:translate-y-0 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50"
                                 >
-                                    {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--background)] border-t-transparent" aria-hidden="true" />}
-                                    {loading ? "Entrando…" : "Entrar"}
+                                    {loading
+                                        ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--background)] border-t-transparent" aria-hidden="true" />
+                                        : "Iniciar sesión"}
                                 </button>
                                 <Link href="/" className="text-sm text-[var(--ink-soft)] underline decoration-solid underline-offset-4 transition hover:text-[var(--copper)]">Volver al inicio</Link>
                             </div>
                         </form>
-
-                        {process.env.NODE_ENV !== "production" && (
-                            <div className="mt-8 rounded-md border hairline bg-[var(--paper)] p-4 text-xs leading-5 text-[var(--ink-soft)]">
-                                <p className="font-semibold text-[var(--copper)]">Entorno de prueba</p>
-                                <p>Las credenciales válidas se crean en la base de datos (backend/.env).</p>
-                                <p>Admin semilla · <span className="font-mono">admin@garymayhua.com</span> — contraseña en <span className="font-mono">ADMIN_SEED_PASSWORD</span></p>
-                                <p>Los estudiantes los registra el admin en el panel via el backend.</p>
-                            </div>
-                        )}
                     </div>
                 </section>
             </main>
