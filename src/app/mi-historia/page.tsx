@@ -130,9 +130,16 @@ export default function MiHistoria() {
                   “La disciplina convierte el propósito en resultado; cada
                   paso, aunque pequeño, es parte de una visión más grande.”
                 </blockquote>
-
-                <figcaption className="mt-5 display-font text-lg font-semibold text-[var(--copper)]">
-                  — Gary Mayhua
+                <figcaption className="mt-5 flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/foto.avif"
+                    alt="Gary Mayhua"
+                    className="h-12 w-12 rounded-full border border-[var(--copper)]/50 object-cover sm:h-14 sm:w-14"
+                  />
+                  <span className="display-font text-lg font-semibold leading-none text-[var(--copper)] sm:text-xl">
+                    Gary Mayhua
+                  </span>
                 </figcaption>
               </figure>
             </div>
