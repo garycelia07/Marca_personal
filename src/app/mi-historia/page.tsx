@@ -131,9 +131,11 @@ export default function MiHistoria() {
                 />
               </div>
 
-              <span className="display-font mt-6 block text-lg font-semibold leading-none text-[var(--copper)] sm:text-xl">
-                — Gary Mayhua
-              </span>
+              <div className="mt-8 flex justify-end lg:mt-10">
+                <span className="display-font text-lg font-semibold text-[var(--copper)] sm:text-xl">
+                  — Gary Mayhua
+                </span>
+              </div>
             </div>
           </div>
         </div>
