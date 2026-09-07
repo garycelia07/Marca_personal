@@ -6,7 +6,7 @@ import { SocialIcon, type SocialIconName } from "@/components/footer";
 import { LeadForm } from "@/components/lead-form";
 import { FeaturedCourses } from "@/components/featured-courses";
 import { HomeProjects } from "@/components/home-projects";
-import { SectionLabel, SiteShell } from "@/components/site-shell";
+import { SiteShell } from "@/components/site-shell";
 
 const contactChannels: { label: string; value: string; href: string; icon: SocialIconName }[] = [
   {
@@ -65,14 +65,17 @@ export default function Home() {
       <section className="border-y hairline bg-[var(--paper)]">
         <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.7fr_1.3fr] lg:px-12 lg:py-28">
           <div className="reveal">
-            <SectionLabel number="01">La mirada</SectionLabel>
-            <p className="mt-16 max-w-xs text-sm leading-6 text-[var(--ink-soft)]">Una filosofía práctica para convertir intención en movimiento.</p>
+            <div className="flex items-center gap-4">
+              <span aria-hidden="true" className="h-px w-8 bg-[var(--copper)]" />
+              <span className="display-font text-3xl leading-none text-[var(--foreground)] sm:text-4xl lg:text-5xl">La mirada</span>
+            </div>
+            <p className="mt-9 max-w-xs text-lg leading-8 text-[var(--ink-soft)] sm:text-xl">Una filosofía práctica para convertir intención en movimiento.</p>
             <div className="mt-14 border-t hairline pt-8">
-              <p className="eyebrow">Pilares</p>
-              <ul className="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-[var(--ink-soft)]">
-                <li className="float-y rounded-full border hairline px-3 py-1.5 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "0ms" }}>Visión</li>
-                <li className="float-y rounded-full border hairline px-3 py-1.5 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "600ms" }}>Disciplina</li>
-                <li className="float-y rounded-full border hairline px-3 py-1.5 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "1200ms" }}>Comunidad</li>
+              <p className="eyebrow text-sm">Pilares</p>
+              <ul className="mt-6 flex flex-wrap gap-3 text-sm font-semibold text-[var(--ink-soft)] sm:text-base">
+                <li className="float-y rounded-full border hairline px-4 py-2 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "0ms" }}>Visión</li>
+                <li className="float-y rounded-full border hairline px-4 py-2 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "600ms" }}>Disciplina</li>
+                <li className="float-y rounded-full border hairline px-4 py-2 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "1200ms" }}>Comunidad</li>
               </ul>
             </div>
           </div>
