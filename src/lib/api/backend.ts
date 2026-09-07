@@ -1,8 +1,12 @@
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_COOKIE } from "@/lib/api/auth";
 
-/** Base URL del backend real. Se sobreescribe con la env `BACKEND_API_URL`. */
-export const backendUrl = process.env.BACKEND_API_URL ?? "http://localhost:3000/api/v1";
+/** Base URL del backend real. Usa la env `BACKEND_API_URL`; en producción aplica un fallback al dominio público (evita el `localhost` muerto en el deploy) y en local mantiene localhost para desarrollo. */
+export const backendUrl =
+    process.env.BACKEND_API_URL ??
+    (process.env.NODE_ENV === "production"
+        ? "https://api.garymayhua.com/api/v1"
+        : "http://localhost:3000/api/v1");
 
 /**
  * Realiza una petición al backend real añadiendo automáticamente el token de
@@ -35,5 +39,6 @@ export async function backendFetch(
         headers,
         body: init?.body === undefined ? undefined : isMultipart ? (init.body as FormData) : JSON.stringify(init.body),
         cache: "no-store",
+        signal: AbortSignal.timeout(12000),
     });
 }

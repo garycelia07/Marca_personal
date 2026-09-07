@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import type { LoginInput, LoginResponse } from "@/lib/api/auth";
 import { ACCESS_TOKEN_COOKIE } from "@/lib/api/auth";
 
-const backendUrl = process.env.BACKEND_API_URL ?? "http://localhost:3000/api/v1";
+const backendUrl =
+    process.env.BACKEND_API_URL ??
+    (process.env.NODE_ENV === "production"
+        ? "https://api.garymayhua.com/api/v1"
+        : "http://localhost:3000/api/v1");
 
 function isTokenExpired(accessExpiresAt: string | null): boolean {
   if (!accessExpiresAt) return false;
@@ -30,6 +34,7 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: body.email.trim(), password: body.password }),
       cache: "no-store",
+      signal: AbortSignal.timeout(12000),
     });
 
     const payload = (await response.json().catch(() => null)) as LoginResponse | { message?: string } | null;
