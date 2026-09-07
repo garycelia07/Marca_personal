@@ -7,6 +7,8 @@ import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
 
 type Catalog = { id: string; title: string; description: string; coverImageUrl?: string | null; lessons: number };
 
+export const dynamic = "force-dynamic";
+
 export default async function EstudianteDashboard() {
     const user = await getCurrentUser();
     if (!user) redirect("/iniciar-sesion");

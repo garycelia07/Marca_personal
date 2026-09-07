@@ -72,7 +72,7 @@ export default async function AdminDashboard() {
                     <span className="rounded-full border hairline bg-[var(--lime)] px-3 py-1 text-xs font-semibold text-[var(--forest-deep)]">ADMIN</span>
                 </div>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--ink-soft)] sm:text-lg">
-                    Aquí tienes el pulso de Áurea: actividad reciente, programas y métricas en un solo lugar.
+                    Aquí tienes el pulso de Gary Mayhua: actividad reciente, programas y métricas en un solo lugar.
                 </p>
             </header>
 

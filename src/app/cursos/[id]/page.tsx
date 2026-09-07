@@ -18,11 +18,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
         const course = await getCourse(id);
         return {
-            title: `${course.title} | Áurea`,
+            title: `${course.title} | Gary Mayhua`,
             description: course.description ?? undefined
         };
     } catch {
-        return { title: "Curso | Áurea" };
+        return { title: "Curso | Gary Mayhua" };
     }
 }
 

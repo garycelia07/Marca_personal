@@ -96,8 +96,8 @@ export default function IniciarSesion() {
             <main className="grid min-h-[calc(100vh-170px)] lg:grid-cols-[0.9fr_1.1fr]">
                 <section className="auth-panel flex flex-col justify-between p-8 text-[var(--background)] sm:p-12 lg:p-16">
                     <div className="flex items-center gap-2">
-                        <span aria-hidden="true" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--copper-soft)]/40 bg-[var(--forest-deep)] text-lg font-bold text-[var(--copper-soft)]">A</span>
-                        <Link href="/" className="display-font text-2xl">Áurea<span className="text-[var(--copper-soft)]">.</span></Link>
+                        <span aria-hidden="true" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--copper-soft)]/40 bg-[var(--forest-deep)] text-lg font-bold text-[var(--copper-soft)]">G</span>
+                        <Link href="/" className="display-font text-2xl">Gary <span className="text-[var(--copper-soft)]">Mayhua</span></Link>
                     </div>
                     <div className="max-w-md">
                         <p className="eyebrow text-[var(--copper-soft)]">Tu espacio de crecimiento</p>

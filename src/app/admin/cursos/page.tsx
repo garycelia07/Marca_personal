@@ -21,7 +21,7 @@ export default async function AdminCoursesPage() {
                 <p className="eyebrow">Panel de administración</p>
                 <h1 className="display-font mt-4 text-4xl leading-none sm:text-5xl">Cursos.</h1>
                 <p className="mt-4 text-base leading-7 text-[var(--ink-soft)] sm:text-lg">
-                    Crea, edita, publica y organiza en módulos y lecciones el contenido de Áurea.
+                    Crea, edita, publica y organiza en módulos y lecciones el contenido formativo de la plataforma.
                 </p>
             </header>
             <CoursesManager />

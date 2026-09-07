@@ -5,34 +5,8 @@ import Link from "next/link";
 import { SocialIcon, type SocialIconName } from "@/components/footer";
 import { LeadForm } from "@/components/lead-form";
 import { FeaturedCourses } from "@/components/featured-courses";
+import { HomeProjects } from "@/components/home-projects";
 import { SectionLabel, SiteShell } from "@/components/site-shell";
-
-const projects = [
-  {
-    number: "01",
-    type: "Arquitectura & Concepto",
-    title: "Santuario Urbano",
-    text: "Un espacio concebido para fusionar la tranquilidad de la naturaleza con el dinamismo de la vida moderna.",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    alt: "Diseño interior minimalista y moderno con luz natural",
-  },
-  {
-    number: "02",
-    type: "Diseño Interior",
-    title: "Atelier Áurea",
-    text: "Estructuras limpias y materiales nobles que definen un entorno de alto rendimiento y elegancia.",
-    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
-    alt: "Espacio de arquitectura vanguardista con acabados finos",
-  },
-  {
-    number: "03",
-    type: "Desarrollo Espacial",
-    title: "Pabellón de Cristal",
-    text: "Geometría sobria pensada para potenciar la perspectiva, la luz y la conexión con el entorno.",
-    image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
-    alt: "Estructura arquitectónica conceptual de estilo minimalista",
-  },
-];
 
 const heroSocials: { label: string; href: string; icon: SocialIconName }[] = [
   { label: "Facebook", href: "https://www.facebook.com/", icon: "facebook" },
@@ -44,14 +18,14 @@ const heroSocials: { label: string; href: string; icon: SocialIconName }[] = [
 const contactChannels: { label: string; value: string; href: string; icon: SocialIconName }[] = [
   {
     label: "WhatsApp",
-    value: "+51 987 654 321",
-    href: "https://wa.me/51987654321",
+    value: "+51 964 045 066",
+    href: "https://wa.me/51964045066",
     icon: "whatsapp",
   },
   {
     label: "Email",
-    value: "hola@aurea.com",
-    href: "mailto:hola@aurea.com",
+    value: "tipsinmobiliaria24@gmail.com",
+    href: "mailto:tipsinmobiliaria24@gmail.com",
     icon: "facebook", // Cambiado por una opción válida de SocialIconName
   },
 ];
@@ -115,68 +89,14 @@ export default function Home() {
           <div className="reveal delay-1">
             <h2 className="display-font max-w-4xl text-4xl leading-[1.02] sm:text-6xl">No se trata solo de llegar más lejos. <em className="script-font text-[var(--copper)]">Se trata</em> de saber para qué.</h2>
             <div className="mt-10 flex flex-col gap-8 border-t hairline pt-8 sm:flex-row sm:items-start sm:justify-between">
-              <p className="max-w-md text-base leading-7 text-[var(--ink-soft)]">Áurea nace de una convicción sencilla: las decisiones que cambian una vida combinan visión, disciplina y una comunidad que te devuelve perspectiva.</p>
+              <p className="max-w-md text-base leading-7 text-[var(--ink-soft)]">Gary Mayhua nace de una convicción sencilla: las decisiones que cambian una vida combinan visión, disciplina y una comunidad que te devuelve perspectiva.</p>
               <Link href="/nosotros" className="editorial-link shrink-0 text-sm font-semibold">Nuestra forma de trabajar</Link>
             </div>
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 lg:px-12 lg:py-32">
-        <div className="mb-14 flex flex-col gap-6 border-b hairline pb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <SectionLabel number="02">Lo que estamos construyendo</SectionLabel>
-            <h2 className="display-font mt-5 max-w-2xl text-4xl leading-[0.98] tracking-tight sm:text-6xl">
-              Ideas que se vuelven <em className="script-font text-[var(--copper)]">lugares.</em>
-            </h2>
-          </div>
-          <Link href="/proyectos" className="editorial-link shrink-0 text-sm font-semibold tracking-wide">
-            Ver todos los proyectos
-          </Link>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {projects.map((project, index) => (
-            <article
-              key={project.number}
-              className={`group relative flex flex-col items-center justify-between rounded-xl border hairline bg-[var(--paper)] p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md reveal ${index % 2 === 0 ? "from-top" : "from-bottom"}`}
-            >
-              <div className="absolute top-0 right-6 h-1 w-12 bg-[var(--copper)] rounded-b" />
-              <span className="absolute left-6 top-4 text-5xl font-extrabold text-[var(--foreground)] opacity-10 select-none pointer-events-none">
-                {project.number}
-              </span>
-
-              <div className="relative mt-6 mb-6 flex h-20 w-20 items-center justify-center">
-                <div className="relative h-16 w-16 overflow-hidden rounded-full border border-[var(--line)] p-1">
-                  <Image
-                    src={project.image}
-                    alt={project.alt}
-                    fill
-                    className="object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--copper)]">
-                  {project.type}
-                </p>
-                <h3 className="display-font mt-2 text-2xl font-bold text-[var(--foreground)]">
-                  {project.title}
-                </h3>
-                <p className="mt-3 text-xs leading-relaxed text-[var(--ink-soft)] max-w-xs">
-                  {project.text}
-                </p>
-              </div>
-
-              <Link
-                href="/proyectos"
-                className="mt-8 w-full rounded-md bg-[var(--copper)] py-2.5 text-xs font-semibold uppercase tracking-wider text-[var(--forest-deep)] transition-all duration-200 hover:brightness-110"
-              >
-                Explorar
-              </Link>
-            </article>
-          ))}
-        </div>
+      <section className="bg-[var(--background)]">
+        <HomeProjects />
       </section>
       <FeaturedCourses />
       <section className="bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">

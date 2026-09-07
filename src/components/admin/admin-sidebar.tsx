@@ -29,9 +29,9 @@ export function AdminSidebar() {
         <aside aria-label="Navegación de administración" className="flex w-full flex-col border-r hairline bg-[var(--paper)] lg:w-60 lg:min-w-60">
             <div className="flex items-center gap-2.5 border-b hairline px-5 py-4">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--forest)]">
-                    <span className="display-font text-base text-[var(--background)]">A</span>
+                    <span className="display-font text-base text-[var(--background)]">G</span>
                 </span>
-                <span className="display-font text-lg text-[var(--foreground)]">Áurea<span className="text-[var(--copper)]">.</span></span>
+                <span className="display-font text-lg text-[var(--foreground)]">Gary <span className="text-[var(--copper)]">Mayhua</span></span>
             </div>
 
             <nav className="flex-1 space-y-1 px-3 py-4" aria-label="Menú principal">

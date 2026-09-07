@@ -63,7 +63,7 @@ export default function AboutPage() {
               Hacer que más personas puedan tomar el volante de su futuro financiero.
             </p>
             <p className="max-w-3xl text-base leading-relaxed text-[var(--ink-soft)] sm:text-lg">
-              Áurea reúne educación, acompañamiento e inversión para convertir la ambición en una práctica con dirección. Trabajamos desde la experiencia, con lenguaje humano y una mirada de largo plazo.
+              Nuestra plataforma reúne educación, acompañamiento e inversión para convertir la ambición en una práctica con dirección. Trabajamos desde la experiencia, con lenguaje humano y una mirada de largo plazo.
             </p>
           </div>
         </div>

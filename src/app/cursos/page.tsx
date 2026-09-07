@@ -4,7 +4,7 @@ import { PageIntro, SiteShell } from "@/components/site-shell";
 import { CoursesGrid } from "@/components/courses-grid";
 
 export const metadata: Metadata = {
-    title: "Cursos | Áurea",
+    title: "Cursos | Gary Mayhua",
     description: "Programas de liderazgo, educación financiera e inversión con propósito.",
 };
 
