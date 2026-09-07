@@ -115,18 +115,19 @@ export default function MiHistoria() {
               </ol>
             </div>
 
-            {/* CITA + IMAGEN GRANDE + NOMBRE */}
+            {/* CITA + IMAGEN GRANDE (libre) + NOMBRE */}
             <div className="flex flex-col">
               <blockquote className="display-font text-2xl italic leading-snug text-[var(--foreground)] sm:text-[1.65rem]">
                 “La disciplina convierte el propósito en resultado; cada paso,
                 aunque pequeño, es parte de una visión más grande.”
               </blockquote>
 
-              <div className="relative mt-8 aspect-[4/5] w-full overflow-hidden rounded-2xl lg:mt-10">
+              {/* Foto suelta y elegante: sin marco, sin tarjeta, sin fondo */}
+              <div className="relative mt-8 w-full lg:mt-10">
                 <img
-                  src="/gary.avif"
-                  alt="Gary Mayhua brindando una conferencia"
-                  className="h-full w-full object-cover"
+                  src="/foto.avif"
+                  alt="Retrato de Gary Mayhua"
+                  className="h-auto w-full object-contain"
                 />
               </div>
 
