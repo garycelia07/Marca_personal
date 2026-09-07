@@ -96,8 +96,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-12 lg:py-20">
           <div className="flex flex-col">
             <div>
-              <p className="eyebrow text-[var(--copper)]">Contacto Directo</p>
-              <h2 className="display-font mt-5 text-4xl leading-[0.98] tracking-tight sm:text-6xl">
+              <h2 className="display-font text-4xl leading-[0.98] tracking-tight sm:text-6xl">
                 Hablemos de lo que <em className="script-font text-[var(--copper)]">sigue.</em>
               </h2>
               <p className="mt-8 max-w-sm text-sm leading-relaxed text-[var(--ink-soft)]">
