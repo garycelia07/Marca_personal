@@ -116,9 +116,8 @@ export function SiteHeader() {
     return (
         <header className="sticky top-0 z-20 border-b hairline bg-[color:var(--background)]/90 backdrop-blur-md">
             <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
-                <Link href="/" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--forest)] font-serif text-lg text-[var(--background)]">A</span>
-                    <span className="display-font text-xl font-semibold tracking-normal">Áurea<span className="text-[var(--copper)]">.</span></span>
+                <Link href="/" className="group flex items-center" onClick={() => setOpen(false)}>
+                    <img src="/aurea.png" alt="Áurea" className="h-10 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90" />
                 </Link>
                 <nav className="hidden items-center gap-7 lg:flex" aria-label="Navegación principal">
                     {navigation.map((item) => (
@@ -145,6 +144,7 @@ export function SiteHeader() {
                 </nav>
                 <div className="flex items-center gap-3 lg:hidden">
                     <ThemeToggle />
+                    <img src="/aureaicon.png" alt="Áurea icon" className="h-8 w-8 object-contain" />
                     <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={open ? "Cerrar menú" : "Abrir menú"} className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-full border hairline">
                         <span className="h-px w-4 bg-current" /><span className="h-px w-4 bg-current" />
                     </button>

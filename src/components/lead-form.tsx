@@ -68,10 +68,21 @@ export function LeadForm() {
                 </p>
             )}
 
-            <button type="submit" disabled={sending} className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-7 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] disabled:opacity-50">
-                {sending && <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--background)] border-t-transparent" aria-hidden="true" />}
-                {sending ? "Enviando…" : "Enviar mensaje"}
-            </button>
+            <div className="flex justify-center">
+                <button
+                    type="submit"
+                    disabled={sending}
+                    className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-7 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] disabled:opacity-50">
+                    {sending && (
+                        <span
+                            className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--background)] border-t-transparent"
+                            aria-hidden="true"
+                        />
+                    )}
+
+                    {sending ? "Enviando…" : "Enviar mensaje"}
+                </button>
+            </div>
         </form>
     );
 }
