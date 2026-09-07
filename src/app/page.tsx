@@ -93,7 +93,7 @@ export default function Home() {
       </section>
       <FeaturedCourses />
       <section className="bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
-        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:px-12 lg:py-20">
           <div className="flex flex-col">
             <div>
               <p className="eyebrow text-[var(--copper)]">Contacto Directo</p>
