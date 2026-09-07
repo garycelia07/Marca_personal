@@ -1,3 +1,5 @@
+import { WhatsAppLeadButton } from "@/components/whatsapp-lead-button";
+
 export type SocialIconName = "facebook" | "instagram" | "linkedin" | "youtube" | "tiktok" | "whatsapp";
 
 export function SocialIcon({ name }: { name: SocialIconName }) {
@@ -53,9 +55,7 @@ export function SiteFooter() {
                     <span>© 2026 Áurea</span>
                 </div>
             </div>
-            <a href="https://wa.me/?text=Hola%2C%20me%20gustar%C3%ADa%20conocer%20m%C3%A1s%20sobre%20%C3%81urea." target="_blank" rel="noreferrer" aria-label="Escribir por WhatsApp" title="Escribir por WhatsApp" className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-xs font-bold text-white shadow-lg shadow-black/20 transition hover:scale-105 hover:bg-[#1da851] sm:bottom-8 sm:right-8">
-                <SocialIcon name="whatsapp" />
-            </a>
+            <WhatsAppLeadButton />
         </footer>
     );
 }

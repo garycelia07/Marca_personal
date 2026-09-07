@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/auth";
+import { backendFetch } from "@/lib/api/backend";
+import type { Enrollment } from "@/lib/api/enrollments";
 import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
 
 const progress = [
@@ -24,6 +26,17 @@ export default async function EstudianteDashboard() {
 
     if (user.role !== "STUDENT") {
         redirect("/admin");
+    }
+
+    let myEnrollments: Enrollment[] = [];
+    try {
+        const response = await backendFetch("/enrollments/me?page=1&limit=20");
+        const payload = await response.json().catch(() => null) as { items?: Enrollment[] } | null;
+        if (response.ok && payload?.items) {
+            myEnrollments = payload.items;
+        }
+    } catch {
+        // Los cursos asignados no bloquean el resto del panel.
     }
 
     const initials = user.fullName
@@ -92,6 +105,22 @@ export default async function EstudianteDashboard() {
                             <Link href="/mi-historia" className="rounded-full bg-[var(--forest)] px-7 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]">Continuar aprendiendo</Link>
                             <Link href="https://wa.me/?text=Hola%2C%20me%20gustar%C3%ADa%20agendar%20una%20mentor%C3%ADa." target="_blank" rel="noreferrer" className="rounded-full border hairline px-7 py-3 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">Agendar una mentoría</Link>
                         </div>
+                    </section>
+
+                    <section>
+                        <SectionLabel number="03">Mis cursos asignados</SectionLabel>
+                        <ul className="mt-8 space-y-4">
+                            {myEnrollments.length === 0 ? (
+                                <li className="rounded-md border hairline bg-[var(--paper)] px-4 py-6 text-sm text-[var(--ink-soft)]">Aún no tienes cursos asignados. Cuando tu mentor te matricule, aparecerán aquí.</li>
+                            ) : (
+                                myEnrollments.map((enrollment) => (
+                                    <li key={enrollment.id} className="rounded-md border hairline bg-[var(--paper)] p-4">
+                                        <p className="text-sm font-semibold">{enrollment.course?.title ?? "Curso"}</p>
+                                        {enrollment.expiresAt && <p className="mt-1 text-xs text-[var(--ink-soft)]">Acceso hasta: {new Date(enrollment.expiresAt).toLocaleDateString("es-ES")}</p>}
+                                    </li>
+                                ))
+                            )}
+                        </ul>
                     </section>
                 </div>
             </section>

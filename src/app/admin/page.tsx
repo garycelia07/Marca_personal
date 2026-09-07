@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/auth";
-import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
+import { SectionLabel } from "@/components/site-shell";
+import { ChartIcon, UsersGroupIcon, BookIcon, MailIcon, AttachmentIcon, EditIcon } from "@/components/admin/admin-icons";
 
 const stats = [
-    { label: "Usuarios activos", value: "1.284" },
-    { label: "Programas activos", value: "6" },
-    { label: "Ingresos del mes", value: "€ 18.240" },
-    { label: "Sesiones esta semana", value: "312" },
+    { label: "Usuarios activos", value: "1.284", icon: UsersGroupIcon },
+    { label: "Programas activos", value: "6", icon: BookIcon },
+    { label: "Ingresos del mes", value: "€ 18.240", icon: ChartIcon },
+    { label: "Sesiones esta semana", value: "312", icon: UsersGroupIcon },
 ];
 
 const recentActivity = [
@@ -15,6 +16,15 @@ const recentActivity = [
     { who: "Miguel Ángel R.", what: "Inscribió a Programa Patrimonio", when: "hace 18 min" },
     { who: "Julieta Paz", what: "Completó el módulo 3", when: "hace 1 h" },
     { who: "Nicolás Varas", what: "Solicitó una mentoría", when: "hace 3 h" },
+];
+
+const quickLinks = [
+    { title: "Gestionar estudiantes", href: "/admin/estudiantes", desc: "Crea, edita y ajusta la vigencia de acceso de estudiantes.", icon: UsersGroupIcon },
+    { title: "Gestionar cursos", href: "/admin/cursos", desc: "Crea y publica cursos, módulos y lecciones.", icon: BookIcon },
+    { title: "Gestionar materiales", href: "/admin/materiales", desc: "Sube PDFs e imágenes al VPS.", icon: AttachmentIcon },
+    { title: "Editar contenido", href: "/admin/contenido", desc: "Actualiza las secciones del landing page.", icon: EditIcon },
+    { title: "Ver contactos", href: "/admin/contactos", desc: "Prospectos capturados del landing.", icon: MailIcon },
+    { title: "Métricas", href: "/admin", desc: "Explora el detalle de ingresos y conversiones.", icon: ChartIcon },
 ];
 
 export default async function AdminDashboard() {
@@ -28,6 +38,7 @@ export default async function AdminDashboard() {
         redirect("/estudiante");
     }
 
+    const firstName = user.fullName.split(/\s+/)[0] ?? "";
     const initials = user.fullName
         .split(/\s+/)
         .filter(Boolean)
@@ -36,67 +47,72 @@ export default async function AdminDashboard() {
         .join("");
 
     return (
-        <SiteShell>
-            <PageIntro
-                eyebrow="Panel de administración"
-                title="Bienvenido."
-                description={`Hola, ${user.fullName}. Aquí tienes el pulso de Áurea: actividad reciente, programas y métricas en un solo lugar.`}
-            />
-            <section className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
-                <div className="flex flex-wrap items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--forest)] text-base text-[var(--background)]">{initials || "A"}</span>
-                    <div>
-                        <p className="text-sm font-semibold">{user.fullName}</p>
-                        <p className="text-xs text-[var(--ink-soft)]">{user.email}</p>
+        <section>
+            <header className="mb-8 border-b hairline pb-6">
+                <div className="flex flex-wrap items-center gap-4">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--forest)]">
+                        <span className="display-font text-lg text-[var(--background)]">{initials || "A"}</span>
+                    </span>
+                    <div className="min-w-0 flex-1">
+                        <p className="eyebrow">Panel de administración</p>
+                        <h1 className="display-font mt-1 text-3xl leading-none sm:text-4xl">Bienvenido, {firstName}.</h1>
                     </div>
-                    <span className="ml-auto rounded-full border hairline bg-[var(--lime)] px-3 py-1 text-xs font-semibold text-[var(--forest-deep)]">ADMIN</span>
+                    <span className="rounded-full border hairline bg-[var(--lime)] px-3 py-1 text-xs font-semibold text-[var(--forest-deep)]">ADMIN</span>
                 </div>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--ink-soft)] sm:text-lg">
+                    Aquí tienes el pulso de Áurea: actividad reciente, programas y métricas en un solo lugar.
+                </p>
+            </header>
 
-                <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    {stats.map((stat) => (
-                        <article key={stat.label} className="border hairline bg-[var(--background)] p-6">
-                            <p className="eyebrow">{stat.label}</p>
-                            <p className="display-font mt-4 text-4xl">{stat.value}</p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {stats.map((stat) => {
+                    const Icon = stat.icon;
+                    return (
+                        <article key={stat.label} className="rounded-xl border hairline bg-[var(--paper)] p-5 transition hover:border-[var(--copper)]">
+                            <div className="flex items-center justify-between">
+                                <p className="eyebrow">{stat.label}</p>
+                                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--lime)] text-[var(--copper)]">
+                                    <Icon width={16} height={16} />
+                                </span>
+                            </div>
+                            <p className="display-font mt-4 text-3xl">{stat.value}</p>
                         </article>
-                    ))}
-                </div>
+                    );
+                })}
+            </div>
 
-                <div className="mt-14 grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16">
-                    <section>
-                        <div className="mb-1 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                            <SectionLabel number="01">Accesos rápidos</SectionLabel>
-                            <Link href="/servicios" className="editorial-link text-sm font-semibold">Ver servicios</Link>
-                        </div>
-                        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                            {[
-                                { title: "Gestionar programas", desc: "Crea y edita programas y becas activas." },
-                                { title: "Validar estudiantes", desc: "Revisa identidades e inscripciones pendientes." },
-                                { title: "Publicar recursos", desc: "Sube materiales y lecciones al catálogo." },
-                                { title: "Métricas", desc: "Explora el detalle de ingresos y conversiones." },
-                            ].map((card) => (
-                                <Link key={card.title} href="#" className="group rounded-md border hairline bg-[var(--background)] p-6 transition duration-500 hover:-translate-y-1 hover:border-[var(--copper)] hover:bg-[var(--lime)]">
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-full border hairline text-[var(--copper)] transition group-hover:rotate-45">↗</span>
-                                    <h3 className="display-font mt-12 text-3xl">{card.title}</h3>
-                                    <p className="mt-4 text-sm leading-6 text-[var(--ink-soft)]">{card.desc}</p>
+            <div className="mt-10 grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:gap-12">
+                <section>
+                    <SectionLabel number="01">Accesos rápidos</SectionLabel>
+                    <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                        {quickLinks.map((card) => {
+                            const Icon = card.icon;
+                            return (
+                                <Link key={card.title} href={card.href} className="group rounded-xl border hairline bg-[var(--background)] p-5 transition duration-300 hover:-translate-y-0.5 hover:border-[var(--copper)] hover:bg-[var(--lime)]">
+                                    <span className="flex h-9 w-9 items-center justify-center rounded-full border hairline text-[var(--copper)] transition group-hover:rotate-45 group-hover:border-[var(--copper)]">
+                                        <Icon width={18} height={18} />
+                                    </span>
+                                    <h3 className="display-font mt-5 text-2xl leading-tight">{card.title}</h3>
+                                    <p className="mt-2 text-sm leading-5 text-[var(--ink-soft)]">{card.desc}</p>
                                 </Link>
-                            ))}
-                        </div>
-                    </section>
+                            );
+                        })}
+                    </div>
+                </section>
 
-                    <section>
-                        <SectionLabel number="02">Actividad reciente</SectionLabel>
-                        <ul className="mt-8 space-y-4">
-                            {recentActivity.map((entry) => (
-                                <li key={entry.who} className="rounded-md border hairline bg-[var(--paper)] p-4">
-                                    <p className="text-sm font-semibold">{entry.who}</p>
-                                    <p className="mt-1 text-sm text-[var(--ink-soft)]">{entry.what}</p>
-                                    <p className="mt-2 text-xs text-[var(--ink-soft)]">{entry.when}</p>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-                </div>
-            </section>
-        </SiteShell>
+                <section>
+                    <SectionLabel number="02">Actividad reciente</SectionLabel>
+                    <ul className="mt-6 space-y-3">
+                        {recentActivity.map((entry) => (
+                            <li key={entry.who} className="rounded-xl border hairline bg-[var(--paper)] p-4 transition hover:border-[var(--copper)]">
+                                <p className="text-sm font-semibold">{entry.who}</p>
+                                <p className="mt-1 text-sm text-[var(--ink-soft)]">{entry.what}</p>
+                                <p className="mt-2 text-xs text-[var(--ink-soft)]">{entry.when}</p>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            </div>
+        </section>
     );
 }

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 const navigation = [
     { label: "Inicio", href: "/" },
+    { label: "Cursos", href: "/cursos" },
     { label: "Nosotros", href: "/nosotros" },
     { label: "Mi Historia", href: "/mi-historia" },
     { label: "Proyectos", href: "/proyectos" },
@@ -109,7 +110,7 @@ export function SiteHeader() {
     const pathname = usePathname();
 
     useEffect(() => {
-        setUser(readStoredUser());
+        void Promise.resolve().then(() => setUser(readStoredUser()));
     }, [pathname]);
 
     return (

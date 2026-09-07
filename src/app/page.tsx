@@ -3,12 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SocialIcon, type SocialIconName } from "@/components/footer";
+import { LeadForm } from "@/components/lead-form";
+import { FeaturedCourses } from "@/components/featured-courses";
 import { SectionLabel, SiteShell } from "@/components/site-shell";
 
 const projects = [
-    { number: "01", type: "Patrimonio", title: "Casa Nómada", text: "Arquitectura para vivir, invertir y dejar una huella que permanece." },
-    { number: "02", type: "Educación", title: "Círculo Capital", text: "Una comunidad para tomar decisiones financieras con criterio y calma." },
-    { number: "03", type: "Digital", title: "Mapa de Futuro", text: "Herramientas para convertir una intención en un plan medible." },
+    { number: "01", type: "Patrimonio", title: "Casa Nómada", text: "Arquitectura para vivir, invertir y dejar una huella que permanece.", image: "https://images.unsplash.com/photo-1524088469323-9cd88c0b0fbe?auto=format&fit=crop&w=800&h=900", alt: "Arquitectura moderna de hormigón con luz natural" },
+    { number: "02", type: "Educación", title: "Círculo Capital", text: "Una comunidad para tomar decisiones financieras con criterio y calma.", image: "https://images.unsplash.com/photo-1522206808703-11b9a1d0f9a0?auto=format&fit=crop&w=800&h=900", alt: "Persona tomando notas financieras en un espacio luminoso" },
+    { number: "03", type: "Digital", title: "Mapa de Futuro", text: "Herramientas para convertir una intención en un plan medible.", image: "https://images.unsplash.com/photo-1558619452581-d810042a5e13?auto=format&fit=crop&w=800&h=900", alt: "Interfaz digital con gráficos de proyección" },
 ];
 
 const heroSocials: { label: string; href: string; icon: SocialIconName }[] = [
@@ -37,23 +39,40 @@ export default function Home() {
             </section>
             <section className="border-y hairline bg-[var(--paper)]">
 <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.7fr_1.3fr] lg:px-12 lg:py-28">
-                    <div className="reveal"><SectionLabel number="01">La mirada</SectionLabel><p className="mt-16 max-w-xs text-sm leading-6 text-[var(--ink-soft)]">Una filosofía práctica para convertir intención en movimiento.</p></div>
-                    <div className="reveal delay-1"><p className="display-font max-w-4xl text-4xl leading-[1.02] sm:text-6xl">No se trata solo de llegar más lejos. Se trata de saber para qué.</p><div className="mt-10 flex flex-col gap-8 border-t hairline pt-8 sm:flex-row sm:items-start sm:justify-between"><p className="max-w-md text-base leading-7 text-[var(--ink-soft)]">Áurea nace de una convicción sencilla: las decisiones que cambian una vida combinan visión, disciplina y una comunidad que te devuelve perspectiva.</p><Link href="/nosotros" className="editorial-link shrink-0 text-sm font-semibold">Nuestra forma de trabajar</Link></div></div>
+                    <div className="reveal"><SectionLabel number="01">La mirada</SectionLabel><p className="mt-16 max-w-xs text-sm leading-6 text-[var(--ink-soft)]">Una filosofía práctica para convertir intención en movimiento.</p><div className="mt-14 border-t hairline pt-8"><p className="eyebrow">Pilares</p><ul className="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-[var(--ink-soft)]"><li className="float-y rounded-full border hairline px-3 py-1.5 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "0ms" }}>Visión</li><li className="float-y rounded-full border hairline px-3 py-1.5 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "600ms" }}>Disciplina</li><li className="float-y rounded-full border hairline px-3 py-1.5 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "1200ms" }}>Comunidad</li></ul></div></div>
+                    <div className="reveal delay-1"><h2 className="display-font max-w-4xl text-4xl leading-[1.02] sm:text-6xl">No se trata solo de llegar más lejos. <em className="script-font text-[var(--copper)]">Se trata</em> de saber para qué.</h2><div className="mt-10 flex flex-col gap-8 border-t hairline pt-8 sm:flex-row sm:items-start sm:justify-between"><p className="max-w-md text-base leading-7 text-[var(--ink-soft)]">Áurea nace de una convicción sencilla: las decisiones que cambian una vida combinan visión, disciplina y una comunidad que te devuelve perspectiva.</p><Link href="/nosotros" className="editorial-link shrink-0 text-sm font-semibold">Nuestra forma de trabajar</Link></div></div>
                 </div>
             </section>
             <section className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 lg:px-12 lg:py-32">
                 <div className="mb-14 flex flex-col gap-6 border-b hairline pb-8 sm:flex-row sm:items-end sm:justify-between">
-                    <div><SectionLabel number="02">Lo que estamos construyendo</SectionLabel><h2 className="display-font mt-5 max-w-2xl text-4xl leading-[0.98] sm:text-6xl">Ideas que se vuelven lugares.</h2></div>
+                    <div><SectionLabel number="02">Lo que estamos construyendo</SectionLabel><h2 className="display-font mt-5 max-w-2xl text-4xl leading-[0.98] sm:text-6xl">Ideas que se vuelven <em className="script-font text-[var(--copper)]">lugares.</em></h2></div>
                     <Link href="/proyectos" className="editorial-link text-sm font-semibold">Ver todos los proyectos</Link>
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
-                    {projects.map((project) => <article key={project.number} className="group reveal border hairline bg-[var(--background)] p-6 transition duration-500 hover:-translate-y-1 hover:border-[var(--copper)] hover:bg-[var(--lime)] sm:p-8"><div className="flex items-center justify-between"><p className="eyebrow">{project.number}</p><span className="flex h-8 w-8 items-center justify-center rounded-full border hairline text-[var(--copper)] transition group-hover:rotate-45">↗</span></div><p className="mt-16 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-soft)]">{project.type}</p><h3 className="display-font mt-3 text-4xl">{project.title}</h3><p className="mt-5 max-w-xs text-sm leading-6 text-[var(--ink-soft)]">{project.text}</p></article>)}
+                    {projects.map((project) => <article key={project.number} className="group card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--background)] shadow-[0_18px_40px_-20px_rgba(36,35,31,0.45)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)] hover:shadow-[0_26px_48px_-18px_rgba(36,35,31,0.55)]"><div className="relative aspect-[4/3] overflow-hidden"><Image src={project.image} alt={project.alt} fill sizes="(max-width: 1024px) 100vw, 480px" className="object-cover transition duration-700 group-hover:scale-110 group-hover:-rotate-1" /><span className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--copper)]/40 bg-[var(--lime)]/90 text-sm font-bold text-[var(--copper)] backdrop-blur-sm">{project.number}</span><span aria-hidden="true" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border hairline bg-[var(--background)]/80 text-[var(--copper)] backdrop-blur-sm transition duration-300 group-hover:rotate-45 group-hover:bg-[var(--copper)] group-hover:text-[var(--forest-deep)]">↗</span></div><div className="px-5 pt-6 sm:px-7 sm:pt-8"><p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]">{project.type}</p><h3 className="display-font mt-4 text-4xl leading-none">{project.title}</h3><p className="mt-5 max-w-xs text-sm leading-6 text-[var(--ink-soft)]">{project.text}</p></div><div className="mt-auto flex items-center gap-2 border-t hairline px-5 pt-4 text-xs font-bold text-[var(--ink-soft)] transition group-hover:text-[var(--copper)] sm:px-7"><span className="eyebrow">Explorar</span><span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1.5">→</span></div></article>)}
                 </div>
             </section>
+            <FeaturedCourses />
             <section className="bg-[var(--forest)] text-[var(--background)]">
                 <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.7fr_1.3fr] lg:px-12 lg:py-28">
-                    <div><SectionLabel number="03">Un siguiente capítulo</SectionLabel><p className="mt-10 max-w-xs text-sm leading-6 text-[var(--copper-soft)]">Una conversación es el primer paso para poner una idea en marcha.</p></div>
-                    <div><p className="display-font max-w-3xl text-4xl leading-[0.98] sm:text-6xl">La transformación no es un evento. Es una práctica.</p><Link href="/iniciar-sesion" className="editorial-link mt-10 text-sm font-semibold text-[var(--background)]">Comenzar una conversación</Link></div>
+                    <div>
+                        <p className="eyebrow text-[var(--copper-soft)]">Contacto</p>
+                        <h2 className="display-font mt-5 text-4xl leading-[0.98] sm:text-6xl">Hablemos de lo que <em className="script-font text-[var(--copper)]">sigue.</em></h2>
+                        <p className="mt-10 max-w-xs text-sm leading-6 text-[var(--copper-soft)]">Una conversación es el primer paso para poner una idea en marcha. Déjanos tus datos y te contactaremos.</p>
+                        <p aria-hidden="true" className="mt-10 h-[1px] w-14 bg-[var(--copper)]" />
+                        <div className="mt-10 space-y-3 text-sm text-[var(--copper-soft)]">
+                            <p>WhatsApp: +51 987 654 321</p>
+                            <p>Email: hola@aurea.com</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="rounded-2xl border border-[var(--copper)]/30 bg-[var(--paper)] p-6 sm:p-8">
+                            <p className="eyebrow">Escríbenos</p>
+                            <p className="mt-2 text-sm text-[var(--ink-soft)]">Déjanos tus datos y te contamos cómo empezar.</p>
+                            <div className="mt-6"><LeadForm /></div>
+                        </div>
+                        <Link href="/iniciar-sesion" className="group mt-8 inline-flex items-center gap-2.5 rounded-full bg-[var(--copper)] px-7 py-3 text-sm font-bold text-[var(--forest-deep)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105">Comenzar una conversación <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1.5">→</span></Link>
+                    </div>
                 </div>
             </section>
         </SiteShell>
