@@ -82,6 +82,12 @@ export type ProjectItemExt = {
     tagline?: string;
     description?: string;
     link?: string;
+    /** URL de imagen elegida de la tarjeta (pegando un enlace) o la que devuelve Servir media. */
+    coverUrl?: string;
+    /** URL de video por enlace (opcional, se usa si no hay archivo subido). */
+    videoUrl?: string;
+    /** URL pública del archivo de video subido (media backend), si aplica. */
+    videoFileUrl?: string;
 };
 
 /** Extrae los ítems crudos de PROJECTS sin perder campos extra (slug, tagline, link). */

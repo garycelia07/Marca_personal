@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { getContentJson, saveContentJson } from "@/lib/api/content";
 
-type ProjectDraft = { name: string; slug: string; tagline: string; description: string; link: string };
+type ProjectDraft = { name: string; slug: string; tagline: string; description: string; link: string; coverUrl?: string; videoUrl?: string };
 type ToastV = "success" | "error";
 type Toast = { id: number; variant: ToastV; message: string };
 
-const EMPTY: ProjectDraft = { name: "", slug: "", tagline: "", description: "", link: "" };
+const EMPTY: ProjectDraft = { name: "", slug: "", tagline: "", description: "", link: "", coverUrl: "", videoUrl: "" };
 
 function slugify(v: string): string {
     return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -42,6 +42,8 @@ export function ProjectsAdmin() {
                 tagline: String(r.tagline ?? ""),
                 description: String(r.description ?? ""),
                 link: String(r.link ?? ""),
+                coverUrl: String(r.coverUrl ?? ""),
+                videoUrl: String(r.videoUrl ?? ""),
             })));
         } catch (e) {
             toast("error", errMessage(e, "No se pudo cargar los proyectos."));
@@ -90,6 +92,8 @@ export function ProjectsAdmin() {
             tagline: editing.tagline.trim(),
             description: editing.description.trim(),
             link: editing.link.trim(),
+            coverUrl: (editing.coverUrl ?? "").trim(),
+            videoUrl: (editing.videoUrl ?? "").trim(),
         };
         setEditing(null);
         await persist(upsert(draft));
@@ -188,6 +192,10 @@ function Editor({ editing, patch, busy, onSave, onClose }: {
                         <textarea value={editing.description} onChange={(e) => set({ ...editing, description: e.target.value })} rows={4} className="mt-1 w-full resize-none rounded border hairline bg-transparent px-3 py-2 outline-none" /></label>
                     <label className="block text-sm"><span className="font-semibold">Enlace «Quiero unirme»</span>
                         <input value={editing.link} onChange={(e) => set({ ...editing, link: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://…" /></label>
+                    <label className="block text-sm"><span className="font-semibold">Imagen de portada (URL)</span>
+                        <input value={editing.coverUrl ?? ""} onChange={(e) => set({ ...editing, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://… o pégala al pulsar «Portada» en la lista" /></label>
+                    <label className="block text-sm"><span className="font-semibold">Video (URL por enlace, opcional)</span>
+                        <input value={editing.videoUrl ?? ""} onChange={(e) => set({ ...editing, videoUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://…/video.mp4 o link a plataforma" /></label>
                 </div>
 
                 <div className="mt-6 flex flex-wrap justify-end gap-3">

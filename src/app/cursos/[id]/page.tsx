@@ -5,6 +5,9 @@ import Image from "next/image";
 import { PageIntro, SiteShell } from "@/components/site-shell";
 import { getCourse } from "@/lib/api/courses";
 import { EnrollCourseButton } from "@/components/course-enroll";
+import { getCurrentUser } from "@/lib/api/auth";
+import { backendFetch } from "@/lib/api/backend";
+import { publicBackendOrigin } from "@/lib/site";
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -39,6 +42,21 @@ export default async function CursoDetallePage({ params }: Props) {
     }
 
     const sortedModules = [...(course.modules ?? [])].sort((a, b) => a.order - b.order);
+    const backendRoot = publicBackendOrigin();
+
+    // Acceso: si es estudiante con ese curso habilitado, ve "Tengo acceso".
+    let hasAccess = false;
+    const user = await getCurrentUser();
+    if (user?.role === "STUDENT" && course.id) {
+        try {
+            const res = await backendFetch("/enrollments/me?page=1&limit=100");
+            const payload = await res.json().catch(() => null) as { data?: { courseId?: string }[]; items?: { courseId?: string }[] };
+            const list = Array.isArray((payload as { data?: unknown }).data) ? (payload as { data: { courseId?: string }[] }).data : (payload?.items ?? []);
+            hasAccess = list.some((e) => e.courseId === course.id);
+        } catch {
+            hasAccess = false;
+        }
+    }
 
     return (
         <SiteShell>
@@ -80,11 +98,26 @@ export default async function CursoDetallePage({ params }: Props) {
                                         </div>
                                         <ul className="divide-y hairline">
                                             {(module.lessons ?? []).sort((a, b) => a.order - b.order).map((lesson) => (
-                                                <li key={lesson.id} className="px-5 py-3 sm:px-6">
+                                                <li key={lesson.id} className="px-5 py-4 sm:px-6">
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-xs text-[var(--copper)]">▶</span>
                                                         <p className="text-sm font-semibold">{lesson.title}</p>
                                                     </div>
+                                                    {lesson.description ? <p className="mt-1 text-sm text-[var(--ink-soft)]">{lesson.description}</p> : null}
+                                                    {hasAccess ? (
+                                                        <div className="mt-3">
+                                                            <video
+                                                                controls
+                                                                playsInline
+                                                                preload="metadata"
+                                                                className="max-w-full rounded-lg border hairline bg-black"
+                                                                src={lesson.videoUrl || `${backendRoot}/api/v1/courses/lessons/${lesson.id}/video`}
+                                                                aria-label={`Video: ${lesson.title}`}
+                                                            >
+                                                                Tu navegador no soporta video.
+                                                            </video>
+                                                        </div>
+                                                    ) : null}
                                                 </li>
                                             ))}
                                         </ul>
@@ -109,7 +142,11 @@ export default async function CursoDetallePage({ params }: Props) {
                                     </dd>
                                 </div>
                             </dl>
+                            {hasAccess ? (
+                            <EnrollCourseButton courseTitle={course.title} hasAccess />
+                        ) : (
                             <EnrollCourseButton courseTitle={course.title} />
+                        )}
                             <Link href="/iniciar-sesion" className="mt-3 inline-flex w-full items-center justify-center rounded-full border hairline px-6 py-3 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
                                 Ya tengo acceso · Iniciar sesión
                             </Link>

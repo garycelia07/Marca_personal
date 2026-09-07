@@ -1,10 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { LeadForm } from "@/components/lead-form";
 
-export function EnrollCourseButton({ courseTitle }: { courseTitle: string }) {
+export function EnrollCourseButton({ courseTitle, hasAccess = false }: { courseTitle: string; hasAccess?: boolean }) {
     const [open, setOpen] = useState(false);
+
+    if (hasAccess) {
+        return (
+            <Link
+                href="/estudiante"
+                className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-bold text-[var(--background)] transition hover:bg-[var(--copper)]"
+            >
+                ✓ Tengo acceso · Ir a mi curso
+            </Link>
+        );
+    }
 
     return (
         <>

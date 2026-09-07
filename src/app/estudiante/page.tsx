@@ -5,17 +5,9 @@ import { backendFetch } from "@/lib/api/backend";
 import type { Enrollment } from "@/lib/api/enrollments";
 import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
 
-const progress = [
-    { label: "FUNDAMENTOS", value: 100, note: "Completado" },
-    { label: "PATRIMONIO", value: 64, note: "En curso" },
-    { label: "INVERSIÓN", value: 30, note: "En curso" },
-];
-
-const nextLessons = [
-    { title: "Presupuesto que respira", module: "Fundamentos · Lección 4", time: "15 min" },
-    { title: "El costo de oportunidad", module: "Inversión · Lección 2", time: "20 min" },
-    { title: "Deuda buena vs. deuda mala", module: "Patrimonio · Lección 3", time: "18 min" },
-];
+// Datos de ejemplo eliminados: la pantalla usa únicamente los datos reales del estudiante.
+const progress: { label: string; value: number; note: string }[] = [];
+const nextLessons: { title: string; module: string; time: string }[] = [];
 
 export default async function EstudianteDashboard() {
     const user = await getCurrentUser();
@@ -30,13 +22,30 @@ export default async function EstudianteDashboard() {
 
     let myEnrollments: Enrollment[] = [];
     try {
-        const response = await backendFetch("/enrollments/me?page=1&limit=20");
-        const payload = await response.json().catch(() => null) as { items?: Enrollment[] } | null;
-        if (response.ok && payload?.items) {
-            myEnrollments = payload.items;
-        }
+        const response = await backendFetch("/enrollments/me?page=1&limit=100");
+        const payload = await response.json().catch(() => null) as { data?: Enrollment[]; items?: Enrollment[] } | null;
+        const list = Array.isArray((payload as { data?: unknown }).data) ? (payload as { data: Enrollment[] }).data : (payload?.items ?? []);
+        if (response.ok) myEnrollments = list;
     } catch {
-        // Los cursos asignados no bloquean el resto del panel.
+        // los cursos asignados no bloquean el panel
+    }
+    const myCourseIds = new Set(myEnrollments.flatMap((e) => (e.courseId ? [e.courseId] : [])));
+
+    // Otros cursos publicados a los que aún no está matriculado.
+    let otherCourses: { id: string; title: string; description?: string; coverImageUrl?: string | null; moduleCount?: number }[] = [];
+    try {
+        const res = await backendFetch("/courses?page=1&limit=100");
+        const payload = await res.json().catch(() => null) as { data?: { id: string; title: string; description?: string | null; coverImageUrl?: string | null; modules?: unknown[] }[] } | null;
+        const items = Array.isArray(payload?.data) ? payload.data : [];
+        otherCourses = items.filter((c) => !myCourseIds.has(c.id)).map((c) => ({
+            id: c.id,
+            title: c.title,
+            description: c.description ?? undefined,
+            coverImageUrl: c.coverImageUrl,
+            moduleCount: Array.isArray(c.modules) ? c.modules.length : 0,
+        }));
+    } catch {
+        otherCourses = [];
     }
 
     const initials = user.fullName
@@ -107,21 +116,65 @@ export default async function EstudianteDashboard() {
                         </div>
                     </section>
 
-                    <section>
+                    <section className="mt-12 border-t hairline pt-8 lg:col-span-2">
                         <SectionLabel number="03">Mis cursos asignados</SectionLabel>
-                        <ul className="mt-8 space-y-4">
+                        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
                             {myEnrollments.length === 0 ? (
-                                <li className="rounded-md border hairline bg-[var(--paper)] px-4 py-6 text-sm text-[var(--ink-soft)]">Aún no tienes cursos asignados. Cuando tu mentor te matricule, aparecerán aquí.</li>
+                                <li className="rounded-md border hairline bg-[var(--paper)] px-4 py-6 text-sm text-[var(--ink-soft)]">
+                                    Aún no tienes cursos asignados. Cuando compres y el admin te habilite uno, aparecerá aquí y podrás ver sus videos.
+                                </li>
                             ) : (
                                 myEnrollments.map((enrollment) => (
-                                    <li key={enrollment.id} className="rounded-md border hairline bg-[var(--paper)] p-4">
+                                    <li key={enrollment.id} className="group rounded-xl border hairline bg-[var(--paper)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--copper)]">
                                         <p className="text-sm font-semibold">{enrollment.course?.title ?? "Curso"}</p>
                                         {enrollment.expiresAt && <p className="mt-1 text-xs text-[var(--ink-soft)]">Acceso hasta: {new Date(enrollment.expiresAt).toLocaleDateString("es-ES")}</p>}
+                                        <Link
+                                            href={enrollment.courseId ? `/cursos/${enrollment.courseId}` : "/estudiante"}
+                                            className="mt-4 inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-4 py-2 text-xs font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]"
+                                        >
+                                            ▶ Ver y reproducir videos
+                                        </Link>
                                     </li>
                                 ))
                             )}
                         </ul>
                     </section>
+
+                    {otherCourses.length > 0 && (
+                        <section className="mt-12 border-t hairline pt-8 lg:col-span-2">
+                            <SectionLabel number="04">Otros cursos disponibles</SectionLabel>
+                            <p className="mt-2 text-sm text-[var(--ink-soft)]">
+                                Cursos del catálogo a los que aún no tienes acceso. Si te interesa uno, solicita tu inscripción y se te habilitará al comprarlo.
+                            </p>
+                            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                {otherCourses.map((other) => (
+                                    <article key={other.id} className="flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
+                                        <div className="relative aspect-[16/9] overflow-hidden bg-[var(--line)]">
+                                            {other.coverImageUrl ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img src={other.coverImageUrl} alt={other.title} loading="lazy" className="h-full w-full object-cover" />
+                                            ) : (
+                                                <div className="flex h-full w-full items-center justify-center bg-[var(--forest)] text-[var(--background)]">✦</div>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-1 flex-col p-5">
+                                            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">Curso</p>
+                                            <h3 className="display-font mt-2 text-2xl leading-tight">{other.title}</h3>
+                                            {other.description && <p className="mt-2 line-clamp-2 text-sm text-[var(--ink-soft)]">{other.description}</p>}
+                                            <Link
+                                                href={`/cursos/${other.id}`}
+                                                className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-[var(--copper)] px-4 py-2 text-xs font-bold text-[var(--forest-deep)] transition hover:brightness-105"
+                                            >
+                                                Inscribirme al curso
+                                            </Link>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    )
+
+                    }
                 </div>
             </section>
         </SiteShell>

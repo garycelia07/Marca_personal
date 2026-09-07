@@ -118,6 +118,20 @@ export function CoursesManager() {
         }
     }
 
+    async function togglePublished(course: Course) {
+        setBusy(true);
+        try {
+            const next = !(course.isPublished ?? false);
+            await updateCourse(course.id, { isPublished: next });
+            pushToast("success", next ? `"${course.title}" publicado.` : `"${course.title}" pasó a borrador.`);
+            void refresh();
+        } catch (error) {
+            pushToast("error", errorMessage(error, "No fue posible cambiar el estado."));
+        } finally {
+            setBusy(false);
+        }
+    }
+
     async function handleDelete() {
         if (!deleting) return;
         setBusy(true);
@@ -197,9 +211,15 @@ export function CoursesManager() {
                                         <p className="font-mono text-xs text-[var(--ink-soft)]">{course.slug}</p>
                                     </td>
                                     <td className="px-5 py-4 sm:px-8">
-                                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${course.isPublished ? "bg-[var(--forest)] text-[var(--background)]" : "bg-[var(--line)] text-[var(--ink-soft)]"}`}>
-                                            {course.isPublished ? "Publicado" : "Borrador"}
-                                        </span>
+                                        {course.isPublished ? (
+                                            <button type="button" onClick={() => void togglePublished(course)} disabled={busy} className="rounded-full bg-[var(--forest)] px-3 py-1 text-xs font-semibold text-[var(--background)] transition hover:brightness-110 disabled:opacity-50" title="Haz clic para pasar a borrador">
+                                                Publicado ✓
+                                            </button>
+                                        ) : (
+                                            <button type="button" onClick={() => void togglePublished(course)} disabled={busy} className="rounded-full border border-[var(--copper)] px-3 py-1 text-xs font-bold text-[var(--copper)] transition hover:bg-[var(--copper)] hover:text-[var(--forest-deep)] disabled:opacity-50" title="Haz clic para publicar">
+                                                Borrador · Publicar
+                                            </button>
+                                        )}
                                     </td>
                                     <td className="px-5 py-4 text-right sm:px-8">
                                         <div className="flex flex-wrap justify-end gap-2">

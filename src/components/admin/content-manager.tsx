@@ -8,6 +8,9 @@ import {
     type ContentSection,
 } from "@/lib/api/content";
 import { SectionImageUploader } from "@/components/admin/section-image-uploader";
+import { ProjectsAdmin } from "@/components/admin/projects-admin";
+import { ServicesAdmin } from "@/components/admin/services-admin";
+import Link from "next/link";
 
 const SECTION_SLOT: Partial<Record<ContentSection, "hero" | "proyectos" | "servicios">> = {
     HERO: "hero",
@@ -43,6 +46,12 @@ export function ContentManager() {
     }
 
     async function load(target: ContentSection) {
+        if (target === "PROJECTS" || target === "SERVICES") {
+            // Esas secciones se gestionan por tarjetas (imagen por archivo o URL) abajo.
+            setFields([]);
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
             const data = await getContentSection(target);
@@ -91,6 +100,37 @@ export function ContentManager() {
             setBusy(false);
         }
     }
+    const isCardsSection = section === "PROJECTS" || section === "SERVICES";
+
+    if (isCardsSection) {
+        return (
+            <section>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p className="eyebrow">Sección</p>
+                        <select
+                            value={section}
+                            onChange={(event) => setSection(event.target.value as ContentSection)}
+                            aria-label="Seleccionar sección"
+                            className="mt-2 rounded-full border hairline bg-transparent px-4 py-2 text-sm outline-none transition focus:border-[var(--copper)]"
+                        >
+                            {CONTENT_SECTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                        <p className="mt-2 text-xs text-[var(--ink-soft)]">
+                            {section === "PROJECTS"
+                                ? "Proyectos: imagen desde laptop (Portada), video desde laptop (Video) y/o pega una URL de imagen/video."
+                                : "Servicios: nombre y descripción que se muestran en /servicios; sube su portada desde laptop o pega la URL."}
+                        </p>
+                    </div>
+                    <Link href="/cursos" className="hidden" aria-hidden="true">x</Link>
+                </div>
+                <div className="mt-6">
+                    {section === "PROJECTS" ? <ProjectsAdmin /> : <ServicesAdmin />}
+                </div>
+            </section>
+        );
+    }
+
 return (
         <section>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

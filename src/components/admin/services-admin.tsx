@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getContentJson, saveContentJson } from "@/lib/api/content";
 
-type Svc = { name: string; slug: string; description: string };
+type Svc = { name: string; slug: string; description: string; coverUrl?: string };
 type Timers = { id: number; variant: "success" | "error"; message: string };
 
 function slugify(v: string): string {
@@ -32,7 +32,7 @@ export function ServicesAdmin() {
         try {
             const data = await getContentJson("SERVICES");
             const raw = Array.isArray(data.items) ? (data.items as Record<string, unknown>[]) : [];
-            setItems(raw.map((r) => ({ name: String(r.name ?? ""), slug: String(r.slug ?? ""), description: String(r.description ?? "") })));
+            setItems(raw.map((r) => ({ name: String(r.name ?? ""), slug: String(r.slug ?? ""), description: String(r.description ?? ""), coverUrl: String(r.coverUrl ?? "") })));
         } catch (e) {
             toast("error", err(e, "No se pudieron cargar los servicios."));
         } finally {
@@ -65,7 +65,7 @@ export function ServicesAdmin() {
     function save() {
         if (!draft) return;
         if (!draft.name.trim()) { toast("error", "El nombre es obligatorio."); return; }
-        const d: Svc = { name: draft.name.trim(), slug: slugify(draft.name) || ("servicio-" + Date.now()), description: draft.description.trim() };
+        const d: Svc = { name: draft.name.trim(), slug: slugify(draft.name) || ("servicio-" + Date.now()), description: draft.description.trim(), coverUrl: (draft.coverUrl ?? "").trim() };
         setDraft(null);
         void persist(upsert(d));
     }
@@ -98,7 +98,7 @@ export function ServicesAdmin() {
                     <h2 className="display-font text-2xl">Servicios</h2>
                     <p className="mt-1 text-sm text-[var(--ink-soft)]">Cada servicio: nombre, descripción y una portada (subida aquí).</p>
                 </div>
-                <button type="button" onClick={() => setDraft({ name: "", slug: "", description: "" })} className="rounded-full bg-[var(--forest)] px-5 py-2 text-sm font-semibold text-[var(--background)]">+ Nuevo servicio</button>
+                <button type="button" onClick={() => setDraft({ name: "", slug: "", description: "", coverUrl: "" })} className="rounded-full bg-[var(--forest)] px-5 py-2 text-sm font-semibold text-[var(--background)]">+ Nuevo servicio</button>
             </div>
 
             {items.length === 0 ? (
@@ -144,6 +144,8 @@ function DraftCard({ draft, set, busy, onSave, onClose }: {
                         <input value={draft.name} onChange={(e) => set({ ...draft, name: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" /></label>
                     <label className="block text-sm"><span className="font-semibold">Descripción</span>
                         <textarea value={draft.description} onChange={(e) => set({ ...draft, description: e.target.value })} rows={4} className="mt-1 w-full resize-none rounded border hairline bg-transparent px-3 py-2 outline-none" /></label>
+                    <label className="block text-sm"><span className="font-semibold">Imagen de portada (URL)</span>
+                        <input value={draft.coverUrl ?? ""} onChange={(e) => set({ ...draft, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://… o pégala al pulsar «Portada» en la lista" /></label>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
                     <button type="button" onClick={onClose} disabled={busy} className="rounded-full border hairline px-5 py-2 text-sm">Cancelar</button>

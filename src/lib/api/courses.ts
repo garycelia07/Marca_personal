@@ -183,3 +183,30 @@ export async function addModule(courseId: string, input: CreateModuleInput): Pro
 export async function addLesson(moduleId: string, input: CreateLessonInput): Promise<Lesson> {
     return (await requestJson(`/api/courses/modules/${encodeURIComponent(moduleId)}/lessons`, jsonInit("POST", input))) as Lesson;
 }
+
+/** Sube o reemplaza el video (≤10 min) de una lección (proxy → PUT). */
+export async function uploadLessonVideo(lessonId: string, file: File): Promise<unknown> {
+    const form = new FormData();
+    form.append("file", file, file.name);
+    const response = await fetch(`/api/courses/lessons/${encodeURIComponent(lessonId)}/video`, {
+        method: "PUT",
+        body: form,
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+        const message = payload && typeof payload === "object" && "message" in payload
+            ? String((payload as { message: string }).message)
+            : "No se pudo subir.";
+        throw Object.assign(new Error(message), { status: response.status });
+    }
+    return payload;
+}
+
+/** Elimina el video archivo de una lección (proxy → DELETE). */
+export async function deleteLessonVideo(lessonId: string): Promise<unknown> {
+    const response = await fetch(`/api/courses/lessons/${encodeURIComponent(lessonId)}/video`, { method: "DELETE" });
+    if (!response.ok) {
+        throw new Error("No se pudo eliminar el video.");
+    }
+    return { ok: true };
+}

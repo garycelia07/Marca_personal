@@ -15,7 +15,9 @@ export function ProjectsGallery({ items }: { items: ProjectItemExt[] }) {
         <>
             <div className="grid gap-5 md:grid-cols-2">
                 {items.map((project, index) => {
-                    const cover = projectCoverUrl(project.name ?? "");
+                    const cover = project.coverUrl && project.coverUrl.trim()
+                        ? project.coverUrl.trim()
+                        : projectCoverUrl(project.name ?? "");
                     const hasLink = Boolean(project.link);
                     return (
                         <button
@@ -69,7 +71,7 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
 
                 <div className="aspect-[16/9] w-full overflow-hidden bg-[var(--line)]">
                     <img
-                        src={projectCoverUrl(project.name ?? "")}
+                        src={project.coverUrl && project.coverUrl.trim() ? project.coverUrl.trim() : projectCoverUrl(project.name ?? "")}
                         alt={project.name ?? "Proyecto"}
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                         className="h-full w-full object-cover"
@@ -81,19 +83,38 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
                     <h2 className="display-font mt-3 text-4xl leading-tight">{project.name}</h2>
                     {project.description && <p className="mt-5 whitespace-pre-line text-base leading-7 text-[var(--ink-soft)]">{project.description}</p>}
 
-                    <div className="mt-6">
-                        <video
-                            key={projectVideoUrl(project.name ?? "")}
-                            src={projectVideoUrl(project.name ?? "")}
-                            controls
-                            playsInline
-                            preload="metadata"
-                            className="w-full rounded-xl border hairline bg-black"
-                            aria-label="Video del proyecto"
-                        >
-                            Tu navegador no soporta video.
-                        </video>
-                    </div>
+                    {(() => {
+                        const mediaIfAny = project.videoUrl && project.videoUrl.trim();
+                        const src = mediaIfAny || projectVideoUrl(project.name ?? "");
+                        const isEmbed = /\.(mp4|webm|ogg)(\?|#|$)/i.test(src);
+                        if (!src) return null;
+                        return (
+                            <div className="mt-6">
+                                {isEmbed ? (
+                                    <video
+                                        key={src}
+                                        src={src}
+                                        controls
+                                        playsInline
+                                        preload="metadata"
+                                        className="w-full rounded-xl border hairline bg-black"
+                                        aria-label="Video del proyecto"
+                                    >
+                                        Tu navegador no soporta video.
+                                    </video>
+                                ) : (
+                                    <a
+                                        href={src}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-5 py-2.5 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]"
+                                    >
+                                        ▶ Ver video del proyecto
+                                    </a>
+                                )}
+                            </div>
+                        );
+                    })()}
 
                     <div className="mt-8 flex flex-wrap gap-3">
                         {project.link ? (

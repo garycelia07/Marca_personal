@@ -1,0 +1,9 @@
+src/app/estudiante/page.tsx(80,47): error TS2339: Property 'label' does not exist on type 'never'.
+src/app/estudiante/page.tsx(82,84): error TS2339: Property 'label' does not exist on type 'never'.
+src/app/estudiante/page.tsx(83,93): error TS2339: Property 'value' does not exist on type 'never'.
+src/app/estudiante/page.tsx(86,108): error TS2339: Property 'value' does not exist on type 'never'.
+src/app/estudiante/page.tsx(88,94): error TS2339: Property 'note' does not exist on type 'never'.
+src/app/estudiante/page.tsx(101,51): error TS2339: Property 'title' does not exist on type 'never'.
+src/app/estudiante/page.tsx(103,89): error TS2339: Property 'title' does not exist on type 'never'.
+src/app/estudiante/page.tsx(104,96): error TS2339: Property 'module' does not exist on type 'never'.
+src/app/estudiante/page.tsx(105,96): error TS2339: Property 'time' does not exist on type 'never'.
