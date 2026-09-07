@@ -1,8 +1,10 @@
+
 import Link from "next/link";
 import { PageIntro, SiteShell } from "@/components/site-shell";
 import { siteConfig, whatsappHref } from "@/lib/site";
 import { fetchAllContent, pickSection, serviceItems, serviceTitle } from "@/lib/cms";
 import { ServicesGrid } from "@/components/services-grid";
+
 
 export const dynamic = "force-dynamic";
 

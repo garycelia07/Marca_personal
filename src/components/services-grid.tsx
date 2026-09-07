@@ -18,7 +18,6 @@ export function ServicesGrid({ items }: { items: ServiceItem[] }) {
                                 src={src}
                                 alt={service.name ?? "Servicio"}
                                 loading="lazy"
-                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                                 className="h-full w-full object-cover"
                             />
                         ) : null}

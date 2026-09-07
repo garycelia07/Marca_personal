@@ -33,7 +33,6 @@ export async function backendFetch(
     return fetch(`${backendUrl}${path}`, {
         method: init?.method ?? "GET",
         headers,
-        // FormData se pasa directo para que fetch genere el boundary multipart.
         body: init?.body === undefined ? undefined : isMultipart ? (init.body as FormData) : JSON.stringify(init.body),
         cache: "no-store",
     });

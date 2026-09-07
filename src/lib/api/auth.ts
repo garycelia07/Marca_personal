@@ -1,14 +1,19 @@
-import { cookies } from "next/headers";
+import { backendFetch } from "@/lib/api/backend";
 
-export type UserRole = "ADMIN" | "STUDENT";
+/** Nombre centralizado de la cookie de autenticación */
+export const ACCESS_TOKEN_COOKIE = "aurea_access_token";
 
-export type AuthUser = {
+export type UserRole = "ADMIN" | "STUDENT" | string;
+
+export interface User {
     id: string;
     email: string;
     fullName: string;
     role: UserRole;
     accessExpiresAt: string | null;
-};
+}
+
+export type AuthUser = User;
 
 export type LoginResponse = {
     accessToken: string;
@@ -33,65 +38,20 @@ export type JwtPayload = {
     [claim: string]: unknown;
 };
 
-export const ACCESS_TOKEN_COOKIE = "mp_access_token";
-
-function normalizeRole(value: unknown): UserRole | null {
-    if (value === "ADMIN" || value === "STUDENT") return value as UserRole;
-    return null;
-}
-
-function decodeBase64(value: string): string {
-    const padded = value.padEnd(Math.ceil(value.length / 4) * 4, "=");
-    if (typeof Buffer !== "undefined") {
-        return Buffer.from(padded, "base64").toString("utf-8");
-    }
-    return atob(padded);
-}
-
-export function decodeJwtToken(token: string): JwtPayload | null {
-    if (!token || typeof token !== "string") return null;
-    const parts = token.split(".");
-    if (parts.length < 2 || !parts[1]) return null;
+/**
+ * Obtiene el usuario autenticado actual desde las cookies en Server Components.
+ */
+export async function getCurrentUser(): Promise<User | null> {
     try {
-        let base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-        base64 += "=".repeat((4 - (base64.length % 4)) % 4);
-        return JSON.parse(decodeBase64(base64)) as JwtPayload;
-    } catch {
+        // backendFetch ya adjunta la cookie 'aurea_access_token' en el header Authorization
+        const res = await backendFetch("/auth/me");
+
+        if (!res.ok) return null;
+
+        const data = (await res.json()) as { user?: User } & User;
+        return data.user ?? data;
+    } catch (error) {
+        console.error("Error al obtener el usuario actual:", error);
         return null;
     }
-}
-
-export async function getCurrentUser(): Promise<AuthUser | null> {
-    try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
-        if (!token) return null;
-
-        const claims = decodeJwtToken(token);
-        if (!claims) return null;
-
-        const role = normalizeRole(claims.role);
-        if (!role) return null;
-
-        const accessExpiresAt =
-            typeof claims.accessExpiresAt === "string"
-                ? claims.accessExpiresAt
-                : typeof claims.exp === "number"
-                    ? new Date(claims.exp * 1000).toISOString()
-                    : null;
-
-        return {
-            id: String(claims.sub ?? claims.userId ?? ""),
-            email: String(claims.email ?? ""),
-            fullName: String(claims.name ?? claims.fullName ?? ""),
-            role,
-            accessExpiresAt,
-        };
-    } catch {
-        return null;
-    }
-}
-
-export function dashboardForRole(role: UserRole): string {
-    return role === "ADMIN" ? "/admin" : "/estudiante";
 }

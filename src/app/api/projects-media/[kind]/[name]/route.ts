@@ -51,4 +51,3 @@ export async function PUT(request: Request, { params }: Context) {
     }
 }
 
-export const config = {}; // (placeholder no usado)
