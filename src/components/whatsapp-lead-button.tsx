@@ -2,11 +2,6 @@
 
 import { whatsappHref } from "@/lib/site";
 
-/**
- * Botón flotante de WhatsApp: el logo oficial solo (sin recuadro/fondo de color).
- * Abre la conversación en el número configurado.
- * NO registra leads vacíos: los contactos con datos se guardan vía los formularios.
- */
 export function WhatsAppLeadButton() {
     return (
         <a
