@@ -184,8 +184,53 @@ export async function addLesson(moduleId: string, input: CreateLessonInput): Pro
     return (await requestJson(`/api/courses/modules/${encodeURIComponent(moduleId)}/lessons`, jsonInit("POST", input))) as Lesson;
 }
 
-/** Sube o reemplaza el video (≤10 min) de una lección (proxy → PUT). */
+/** Sube o reemplaza el video (≤10 min) de una lección. Prefiere subida DIRECTA a Cloudinary
+ * (no pasa por la función de Vercel y evita el 413); si no hay Cloudinary, cae a disco vía el proxy. */
 export async function uploadLessonVideo(lessonId: string, file: File): Promise<unknown> {
+    // 1) Intentar subida directa a Cloudinary (firmada por el backend).
+    try {
+        const signRes = await fetch(`/api/courses/lessons/${encodeURIComponent(lessonId)}/video/sign`, { method: "GET" });
+        if (signRes.ok) {
+            const sign = (await signRes.json()) as {
+                cloudName?: string; apiKey?: string; signature?: string;
+                timestamp?: string; folder?: string; publicId?: string;
+                resourceType?: string; overwrite?: string;
+            };
+            if (sign.cloudName && sign.signature && sign.apiKey) {
+                const cloudForm = new FormData();
+                cloudForm.append("file", file, file.name);
+                cloudForm.append("api_key", sign.apiKey);
+                cloudForm.append("timestamp", sign.timestamp ?? "");
+                cloudForm.append("signature", sign.signature);
+                cloudForm.append("folder", sign.folder ?? "");
+                if (sign.publicId) cloudForm.append("public_id", sign.publicId);
+                cloudForm.append("overwrite", sign.overwrite ?? "true");
+                if (file.type) cloudForm.append("type", file.type);
+                const cloudRes = await fetch(
+                    `https://api.cloudinary.com/v1_1/${sign.cloudName}/video/upload`,
+                    { method: "POST", body: cloudForm },
+                );
+                const cloudPayload = (await cloudRes.json().catch(() => null)) as { secure_url?: string; error?: { message?: string } } | null;
+                if (!cloudRes.ok || !cloudPayload?.secure_url) {
+                    throw Object.assign(new Error(cloudPayload?.error?.message ?? "Cloudinary rechazó el video."), { status: cloudRes.status });
+                }
+                // Guardar la URL en la lección.
+                const saveRes = await fetch(`/api/courses/lessons/${encodeURIComponent(lessonId)}/video-url`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ videoUrl: cloudPayload.secure_url }),
+                });
+                if (!saveRes.ok) {
+                    throw new Error("El video se subió a Cloudinary pero no se pudo guardar en la lección.");
+                }
+                return { ok: true, storage: "cloudinary", url: cloudPayload.secure_url };
+            }
+        }
+    } catch {
+        // Si falla la firma/Cloudinary, caemos al flujo clásico de disco más abajo.
+    }
+
+    // 2) Fallback: disco (proxy clásico).
     const form = new FormData();
     form.append("file", file, file.name);
     const response = await fetch(`/api/courses/lessons/${encodeURIComponent(lessonId)}/video`, {
