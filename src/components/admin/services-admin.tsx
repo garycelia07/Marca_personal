@@ -80,8 +80,18 @@ export function ServicesAdmin() {
             fd.append("file", file, file.name);
             const res = await fetch(`/api/service-cover/${encodeURIComponent(slug)}`, { method: "PUT", body: fd });
             const payload = await res.json().catch(() => null);
-            if (!res.ok) throw { message: payload && typeof payload === "object" && "message" in payload ? (payload as { message: string }).message : "No se subió." };
-            toast("success", `Portada de "${name}" subida.`);
+            if (!res.ok) throw { message: payload && typeof payload === "object" && "message" in payload ? (payload as { message: string }).message : "No se pudo subir la portada." };
+            // Persistir la portada en el ítem para que DESPUÉS se muestre (no solo en el disco).
+            const coverUrl = `/api/service-cover/${encodeURIComponent(slug)}`;
+            const next = items.map((i) => {
+                if ((i.slug && i.slug === slug) || (i.slug || slugify(i.name)) === slug) return { ...i, coverUrl };
+                return i;
+            });
+            if (next.length === 0) next.push({ name, slug, description: "", coverUrl });
+            setItems(next);
+            try { await saveContentJson("SERVICES", { title: "Servicios y formación.", items: next }); } catch { /* la persistencia de texto no debe tumbar la subida */ }
+            setDraft((d) => (d && (d.slug === slug || slugify(d.name) === slug) ? { ...d, coverUrl } : d));
+            toast("success", `Portada de "${name}" subida correctamente.`);
         } catch (e) {
             toast("error", err(e, "No se pudo subir la imagen."));
         } finally {
