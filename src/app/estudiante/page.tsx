@@ -38,7 +38,7 @@ export default async function EstudianteDashboard() {
     const initials = user.fullName.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("");
 
     return (
-        <SiteShell>
+        <SiteShell hideHeader>
             <PageIntro eyebrow="Panel estudiantil" title="Tu espacio de crecimiento."
                 description={`Hola, ${user.fullName}. Aquí están tus cursos inscritos para ver y reproducir sus videos.`} />
             <section className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:px-12">

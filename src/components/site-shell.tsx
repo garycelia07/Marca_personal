@@ -3,10 +3,10 @@
 import { SiteFooter } from "@/components/footer";
 import { SiteHeader } from "@/components/header";
 
-export function SiteShell({ children }: { children: React.ReactNode }) {
+export function SiteShell({ children, hideHeader = false }: { children: React.ReactNode; hideHeader?: boolean }) {
     return (
         <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-            <SiteHeader />
+            {!hideHeader && <SiteHeader />}
             <main>{children}</main>
             <SiteFooter />
         </div>
