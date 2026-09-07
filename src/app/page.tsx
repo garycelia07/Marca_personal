@@ -8,13 +8,6 @@ import { FeaturedCourses } from "@/components/featured-courses";
 import { HomeProjects } from "@/components/home-projects";
 import { SectionLabel, SiteShell } from "@/components/site-shell";
 
-const heroSocials: { label: string; href: string; icon: SocialIconName }[] = [
-  { label: "Facebook", href: "https://www.facebook.com/", icon: "facebook" },
-  { label: "TikTok", href: "https://www.tiktok.com/", icon: "tiktok" },
-  { label: "Instagram", href: "https://www.instagram.com/", icon: "instagram" },
-  { label: "YouTube", href: "https://www.youtube.com/", icon: "youtube" },
-];
-
 const contactChannels: { label: string; value: string; href: string; icon: SocialIconName }[] = [
   {
     label: "WhatsApp",
@@ -33,24 +26,21 @@ const contactChannels: { label: string; value: string; href: string; icon: Socia
 export default function Home() {
   return (
     <SiteShell>
-      <section className="hero-portrait-bg relative overflow-hidden px-4 py-5 text-[var(--foreground)] sm:px-8 sm:py-8 lg:py-10">
-        <div className="hero-panel-in mx-auto grid min-h-[590px] max-w-[1440px] overflow-hidden lg:grid-cols-[0.9fr_1.35fr]">
-          <div className="hero-copy order-2 flex flex-col justify-center px-6 py-10 sm:px-12 lg:order-1 lg:px-14 lg:py-16">
-            <p className="eyebrow">Liderazgo · Patrimonio · Propósito</p>
-            <p className="mt-5 text-sm font-semibold text-[var(--ink-soft)]">Hola, soy</p>
-            <h1 className="script-font mt-2 text-6xl leading-[0.78] text-[var(--copper)] sm:text-7xl">Gary Mayhua</h1>
-            <p className="mt-8 max-w-md text-2xl leading-tight sm:text-3xl">Los grandes sueños comienzan siendo un simple sueño.</p>
-            <p className="mt-5 max-w-sm text-sm leading-6 text-[var(--ink-soft)]">Acompañamos a personas que quieren crecer con intención, invertir con claridad y construir una vida con más posibilidades.</p>
-            <div className="mt-8 flex flex-wrap items-center gap-5">
-              <Link href="/servicios" className="rounded-md bg-[var(--copper)] px-5 py-3 text-sm font-semibold text-[var(--forest-deep)] transition hover:brightness-110">Explorar acompañamiento</Link>
-              <Link href="/mi-historia" className="editorial-link text-sm font-semibold">Mi historia</Link>
-            </div>
-            <div className="mt-9 flex items-center gap-3" aria-label="Redes sociales">
-              {heroSocials.map((social) => (
-                <a key={social.label} href={social.href} target="_blank" rel="noreferrer" aria-label={social.label} className="flex h-9 w-9 items-center justify-center rounded-full border border-black/15 text-[var(--foreground)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
-                  <SocialIcon name={social.icon} />
-                </a>
-              ))}
+      <section className="hero-portrait-bg relative overflow-hidden text-[var(--foreground)]">
+        {/* Eyebrow pegado al encabezado (borde superior del hero) */}
+        <div className="mx-auto max-w-[1440px] px-4 pt-6 sm:px-8 sm:pt-8 lg:px-12">
+          <p className="eyebrow">Liderazgo · Patrimonio · Propósito</p>
+        </div>
+
+        <div className="hero-panel-in mx-auto grid min-h-[540px] max-w-[1440px] overflow-hidden pt-6 lg:grid-cols-[0.9fr_1.35fr] lg:pt-2">
+          <div className="hero-copy order-2 flex flex-col justify-center px-6 pb-12 sm:px-12 lg:order-1 lg:px-14">
+            <p className="text-base font-semibold text-[var(--ink-soft)] sm:text-lg">Hola, soy</p>
+            <h1 className="script-font mt-3 text-7xl leading-[0.74] text-[var(--copper)] sm:text-8xl lg:text-[7rem]">Gary Mayhua</h1>
+            <p className="mt-8 max-w-md text-2xl leading-tight sm:text-3xl lg:text-4xl">Los grandes sueños comienzan siendo un simple sueño.</p>
+            <p className="mt-5 max-w-md text-base leading-7 text-[var(--ink-soft)] sm:text-lg">Acompañamos a personas que quieren crecer con intención, invertir con claridad y construir una vida con más posibilidades.</p>
+            <div className="mt-9 flex flex-wrap items-center gap-5">
+              <Link href="/servicios" className="rounded-md bg-[var(--copper)] px-6 py-3.5 text-base font-semibold text-[var(--forest-deep)] transition hover:brightness-110">Explorar acompañamiento</Link>
+              <Link href="/mi-historia" className="editorial-link text-base font-semibold">Mi historia</Link>
             </div>
           </div>
           <div className="hero-image-in group relative order-1 min-h-[430px] overflow-hidden lg:order-2 lg:min-h-[590px]">
