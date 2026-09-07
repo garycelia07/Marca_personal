@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image"; 
+import Image from "next/image";
 import { SectionLabel, SiteShell } from "@/components/site-shell";
 
 const principles = [
@@ -26,6 +26,7 @@ const principles = [
 export default function AboutPage() {
   return (
     <SiteShell>
+      {/* Hero */}
       <section className="relative overflow-hidden bg-[var(--background)] pt-12 pb-20 sm:pt-20 lg:py-10">
         <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -52,7 +53,7 @@ export default function AboutPage() {
               sizes="100vw"
               className="object-cover transition-transform duration-700 hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--forest-deep)]/40 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--forest-deep)]/60 via-transparent to-transparent" />
           </div>
         </div>
       </section>
@@ -72,53 +73,98 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Misión y Visión */}
-      <section className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <article className="group relative flex flex-col justify-between rounded-3xl border border-[var(--line)] bg-[var(--background)] p-8 shadow-sm transition-all duration-300 hover:border-[var(--copper)] sm:p-12">
-            <div>
-              <div className="flex items-center justify-between">
-                <SectionLabel number="02">Misión</SectionLabel>
-                <span className="h-2 w-2 rounded-full bg-[var(--copper)]" />
-              </div>
-              <h2 className="display-font mt-10 text-3xl leading-tight sm:text-4xl">
-                Convertir claridad en decisiones que transforman.
-              </h2>
-            </div>
-            <p className="mt-8 text-base leading-relaxed text-[var(--ink-soft)]">
-              Acompañar a cada persona a ordenar sus ideas, fortalecer su criterio financiero y construir patrimonio con pasos concretos.
-            </p>
-          </article>
+      {/* Misión, Visión y Valores (Optimizado para Modo Oscuro y Claro) */}
+      <section className="relative overflow-hidden bg-[var(--background)] py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
 
-          <article className="group relative flex flex-col justify-between rounded-3xl border border-[var(--line)] bg-[var(--paper)] p-8 shadow-sm transition-all duration-300 hover:border-[var(--copper)] sm:p-12">
-            <div>
-              <div className="flex items-center justify-between">
-                <SectionLabel number="03">Visión</SectionLabel>
-                <span className="h-2 w-2 rounded-full bg-[var(--copper)]" />
-              </div>
-              <h2 className="display-font mt-10 text-3xl leading-tight sm:text-4xl">
-                Una generación que lidera su futuro con libertad.
-              </h2>
-            </div>
-            <p className="mt-8 text-base leading-relaxed text-[var(--ink-soft)]">
-              Imaginamos una comunidad donde invertir, aprender y crecer sean prácticas accesibles, conscientes y sostenibles.
+          {/* Texto superior */}
+          <div className="mx-auto mb-14 max-w-4xl text-center sm:mb-20">
+            <p className="text-sm leading-relaxed text-[var(--ink-soft)] sm:text-base">
+              Creemos que construir un mejor futuro requiere claridad para decidir,
+              visión para avanzar y valores que nos permitan mantenernos firmes
+              durante el camino.
             </p>
-          </article>
+          </div>
+
+          <div className="relative mx-auto max-w-[1100px]">
+            {/* Límite superior de cobre */}
+            <div className="absolute left-0 right-0 top-0 h-1 bg-[var(--copper)] z-20" />
+
+            <div className="grid grid-cols-1 items-center md:grid-cols-3">
+              {/* Misión */}
+              <article className="relative flex min-h-[380px] flex-col items-center justify-start rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none bg-[var(--forest)] px-7 pb-10 pt-14 text-center sm:px-10 border border-white/10 dark:border-white/15">
+                <div className="mb-7 flex h-16 w-16 items-center justify-center rounded-full border-[4px] border-[var(--paper)] text-[var(--paper)]">
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
+                    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                  </svg>
+                </div>
+                <h3 className="display-font text-3xl font-bold text-[var(--paper)] sm:text-4xl">
+                  Misión
+                </h3>
+                <div className="mt-5 h-px w-16 bg-[var(--paper)]/60" />
+                <p className="mt-6 max-w-[260px] text-sm leading-relaxed text-[var(--paper)]/90">
+                  Convertir claridad en decisiones que transforman, acompañando a cada persona a construir un futuro con dirección y propósito.
+                </p>
+              </article>
+
+              {/* Visión (Tarjeta destacada con fondo Cobre alto contraste) */}
+              <article className="relative z-10 flex min-h-[440px] flex-col items-center justify-start rounded-2xl bg-[var(--copper)] px-7 pb-12 pt-14 text-center shadow-2xl shadow-black/50 border border-white/20 md:-my-4 md:scale-105">
+                <div className="mb-7 flex h-16 w-16 items-center justify-center text-[#1c2e24]">
+                  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 12C3 12 6.5 6.5 12 6.5C17.5 6.5 21 12 21 12C21 12 17.5 17.5 12 17.5C6.5 17.5 3 12 3 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                    <circle cx="12" cy="12" r="3.2" fill="currentColor" />
+                  </svg>
+                </div>
+                <h3 className="display-font text-3xl font-bold text-[#1c2e24] sm:text-4xl">
+                  Visión
+                </h3>
+                <div className="mt-5 h-px w-16 bg-[#1c2e24]/40" />
+                <p className="mt-6 max-w-[260px] text-sm font-medium leading-relaxed text-[#1c2e24]">
+                  Una generación que lidera su futuro con libertad, conocimiento y una visión consciente del crecimiento personal y patrimonial.
+                </p>
+              </article>
+
+              {/* Valores */}
+              <article className="relative flex min-h-[380px] flex-col items-center justify-start rounded-b-2xl md:rounded-r-2xl md:rounded-bl-none bg-[var(--forest-deep)] px-7 pb-10 pt-14 text-center sm:px-10 border border-white/10 dark:border-white/15">
+                <div className="mb-7 flex h-16 w-16 items-center justify-center text-[var(--paper)]">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 9.5L7 5H17L21 9.5L12 19L3 9.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                    <path d="M3 9.5H21" stroke="currentColor" strokeWidth="1.6" />
+                    <path d="M7 5L9.5 9.5L12 19L14.5 9.5L17 5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <h3 className="display-font text-3xl font-bold text-[var(--paper)] sm:text-4xl">
+                  Valores
+                </h3>
+                <div className="mt-5 h-px w-16 bg-[var(--paper)]/60" />
+                <p className="mt-6 max-w-[260px] text-sm leading-relaxed text-[var(--paper)]/90">
+                  Actuamos con claridad, criterio y comunidad para construir relaciones sólidas y decisiones sostenibles en el tiempo.
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div className="mx-auto mt-16 max-w-3xl text-center sm:mt-20">
+            <p className="text-sm leading-relaxed text-[var(--ink-soft)] sm:text-base">
+              Nuestra misión, visión y valores son el punto de partida de cada decisión que tomamos y de cada relación que construimos.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Principios - Grid Mosaico (Estilo de la captura: 3x2 intercalado) */}
+      {/* Principios - Grid Mosaico */}
       <section className="mx-auto max-w-[1440px] px-5 pb-20 sm:px-8 lg:px-12 lg:pb-32">
-        <div className="text-center mb-16">
+        <div className="mb-16 text-center">
           <h2 className="display-font text-4xl font-bold sm:text-5xl lg:text-6xl text-[var(--foreground)]">
             Nuestros Principios
           </h2>
-          <div className="mt-4 mx-auto h-[1px] w-48 bg-[var(--foreground)]" />
+          <div className="mt-4 mx-auto h-[1px] w-48 bg-[var(--line)]" />
         </div>
 
-        {/* Cuadrícula 3x2 Mosaico */}
         <div className="grid grid-cols-1 md:grid-cols-3 border-t border-l border-[var(--line)]">
-          {/* Fila 1: Imagen 04 | Texto 04 | Imagen 05 */}
+          {/* Fila 1 */}
           <div className="relative min-h-[320px] border-r border-b border-[var(--line)] bg-[var(--paper)]">
             <Image
               src={principles[0].image}
@@ -157,7 +203,7 @@ export default function AboutPage() {
             />
           </div>
 
-          {/* Fila 2: Texto 05 | Imagen 06 | Texto 06 */}
+          {/* Fila 2 */}
           <div className="flex flex-col items-center justify-center p-8 text-center min-h-[320px] border-r border-b border-[var(--line)] bg-[var(--paper)]">
             <span className="font-mono text-xs font-semibold tracking-widest text-[var(--copper)]">
               {principles[1].number}
