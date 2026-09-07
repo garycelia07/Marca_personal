@@ -27,48 +27,77 @@ export default function AboutPage() {
   return (
     <SiteShell>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[var(--background)] pt-12 pb-20 sm:pt-20 lg:py-10">
+      <section className="relative overflow-hidden bg-[var(--background)] py-16 sm:py-24 lg:py-14">
         <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
-              <span className="eyebrow inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--paper)] px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--copper)]">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
+
+            {/* Columna Izquierda: Contenido puro */}
+            <div className="flex flex-col lg:col-span-6 xl:col-span-7">
+              <span className="eyebrow inline-flex self-start items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--paper)] px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--copper)]">
                 Nosotros / 01
               </span>
-              <h1 className="display-font mt-6 text-5xl leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
+
+              <h1 className="display-font mt-6 text-5xl leading-[0.95] tracking-tight sm:text-7xl lg:text-7xl xl:text-8xl text-[var(--foreground)]">
                 Crecer con <em className="script-font text-[var(--copper)] font-normal">raíz.</em>
               </h1>
-            </div>
-            <p className="max-w-md text-base leading-relaxed text-[var(--ink-soft)] lg:text-lg">
-              Somos una plataforma de pensamiento y acción para quienes entienden el patrimonio como una herramienta de libertad, no como una cifra en pantalla.
-            </p>
-          </div>
 
-          {/* Imagen Hero */}
-          <div className="relative mt-12 h-[380px] w-full overflow-hidden rounded-3xl border border-[var(--line)] sm:h-[520px] lg:mt-16">
-            <Image
-              src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=85"
-              alt="Personas conversando en una mesa de trabajo"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover transition-transform duration-700 hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--forest-deep)]/60 via-transparent to-transparent" />
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--ink-soft)] lg:text-lg">
+                Somos una plataforma de pensamiento y acción para quienes entienden el patrimonio como una herramienta de libertad, no como una cifra en pantalla.
+              </p>
+            </div>
+            <div className="relative lg:col-span-6 xl:col-span-5">
+              <div className="relative rounded-3xl bg-[var(--copper)] p-4 sm:p-6 shadow-2xl">
+                <div className="relative aspect-square w-full overflow-hidden rounded-2xl">
+                  <Image
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80"
+                    alt="Persona de la plataforma"
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+
+                  {/* Botón de reproducción */}
+                  <div className="absolute bottom-6 left-6 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--paper)] text-[var(--forest-deep)] shadow-lg">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="ml-1">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
-
       {/* Propósito */}
-      <section className="border-y border-[var(--line)] bg-[var(--paper)] py-20 sm:py-28">
-        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 sm:px-8 lg:grid-cols-[0.4fr_1.6fr] lg:px-12">
-          <SectionLabel number="01">Propósito</SectionLabel>
-          <div className="space-y-8">
-            <p className="display-font text-3xl leading-snug sm:text-5xl lg:text-6xl">
-              Hacer que más personas puedan tomar el volante de su futuro financiero.
-            </p>
-            <p className="max-w-3xl text-base leading-relaxed text-[var(--ink-soft)] sm:text-lg">
-              Nuestra plataforma reúne educación, acompañamiento e inversión para convertir la ambición en una práctica con dirección. Trabajamos desde la experiencia, con lenguaje humano y una mirada de largo plazo.
-            </p>
+      <section className="relative overflow-hidden border-y border-[var(--line)] bg-[var(--paper)] py-12 sm:py-16">
+        {/* Detalle de línea decorativa curva en la esquina derecha */}
+        <div className="pointer-events-none absolute -right-12 -top-12 h-64 w-64 opacity-20">
+          <svg className="h-full w-full" viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="90" stroke="var(--copper)" strokeWidth="1.5" />
+          </svg>
+        </div>
+
+        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12 text-center">
+          {/* Título pequeño superior */}
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ink-soft)]">
+            Nuestra experiencia
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16">
+            <span className="font-sans text-2xl font-black uppercase tracking-tighter text-[var(--foreground)] opacity-70 transition-all duration-300 hover:opacity-100 sm:text-3xl">
+              YALA
+            </span>
+            <span className="font-serif text-xl font-medium tracking-wide text-[var(--foreground)] opacity-70 transition-all duration-300 hover:opacity-100 sm:text-2xl">
+              Bienes <em className="script-font italic font-normal text-[var(--copper)]">Raíces</em>
+            </span>
+            <span className="font-mono text-lg font-bold uppercase tracking-[0.25em] text-[var(--foreground)] opacity-70 transition-all duration-300 hover:opacity-100 sm:text-xl">
+              FINANZAS
+            </span>
+            <span className="display-font text-xl font-light uppercase tracking-[0.2em] text-[var(--foreground)] opacity-70 transition-all duration-300 hover:opacity-100 sm:text-2xl">
+              LIFE <strong className="font-extrabold text-[var(--copper)]">360</strong>
+            </span>
+
           </div>
         </div>
       </section>
