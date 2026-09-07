@@ -47,19 +47,23 @@ export function SiteHeader() {
                     <img src="/gary.avif" alt="Gary Mayhua" className="h-12 w-auto object-contain" />
                 </Link>
 
-                <nav className="hidden items-center gap-7 lg:flex" aria-label="Navegación principal">
-                    {navigation.map((item) => (
-                        <Link key={item.href} href={item.href} className={`text-sm transition hover:text-[var(--copper)] ${pathname === item.href ? "font-semibold text-[var(--copper)]" : "text-[var(--ink-soft)]"}`}>
-                            {item.label}
-                        </Link>
-                    ))}
-                    <div className="ml-6 flex items-center gap-4 border-l hairline pb-0.5 pl-6">
+                <div className="ml-auto hidden items-center gap-7 lg:flex">
+                    <nav className="flex items-center gap-7" aria-label="Navegación principal">
+                        {navigation.map((item) => (
+                            <Link key={item.href} href={item.href} className={`whitespace-nowrap text-sm transition hover:text-[var(--copper)] ${pathname === item.href ? "font-semibold text-[var(--copper)]" : "text-[var(--ink-soft)]"}`}>
+                                {item.label}
+                            </Link>
+                        ))}
+                    </nav>
+
+                    {/* Login + tema, pegados al extremo derecho */}
+                    <div className="flex items-center gap-4">
                         <Link href="/iniciar-sesion" className="rounded-md border border-[var(--forest)] px-4 py-2 text-base font-semibold text-[var(--forest)] transition hover:bg-[var(--forest)] hover:text-[var(--background)]">
                             Login
                         </Link>
                         <ThemeToggle />
                     </div>
-                </nav>
+                </div>
 
                 <div className="flex items-center gap-3 lg:hidden">
                     <ThemeToggle />
