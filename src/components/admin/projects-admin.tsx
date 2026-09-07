@@ -120,6 +120,13 @@ export function ProjectsAdmin() {
         }
     }
 
+    /* Subir imagen/video desde el editor (botón laptop). Requiere proyecto guardado (slug). */
+    async function onPickMedia(kind: "cover" | "video", file: File) {
+        if (!editing) return;
+        const slug = editing.slug || slugify(editing.name);
+        if (!slug) { toast("error", "Guarda el proyecto primero (necesita nombre)."); return; }
+        await upload(kind, editing.name, file, slug);
+    }
     const hasItems = items.length > 0;
 
     return (
@@ -163,17 +170,27 @@ export function ProjectsAdmin() {
                 </ul>
             ) : null}
 
-            {editing && <Editor editing={editing} patch={setEditing} busy={busy} onSave={() => void saveEditor()} onClose={() => setEditing(null)} />}
+            {editing && (
+                <Editor
+                    editing={editing}
+                    patch={setEditing}
+                    busy={busy}
+                    onSave={() => void saveEditor()}
+                    onClose={() => setEditing(null)}
+                    onPickMedia={onPickMedia}
+                />
+            )}
         </section>
     );
 }
 
-function Editor({ editing, patch, busy, onSave, onClose }: {
+function Editor({ editing, patch, busy, onSave, onClose, onPickMedia }: {
     editing: ProjectDraft;
     patch: (v: ProjectDraft) => void;
     busy: boolean;
     onSave: () => void;
     onClose: () => void;
+    onPickMedia: (kind: "cover" | "video", file: File) => void;
 }) {
     const set = (next: ProjectDraft) => patch(next);
     return (
@@ -192,10 +209,27 @@ function Editor({ editing, patch, busy, onSave, onClose }: {
                         <textarea value={editing.description} onChange={(e) => set({ ...editing, description: e.target.value })} rows={4} className="mt-1 w-full resize-none rounded border hairline bg-transparent px-3 py-2 outline-none" /></label>
                     <label className="block text-sm"><span className="font-semibold">Enlace «Quiero unirme»</span>
                         <input value={editing.link} onChange={(e) => set({ ...editing, link: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://…" /></label>
-                    <label className="block text-sm"><span className="font-semibold">Imagen de portada (URL)</span>
-                        <input value={editing.coverUrl ?? ""} onChange={(e) => set({ ...editing, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://… o pégala al pulsar «Portada» en la lista" /></label>
-                    <label className="block text-sm"><span className="font-semibold">Video (URL por enlace, opcional)</span>
-                        <input value={editing.videoUrl ?? ""} onChange={(e) => set({ ...editing, videoUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://…/video.mp4 o link a plataforma" /></label>
+                    <label className="block text-sm"><span className="font-semibold">Imagen de portada</span>
+                        <input value={editing.coverUrl ?? ""} onChange={(e) => set({ ...editing, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Pega la URL de la imagen… (o súbela de tu laptop abajo)" />
+                        <span className="mt-2 inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
+                            📂 Subir imagen desde mi laptop
+                            <input type="file" accept="image/*" className="sr-only"
+                                disabled={busy}
+                                onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickMedia("cover", f); e.target.value = ""; }} />
+                        </span>
+                        {busy && <span className="ml-2 text-xs text-[var(--ink-soft)]">Subiendo…</span>}
+                    </label>
+                    <label className="block text-sm"><span className="font-semibold">Video corto</span>
+                        <input value={editing.videoUrl ?? ""} onChange={(e) => set({ ...editing, videoUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Pega el enlace del video (mp4 o plataforma)… (o súbelo aquí)" />
+                        <span className="mt-2 inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
+                            ▶ Subir video desde mi laptop
+                            <input type="file" accept="video/mp4,video/webm" className="sr-only"
+                                disabled={busy}
+                                onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickMedia("video", f); e.target.value = ""; }} />
+                        </span>
+                        {busy && <span className="ml-2 text-xs text-[var(--ink-soft)]">Subiendo…</span>}
+                        <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Máx. 10 min · guarda el proyecto primero para que el nombre quede fijo.</span>
+                    </label>
                 </div>
 
                 <div className="mt-6 flex flex-wrap justify-end gap-3">

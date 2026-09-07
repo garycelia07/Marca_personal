@@ -121,17 +121,30 @@ export function ServicesAdmin() {
                 </ul>
             )}
 
-            {draft && <DraftCard draft={draft} set={setDraft} busy={busy} onSave={save} onClose={() => setDraft(null)} />}
+            {draft && (
+                <DraftCard
+                    draft={draft}
+                    set={setDraft}
+                    busy={busy}
+                    onSave={save}
+                    onClose={() => setDraft(null)}
+                    onUploadFile={(file) => void (async () => {
+                        const slug = draft.slug || slugify(draft.name);
+                        if (slug) await upload(file, draft.name, slug);
+                    })()}
+                />
+            )}
         </section>
     );
 }
 
-function DraftCard({ draft, set, busy, onSave, onClose }: {
+function DraftCard({ draft, set, busy, onSave, onClose, onUploadFile }: {
     draft: Svc;
     set: (v: Svc) => void;
     busy: boolean;
     onSave: () => void;
     onClose: () => void;
+    onUploadFile: (file: File) => void;
 }) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -144,8 +157,17 @@ function DraftCard({ draft, set, busy, onSave, onClose }: {
                         <input value={draft.name} onChange={(e) => set({ ...draft, name: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" /></label>
                     <label className="block text-sm"><span className="font-semibold">Descripción</span>
                         <textarea value={draft.description} onChange={(e) => set({ ...draft, description: e.target.value })} rows={4} className="mt-1 w-full resize-none rounded border hairline bg-transparent px-3 py-2 outline-none" /></label>
-                    <label className="block text-sm"><span className="font-semibold">Imagen de portada (URL)</span>
-                        <input value={draft.coverUrl ?? ""} onChange={(e) => set({ ...draft, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://… o pégala al pulsar «Portada» en la lista" /></label>
+                    <label className="block text-sm"><span className="font-semibold">Imagen de portada</span>
+                        <input value={draft.coverUrl ?? ""} onChange={(e) => set({ ...draft, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Pega la URL de la imagen… (o súbela de tu laptop abajo)" />
+                        <span className="mt-2 inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
+                            📂 Subir imagen desde mi laptop
+                            <input type="file" accept="image/*" className="sr-only"
+                                disabled={busy}
+                                onChange={(e) => { const f = e.target.files?.[0]; if (f) onUploadFile(f); e.target.value = ""; }} />
+                        </span>
+                        {busy && <span className="ml-2 text-xs text-[var(--ink-soft)]">Subiendo…</span>}
+                        <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Guarda el servicio primero para que el nombre quede fijo.</span>
+                    </label>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
                     <button type="button" onClick={onClose} disabled={busy} className="rounded-full border hairline px-5 py-2 text-sm">Cancelar</button>
