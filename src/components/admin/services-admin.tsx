@@ -157,16 +157,22 @@ function DraftCard({ draft, set, busy, onSave, onClose, onUploadFile }: {
                         <input value={draft.name} onChange={(e) => set({ ...draft, name: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" /></label>
                     <label className="block text-sm"><span className="font-semibold">Descripción</span>
                         <textarea value={draft.description} onChange={(e) => set({ ...draft, description: e.target.value })} rows={4} className="mt-1 w-full resize-none rounded border hairline bg-transparent px-3 py-2 outline-none" /></label>
-                    <label className="block text-sm"><span className="font-semibold">Imagen de portada</span>
-                        <input value={draft.coverUrl ?? ""} onChange={(e) => set({ ...draft, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Pega la URL de la imagen… (o súbela de tu laptop abajo)" />
-                        <span className="mt-2 inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
-                            📂 Subir imagen desde mi laptop
-                            <input type="file" accept="image/*" className="sr-only"
-                                disabled={busy}
-                                onChange={(e) => { const f = e.target.files?.[0]; if (f) onUploadFile(f); e.target.value = ""; }} />
-                        </span>
-                        {busy && <span className="ml-2 text-xs text-[var(--ink-soft)]">Subiendo…</span>}
-                        <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Guarda el servicio primero para que el nombre quede fijo.</span>
+                    <label className="block text-sm"><span className="font-semibold">Imagen del servicio <span className="text-xs font-normal text-[var(--ink-soft)]">(es la imagen que se ve en la tarjeta)</span></span>
+                        <input value={draft.coverUrl ?? ""} onChange={(e) => set({ ...draft, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Si prefieres, pega aquí la URL de la imagen" />
+                        <div className="mt-2 flex items-center gap-2">
+                            <label htmlFor={`svc-cover-${draft.slug || draft.name || "new"}`} className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--copper)] px-4 py-2 text-xs font-bold text-[var(--copper)] transition hover:bg-[var(--copper)] hover:text-[var(--forest-deep)]">
+                                📂 Elegir imagen de mi laptop
+                            </label>
+                            <input
+                                id={`svc-cover-${draft.slug || draft.name || "new"}`}
+                                type="file"
+                                accept="image/*"
+                                className="sr-only"
+                                onChange={(e) => { const f = e.target.files?.[0]; if (f && !busy) onUploadFile(f); e.target.value = ""; }}
+                            />
+                            {busy ? <span className="text-xs text-[var(--copper)]">Subiendo…</span> : null}
+                        </div>
+                        <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Primero guarda con un nombre el servicio; luego ya puedes elegir el archivo.</span>
                     </label>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">

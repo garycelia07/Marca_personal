@@ -15,7 +15,7 @@ const navigation = [
 ];
 
 
-const USER_STORAGE_KEY = "mp_user";
+const USER_STORAGE_KEY = "aurea_user";
 
 type StoredUser = {
     id: string;

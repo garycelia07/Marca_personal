@@ -207,28 +207,36 @@ function Editor({ editing, patch, busy, onSave, onClose, onPickMedia }: {
                         <input value={editing.tagline} onChange={(e) => set({ ...editing, tagline: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" /></label>
                     <label className="block text-sm"><span className="font-semibold">Descripción larga</span>
                         <textarea value={editing.description} onChange={(e) => set({ ...editing, description: e.target.value })} rows={4} className="mt-1 w-full resize-none rounded border hairline bg-transparent px-3 py-2 outline-none" /></label>
-                    <label className="block text-sm"><span className="font-semibold">Enlace «Quiero unirme»</span>
-                        <input value={editing.link} onChange={(e) => set({ ...editing, link: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="https://…" /></label>
-                    <label className="block text-sm"><span className="font-semibold">Imagen de portada</span>
-                        <input value={editing.coverUrl ?? ""} onChange={(e) => set({ ...editing, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Pega la URL de la imagen… (o súbela de tu laptop abajo)" />
-                        <span className="mt-2 inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
-                            📂 Subir imagen desde mi laptop
-                            <input type="file" accept="image/*" className="sr-only"
-                                disabled={busy}
-                                onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickMedia("cover", f); e.target.value = ""; }} />
-                        </span>
-                        {busy && <span className="ml-2 text-xs text-[var(--ink-soft)]">Subiendo…</span>}
+                    <label className="block text-sm"><span className="font-semibold">Enlace «Quiero unirme» <span className="text-xs font-normal text-[var(--ink-soft)]">(opcional — si usas WhatsApp déjalo vacío)</span></span>
+                        <input value={editing.link} onChange={(e) => set({ ...editing, link: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Opcional: https://… o déjalo en blanco para usar tu WhatsApp" /></label>
+                    <label className="block text-sm"><span className="font-semibold">Imagen de portada <span className="text-xs font-normal text-[var(--ink-soft)]">(es lo visual de la tarjeta)</span></span>
+                        <input value={editing.coverUrl ?? ""} onChange={(e) => set({ ...editing, coverUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Si prefieres, pega aquí la URL de una imagen" />
+                        <label htmlFor={`cover-file-${editing.slug || editing.name || "new"}`} className="mx-0 mt-2 inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--copper)] px-4 py-2 text-xs font-bold text-[var(--copper)] transition hover:bg-[var(--copper)] hover:text-[var(--forest-deep)]">
+                            📂 Elegir imagen de mi laptop
+                        </label>
+                        <input
+                            id={`cover-file-${editing.slug || editing.name || "new"}`}
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={(e) => { const f = e.target.files?.[0]; if (f && !busy) onPickMedia("cover", f); e.target.value = ""; }}
+                        />
+                        {busy ? <span className="ml-2 text-xs text-[var(--copper)]">Subiendo…</span> : null}
                     </label>
-                    <label className="block text-sm"><span className="font-semibold">Video corto</span>
-                        <input value={editing.videoUrl ?? ""} onChange={(e) => set({ ...editing, videoUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Pega el enlace del video (mp4 o plataforma)… (o súbelo aquí)" />
-                        <span className="mt-2 inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
-                            ▶ Subir video desde mi laptop
-                            <input type="file" accept="video/mp4,video/webm" className="sr-only"
-                                disabled={busy}
-                                onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickMedia("video", f); e.target.value = ""; }} />
-                        </span>
-                        {busy && <span className="ml-2 text-xs text-[var(--ink-soft)]">Subiendo…</span>}
-                        <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Máx. 10 min · guarda el proyecto primero para que el nombre quede fijo.</span>
+                    <label className="block text-sm"><span className="font-semibold">Video corto <span className="text-xs font-normal text-[var(--ink-soft)]">(se abre al hacer clic en la tarjeta)</span></span>
+                        <input value={editing.videoUrl ?? ""} onChange={(e) => set({ ...editing, videoUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Si prefieres, pega aquí el enlace del video (mp4 o plataforma)" />
+                        <label htmlFor={`video-file-${editing.slug || editing.name || "new"}`} className="mx-0 mt-2 inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--copper)] px-4 py-2 text-xs font-bold text-[var(--copper)] transition hover:bg-[var(--copper)] hover:text-[var(--forest-deep)]">
+                            ▶ Elegir video de mi laptop (.mp4, máx. 10 min)
+                        </label>
+                        <input
+                            id={`video-file-${editing.slug || editing.name || "new"}`}
+                            type="file"
+                            accept="video/mp4,video/webm"
+                            className="sr-only"
+                            onChange={(e) => { const f = e.target.files?.[0]; if (f && !busy) onPickMedia("video", f); e.target.value = ""; }}
+                        />
+                        {busy ? <span className="ml-2 text-xs text-[var(--copper)]">Subiendo…</span> : null}
+                        <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Primero guarda con un nombre el proyecto; luego ya puedes elegir el archivo.</span>
                     </label>
                 </div>
 
