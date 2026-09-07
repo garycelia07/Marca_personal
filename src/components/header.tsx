@@ -41,7 +41,7 @@ function ThemeToggle() {
             onClick={toggleTheme}
             aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
             title={dark ? "Modo claro" : "Modo oscuro"}
-            className="flex h-9 w-9 items-center justify-center rounded-full border hairline text-sm transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+            className="flex h-10 w-10 items-center justify-center rounded-full border hairline text-base transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
         >
             {dark ? "☼" : "◐"}
         </button>
@@ -62,7 +62,7 @@ export function SiteHeader() {
         <header className="border-b hairline bg-[var(--background)]">
             <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
                 <Link href="/" className="flex items-center">
-                    <img src="/gary.avif" alt="Gary Mayhua" className="h-10 w-auto object-contain" />
+                    <img src="/gary.avif" alt="Gary Mayhua" className="h-12 w-auto object-contain" />
                 </Link>
 
                 <nav className="hidden items-center gap-7 lg:flex" aria-label="Navegación principal">
@@ -71,12 +71,14 @@ export function SiteHeader() {
                             {item.label}
                         </Link>
                     ))}
-                    {!hasSession && (
-                        <Link href="/iniciar-sesion" className="rounded-md border border-[var(--forest)] px-4 py-2 text-sm font-semibold text-[var(--forest)] transition hover:bg-[var(--forest)] hover:text-[var(--background)]">
-                            Iniciar sesión
-                        </Link>
-                    )}
-                    <ThemeToggle />
+                    <div className="ml-6 flex items-center gap-4 border-l hairline pb-0.5 pl-6">
+                        {!hasSession && (
+                            <Link href="/iniciar-sesion" className="rounded-md border border-[var(--forest)] px-4 py-2 text-base font-semibold text-[var(--forest)] transition hover:bg-[var(--forest)] hover:text-[var(--background)]">
+                                Iniciar sesión
+                            </Link>
+                        )}
+                        <ThemeToggle />
+                    </div>
                 </nav>
 
                 <div className="flex items-center gap-3 lg:hidden">
