@@ -34,8 +34,7 @@ export default function Home() {
 
         <div className="hero-panel-in mx-auto grid min-h-[540px] max-w-[1440px] overflow-hidden pt-6 lg:grid-cols-[0.9fr_1.35fr] lg:pt-2">
           <div className="hero-copy order-2 flex flex-col justify-center px-6 pb-12 sm:px-12 lg:order-1 lg:px-14">
-            <p className="text-base font-semibold text-[var(--ink-soft)] sm:text-lg">Hola, soy</p>
-            <h1 className="script-font mt-3 text-7xl leading-[0.74] text-[var(--copper)] sm:text-8xl lg:text-[7rem]">Gary Mayhua</h1>
+            <h1 className="script-font text-7xl leading-[0.74] text-[var(--copper)] sm:text-8xl lg:text-[7rem]">Gary Mayhua</h1>
             <p className="mt-8 max-w-md text-2xl leading-tight sm:text-3xl lg:text-4xl">Los grandes sueños comienzan siendo un simple sueño.</p>
             <p className="mt-5 max-w-md text-base leading-7 text-[var(--ink-soft)] sm:text-lg">Acompañamos a personas que quieren crecer con intención, invertir con claridad y construir una vida con más posibilidades.</p>
             <div className="mt-9 flex flex-wrap items-center gap-5">

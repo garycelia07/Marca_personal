@@ -60,7 +60,7 @@ export function SiteHeader() {
 
     return (
         <header className="border-b hairline bg-[var(--background)]">
-            <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
+            <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
                 <Link href="/" className="flex items-center">
                     <img src="/gary.avif" alt="Gary Mayhua" className="h-12 w-auto object-contain" />
                 </Link>
