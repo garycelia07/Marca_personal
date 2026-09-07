@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 
 const navigation = [
@@ -12,18 +12,6 @@ const navigation = [
     { label: "Proyectos", href: "/proyectos" },
     { label: "Servicios", href: "/servicios" },
 ];
-
-const USER_STORAGE_KEY = "aurea_user";
-
-function readStoredUser(): boolean {
-    if (typeof window === "undefined") return false;
-    try {
-        const raw = window.localStorage.getItem(USER_STORAGE_KEY);
-        return Boolean(raw);
-    } catch {
-        return false;
-    }
-}
 
 function ThemeToggle() {
     const [dark, setDark] = useState(false);
@@ -50,13 +38,7 @@ function ThemeToggle() {
 
 export function SiteHeader() {
     const [open, setOpen] = useState(false);
-    const [hasSession, setHasSession] = useState(false);
     const pathname = usePathname();
-
-    useEffect(() => {
-        setHasSession(readStoredUser());
-        setOpen(false);
-    }, [pathname]);
 
     return (
         <header className="border-b hairline bg-[var(--background)]">
@@ -72,11 +54,9 @@ export function SiteHeader() {
                         </Link>
                     ))}
                     <div className="ml-6 flex items-center gap-4 border-l hairline pb-0.5 pl-6">
-                        {!hasSession && (
-                            <Link href="/iniciar-sesion" className="rounded-md border border-[var(--forest)] px-4 py-2 text-base font-semibold text-[var(--forest)] transition hover:bg-[var(--forest)] hover:text-[var(--background)]">
-                                Iniciar sesión
-                            </Link>
-                        )}
+                        <Link href="/iniciar-sesion" className="rounded-md border border-[var(--forest)] px-4 py-2 text-base font-semibold text-[var(--forest)] transition hover:bg-[var(--forest)] hover:text-[var(--background)]">
+                            Iniciar sesión
+                        </Link>
                         <ThemeToggle />
                     </div>
                 </nav>
@@ -97,11 +77,9 @@ export function SiteHeader() {
                                 {item.label}
                             </Link>
                         ))}
-                        {!hasSession && (
-                            <Link href="/iniciar-sesion" onClick={() => setOpen(false)} className="text-lg text-[var(--ink-soft)] transition hover:text-[var(--copper)]">
-                                Iniciar sesión
-                            </Link>
-                        )}
+                        <Link href="/iniciar-sesion" onClick={() => setOpen(false)} className="text-lg text-[var(--ink-soft)] transition hover:text-[var(--copper)]">
+                            Iniciar sesión
+                        </Link>
                     </div>
                 </nav>
             )}
