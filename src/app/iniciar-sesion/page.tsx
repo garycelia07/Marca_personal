@@ -83,7 +83,15 @@ export default function IniciarSesion() {
                 // El usuario sigue autenticado vía la cookie HttpOnly.
             }
 
-            router.push(user.role === "ADMIN" ? "/admin" : "/estudiante");
+            // Navegación dura garantizada: evita quedarse pegado en /iniciar-sesion
+            // cuando la navegación cliente (router.push) no surte efecto al desplegar.
+            const dest = user.role === "ADMIN" ? "/admin" : "/estudiante";
+            try {
+                window.location.replace(dest);
+                window.location.href = dest;
+            } catch {
+                router.push(dest);
+            }
         } catch {
             setError("No fue posible conectar con el servidor. Inténtalo de nuevo.");
         } finally {
