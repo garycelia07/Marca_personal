@@ -39,16 +39,20 @@ export function HomeProjects() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-      <div className="mb-12 flex flex-col gap-6 border-b hairline pb-8 sm:flex-row sm:items-end sm:justify-between">
+    <section className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
+      <div className="mb-8 flex flex-col gap-6 border-b hairline pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="eyebrow">Proyectos</p>
           <h2 className="display-font mt-5 max-w-2xl text-4xl leading-[0.98] tracking-tight sm:text-6xl">
             Ideas que se vuelven <em className="script-font text-[var(--copper)]">realidad.</em>
           </h2>
         </div>
-        <Link href="/proyectos" className="editorial-link shrink-0 text-sm font-semibold">
+        <Link
+          href="/proyectos"
+          className="group inline-flex shrink-0 items-center gap-2.5 rounded-full bg-[var(--copper)] px-6 py-3.5 text-base font-bold text-[var(--forest-deep)] shadow-[0_10px_24px_rgba(244,197,66,0.35)] transition hover:brightness-110 hover:-translate-y-0.5"
+        >
           Ver todos los proyectos
+          <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">→</span>
         </Link>
       </div>
 
