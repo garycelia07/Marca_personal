@@ -14,6 +14,31 @@ function err(e: unknown, f: string): string {
     return e && typeof e === "object" && "message" in e ? String((e as { message: string }).message) : f;
 }
 
+/** Sube la portada de un servicio a Cloudinary y devuelve la URL pública. */
+async function serviceCoverCloud(file: File, slug: string): Promise<string> {
+    const signRes = await fetch(`/api/services-media-sign?name=${encodeURIComponent(slug)}`, { cache: "no-store" });
+    const sign = await signRes.json().catch(() => null) as {
+        ok?: boolean; message?: string;
+        cloudName?: string; apiKey?: string; signature?: string; timestamp?: string; publicId?: string; overwrite?: string;
+    } | null;
+    if (!sign || sign.ok !== true || !sign.cloudName || !sign.signature || !sign.apiKey || !sign.publicId) {
+        throw new Error(sign?.message || "Cloudinary no está disponible para imágenes.");
+    }
+    const fd = new FormData();
+    fd.append("file", file, file.name);
+    fd.append("api_key", sign.apiKey);
+    fd.append("timestamp", sign.timestamp ?? "");
+    fd.append("signature", sign.signature);
+    fd.append("public_id", sign.publicId);
+    fd.append("overwrite", sign.overwrite ?? "true");
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${sign.cloudName}/image/upload`, { method: "POST", body: fd });
+    const payload = await res.json().catch(() => null) as { secure_url?: string; error?: { message?: string } } | null;
+    if (!res.ok || !payload?.secure_url) {
+        throw new Error(payload?.error?.message ?? "Cloudinary rechazó la imagen.");
+    }
+    return payload.secure_url;
+}
+
 export function ServicesAdmin() {
     const [items, setItems] = useState<Svc[]>([]);
     const [loading, setLoading] = useState(true);
@@ -77,14 +102,8 @@ export function ServicesAdmin() {
     async function upload(file: File, name: string, slug: string) {
         setBusy(true);
         try {
-            const fd = new FormData();
-            fd.append("file", file, file.name);
-            // Subida DIRECTA al backend (evita el límite de Vercel para imágenes).
-            const res = await directUploadPut(`/api/v1/content/services/${encodeURIComponent(slug)}/cover`, fd);
-            const payload = await res.json().catch(() => null);
-            if (!res.ok) throw { message: payload && typeof payload === "object" && "message" in payload ? (payload as { message: string }).message : "No se pudo subir la portada." };
-            // Persistir la portada en el ítem para que DESPUÉS se muestre (no solo en el disco).
-            const coverUrl = `${backendPublicOrigin()}/api/v1/content/services/${encodeURIComponent(slug)}/cover`;
+            // Portada → Cloudinary (siempre URL pública cargable).
+            const coverUrl = await serviceCoverCloud(file, slug);
             const next = items.map((i) => {
                 if ((i.slug && i.slug === slug) || (i.slug || slugify(i.name)) === slug) return { ...i, coverUrl };
                 return i;

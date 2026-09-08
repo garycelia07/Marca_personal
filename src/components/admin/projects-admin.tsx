@@ -18,6 +18,38 @@ function errMessage(e: unknown, f: string): string {
     return e && typeof e === "object" && "message" in e ? String((e as { message: string }).message) : f;
 }
 
+/** Sube la portada (cover) o el video de un proyecto a Cloudinary y devuelve la URL pública. */
+async function uploadProjectCloud(kind: "cover" | "video", file: File, slug: string): Promise<string> {
+    const signRes = await fetch(`/api/projects-media-sign?name=${encodeURIComponent(slug)}&kind=${kind}`, { cache: "no-store" });
+    const sign = await signRes.json().catch(() => null) as {
+        ok?: boolean;
+        message?: string;
+        cloudName?: string;
+        apiKey?: string;
+        signature?: string;
+        timestamp?: string;
+        publicId?: string;
+        overwrite?: string;
+    } | null;
+    if (!sign || sign.ok !== true || !sign.cloudName || !sign.signature || !sign.apiKey || !sign.publicId) {
+        throw new Error(sign?.message || "Cloudinary no está disponible: sube el archivo desde el editor o configura Cloudinary.");
+    }
+    const type = kind === "cover" ? "image" : "video";
+    const fd = new FormData();
+    fd.append("file", file, file.name);
+    fd.append("api_key", sign.apiKey);
+    fd.append("timestamp", sign.timestamp ?? "");
+    fd.append("signature", sign.signature);
+    fd.append("public_id", sign.publicId);
+    fd.append("overwrite", sign.overwrite ?? "true");
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${sign.cloudName}/${type}/upload`, { method: "POST", body: fd });
+    const payload = await res.json().catch(() => null) as { secure_url?: string; error?: { message?: string } } | null;
+    if (!res.ok || !payload?.secure_url) {
+        throw new Error(payload?.error?.message ?? "Cloudinary rechazó el archivo.");
+    }
+    return payload.secure_url;
+}
+
 export function ProjectsAdmin() {
     const [items, setItems] = useState<ProjectDraft[]>([]);
     const [loading, setLoading] = useState(true);
@@ -109,16 +141,9 @@ export function ProjectsAdmin() {
     async function upload(kind: "cover" | "video", name: string, file: File, slug: string) {
         setBusy(true);
         try {
-            const fd = new FormData();
-            fd.append(kind === "video" ? "video" : "file", file, file.name);
-            // Subida DIRECTA al backend VPS (evita el límite de ~4.5 MB de Vercel): /api/v1/content/projects/{slug}/{kind}
-            const res = await directUploadPut(`/api/v1/content/projects/${encodeURIComponent(slug)}/${kind}`, fd);
-            const payload = await res.json().catch(() => null);
-            if (!res.ok) throw { message: payload && typeof payload === "object" && "message" in payload ? (payload as { message: string }).message : "No se pudo subir." };
-            toast("success", `${kind === "video" ? "Video" : "Imagen"} de "${name}" subida.`);
+            const mediaUrl = await uploadProjectCloud(kind, file, slug);
+            toast("success", `${kind === "video" ? "Video" : "Imagen"} de "${name}" subida a la nube.`);
 
-            // URL pública (servida por el backend a partir del slug).
-            const mediaUrl = `${backendPublicOrigin()}/api/v1/content/projects/${encodeURIComponent(slug)}/${kind}`;
 
             // 1) Refleja en la lista el medio nuevo.
             setItems((curr) => {
