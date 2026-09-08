@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getContentJson, saveContentJson } from "@/lib/api/content";
+import { directUploadPut } from "@/lib/api/direct-upload";
 
 type ProjectDraft = { name: string; slug: string; tagline: string; description: string; link: string; coverUrl?: string; videoUrl?: string };
 type ToastV = "success" | "error";
@@ -103,13 +104,14 @@ export function ProjectsAdmin() {
         setEditing({ ...EMPTY });
     }
 
-    /* Subir portada/video de un proyecto (usa endpoint proxy autenticado). */
+    /* Subir portada/video de un proyecto (subida directa al backend). */
     async function upload(kind: "cover" | "video", name: string, file: File, slug: string) {
         setBusy(true);
         try {
             const fd = new FormData();
             fd.append(kind === "video" ? "video" : "file", file, file.name);
-            const res = await fetch(`/api/projects-media/${kind}/${encodeURIComponent(slug)}`, { method: "PUT", body: fd });
+            // Subida DIRECTA al backend VPS (evita el límite de ~4.5 MB de Vercel): /api/v1/content/projects/{slug}/{kind}
+            const res = await directUploadPut(`/api/v1/content/projects/${encodeURIComponent(slug)}/${kind}`, fd);
             const payload = await res.json().catch(() => null);
             if (!res.ok) throw { message: payload && typeof payload === "object" && "message" in payload ? (payload as { message: string }).message : "No se pudo subir." };
             toast("success", `${kind === "video" ? "Video" : "Imagen"} de "${name}" subida.`);
