@@ -239,3 +239,49 @@ export async function deleteLessonVideo(lessonId: string): Promise<unknown> {
     }
     return { ok: true };
 }
+
+
+/**
+ * Subida DIRECTA de la imagen de portada de un curso a Cloudinary (CDN).
+ * Paso 1: obtiene la firma (paso a proxys del backend admin).
+ * Paso 2: sube el archivo a https://api.cloudinary.com/v1_1/<cloud>/image/upload.
+ * Devuelve la URL pública (secure_url) para guardar en `course.coverImageUrl`.
+ */
+export async function uploadCourseCover(courseId: string, file: File): Promise<string> {
+    if (!file) throw new Error("Selecciona una imagen.");
+
+    const signRes = await fetch(`/api/courses/${encodeURIComponent(courseId)}/cover-sign`, { method: "GET", cache: "no-store" });
+    const sign = await signRes.json().catch(() => null) as {
+        ok?: boolean;
+        reason?: string;
+        cloudName?: string;
+        apiKey?: string;
+        signature?: string;
+        timestamp?: string;
+        publicId?: string;
+        overwrite?: string;
+        message?: string;
+    } | null;
+
+    if (!sign || sign.ok !== true || !sign.cloudName || !sign.signature || !sign.apiKey) {
+        if (sign?.reason === "cloudinary-not-configured") {
+            throw new Error("Cloudinary no está configurado: usa el campo 'pegar URL' de la imagen.");
+        }
+        throw new Error(sign?.message || "No fue posible iniciar la subida de la imagen.");
+    }
+
+    const form = new FormData();
+    form.append("file", file, file.name);
+    form.append("api_key", sign.apiKey!);
+    form.append("timestamp", sign.timestamp ?? "");
+    form.append("signature", sign.signature!);
+    form.append("public_id", sign.publicId ?? "");
+    form.append("overwrite", sign.overwrite ?? "true");
+
+    const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${sign.cloudName}/image/upload`, { method: "POST", body: form });
+    const payload = await cloudRes.json().catch(() => null) as { secure_url?: string; error?: { message?: string } } | null;
+    if (!cloudRes.ok || !payload?.secure_url) {
+        throw new Error(payload?.error?.message ?? "Cloudinary rechazó la imagen.");
+    }
+    return payload.secure_url;
+}

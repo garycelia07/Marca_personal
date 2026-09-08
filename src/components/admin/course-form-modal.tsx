@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Course, CreateCourseInput, UpdateCourseInput } from "@/lib/api/courses";
+import { uploadCourseCover } from "@/lib/api/courses";
 
 export function CourseFormModal({
     title,
@@ -24,6 +25,7 @@ export function CourseFormModal({
     const [coverImageUrl, setCoverImageUrl] = useState(initial?.coverImageUrl ?? "");
     const [isPublished, setIsPublished] = useState(initial?.isPublished ?? false);
     const [fieldError, setFieldError] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     function validate(): boolean {
         if (!courseTitle.trim()) {
@@ -99,14 +101,50 @@ export function CourseFormModal({
                     </label>
 
                     <label className="block">
-                        <span className="mb-2 block text-sm font-semibold">Imagen de portada (URL) <span className="text-xs text-[var(--ink-soft)]">(opcional)</span></span>
+                        <span className="mb-2 block text-sm font-semibold">Imagen de portada <span className="text-xs text-[var(--ink-soft)]">(opcional; se sube a Cloudinary)</span></span>
                         <input
                             type="url"
                             value={coverImageUrl}
                             onChange={(event) => setCoverImageUrl(event.target.value)}
                             className="w-full border-b border-[var(--forest)] bg-transparent px-0 py-3 text-base outline-none transition placeholder:text-[var(--ink-soft)] focus:border-[var(--copper)]"
-                            placeholder="https://ejemplo.com/imagen.jpg"
+                            placeholder="…o pega aquí la URL de una imagen"
                         />
+                        {initial?.id ? (
+                            <span className="mt-2 inline-flex items-center gap-2">
+                                <label htmlFor={`course-cover-file-${initial.id}`} className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--copper)] px-4 py-2 text-xs font-bold text-[var(--copper)] transition hover:bg-[var(--copper)] hover:text-white ${uploading ? "pointer-events-none opacity-60" : ""}`}>
+                                    {uploading ? "Subiendo…" : "📂 Elegir imagen de portada"}
+                                </label>
+                                <input
+                                    id={`course-cover-file-${initial.id}`}
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="sr-only"
+                                    disabled={uploading || busy}
+                                    onChange={async (event) => {
+                                        const f = event.target.files?.[0];
+                                        event.target.value = "";
+                                        if (!f || uploading) return;
+                                        setUploading(true);
+                                        setFieldError(null);
+                                        try {
+                                            const url = await uploadCourseCover(initial.id!, f);
+                                            setCoverImageUrl(url);
+                                        } catch (e) {
+                                            setFieldError(e && typeof e === "object" && "message" in e ? String((e as { message: string }).message) : "No se pudo subir la imagen.");
+                                        } finally {
+                                            setUploading(false);
+                                        }
+                                    }}
+                                />
+                                {coverImageUrl && <span className="text-[10px] text-[var(--ink-soft)]"># cubierta cargada</span>}
+                            </span>
+                        ) : null}
+                        {coverImageUrl ? (
+                            <span className="mt-3 block aspect-[16/9] w-full overflow-hidden rounded-lg border hairline bg-[var(--line)]">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={coverImageUrl} alt="Vista previa de la portada del curso" className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+                            </span>
+                        ) : null}
                     </label>
 
                     <label className="flex cursor-pointer items-center gap-3">
