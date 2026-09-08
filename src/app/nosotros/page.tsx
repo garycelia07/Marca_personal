@@ -103,79 +103,73 @@ export default function AboutPage() {
       </section>
 
       {/* Misión, Visión y Valores (Optimizado para Modo Oscuro y Claro) */}
-      <section className="relative overflow-hidden bg-[var(--background)] py-20 sm:py-24 lg:py-28">
+      <section className="relative overflow-hidden bg-[var(--background)] py-16 sm:py-24 lg:py-28">
         <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
-
-          {/* Texto superior */}
-          <div className="mx-auto mb-14 max-w-4xl text-center sm:mb-20">
+          <div className="mx-auto mb-10 max-w-4xl text-center sm:mb-20">
             <p className="text-sm leading-relaxed text-[var(--ink-soft)] sm:text-base">
               Creemos que construir un mejor futuro requiere claridad para decidir,
               visión para avanzar y valores que nos permitan mantenernos firmes
               durante el camino.
             </p>
           </div>
-
           <div className="relative mx-auto max-w-[1100px]">
-            {/* Límite superior de cobre */}
-            <div className="absolute left-0 right-0 top-0 h-1 bg-[var(--copper)] z-20" />
-
-            <div className="grid grid-cols-1 items-center md:grid-cols-3">
+            <div className="hidden md:block absolute left-0 right-0 top-0 h-1 bg-[var(--copper)] z-20" />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-0 md:items-center">
               {/* Misión */}
-              <article className="relative flex min-h-[380px] flex-col items-center justify-start rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none bg-[var(--forest)] px-7 pb-10 pt-14 text-center sm:px-10 border border-white/10 dark:border-white/15">
-                <div className="mb-7 flex h-16 w-16 items-center justify-center rounded-full border-[4px] border-[var(--paper)] text-[var(--paper)]">
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <article className="relative flex flex-col items-center justify-start rounded-2xl md:rounded-l-2xl md:rounded-r-none bg-[var(--forest)] px-6 py-10 text-center sm:px-10 border border-white/10 dark:border-white/15 min-h-[320px] md:min-h-[380px]">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[var(--paper)] text-[var(--paper)] sm:h-16 sm:w-16">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="sm:w-8 sm:h-8">
                     <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
                     <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
                     <circle cx="12" cy="12" r="1.5" fill="currentColor" />
                   </svg>
                 </div>
-                <h3 className="display-font text-3xl font-bold text-[var(--paper)] sm:text-4xl">
+                <h3 className="display-font text-2xl font-bold text-[var(--paper)] sm:text-3xl lg:text-4xl">
                   Misión
                 </h3>
-                <div className="mt-5 h-px w-16 bg-[var(--paper)]/60" />
-                <p className="mt-6 max-w-[260px] text-sm leading-relaxed text-[var(--paper)]/90">
+                <div className="mt-4 h-px w-12 bg-[var(--paper)]/60 sm:w-16" />
+                <p className="mt-5 max-w-[260px] text-xs sm:text-sm leading-relaxed text-[var(--paper)]/90">
                   Convertir claridad en decisiones que transforman, acompañando a cada persona a construir un futuro con dirección y propósito.
                 </p>
               </article>
 
-              {/* Visión (Tarjeta destacada con fondo Cobre alto contraste) */}
-              <article className="relative z-10 flex min-h-[440px] flex-col items-center justify-start rounded-2xl bg-[var(--copper)] px-7 pb-12 pt-14 text-center shadow-2xl shadow-black/50 border border-white/20 md:-my-4 md:scale-105">
-                <div className="mb-7 flex h-16 w-16 items-center justify-center text-[#1c2e24]">
-                  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              {/* Visión (Tarjeta destacada) */}
+              <article className="relative z-10 flex flex-col items-center justify-start rounded-2xl bg-[var(--copper)] px-6 py-10 text-center shadow-xl shadow-black/20 border border-white/20 min-h-[340px] md:min-h-[440px] md:-my-4 md:scale-105 md:shadow-2xl md:shadow-black/50">
+                <div className="md:hidden absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/40 rounded-b-full" />
+                <div className="mb-6 flex h-14 w-14 items-center justify-center text-[#1c2e24] sm:h-16 sm:w-16">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="sm:w-[52px] sm:h-[52px]">
                     <path d="M3 12C3 12 6.5 6.5 12 6.5C17.5 6.5 21 12 21 12C21 12 17.5 17.5 12 17.5C6.5 17.5 3 12 3 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
                     <circle cx="12" cy="12" r="3.2" fill="currentColor" />
                   </svg>
                 </div>
-                <h3 className="display-font text-3xl font-bold text-[#1c2e24] sm:text-4xl">
+                <h3 className="display-font text-2xl font-bold text-[#1c2e24] sm:text-3xl lg:text-4xl">
                   Visión
                 </h3>
-                <div className="mt-5 h-px w-16 bg-[#1c2e24]/40" />
-                <p className="mt-6 max-w-[260px] text-sm font-medium leading-relaxed text-[#1c2e24]">
+                <div className="mt-4 h-px w-12 bg-[#1c2e24]/40 sm:w-16" />
+                <p className="mt-5 max-w-[260px] text-xs font-medium leading-relaxed text-[#1c2e24] sm:text-sm">
                   Una generación que lidera su futuro con libertad, conocimiento y una visión consciente del crecimiento personal y patrimonial.
                 </p>
               </article>
-
               {/* Valores */}
-              <article className="relative flex min-h-[380px] flex-col items-center justify-start rounded-b-2xl md:rounded-r-2xl md:rounded-bl-none bg-[var(--forest-deep)] px-7 pb-10 pt-14 text-center sm:px-10 border border-white/10 dark:border-white/15">
-                <div className="mb-7 flex h-16 w-16 items-center justify-center text-[var(--paper)]">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <article className="relative flex flex-col items-center justify-start rounded-2xl md:rounded-r-2xl md:rounded-l-none bg-[var(--forest-deep)] px-6 py-10 text-center sm:px-10 border border-white/10 dark:border-white/15 min-h-[320px] md:min-h-[380px]">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center text-[var(--paper)] sm:h-16 sm:w-16">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="sm:w-12 sm:h-12">
                     <path d="M3 9.5L7 5H17L21 9.5L12 19L3 9.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
                     <path d="M3 9.5H21" stroke="currentColor" strokeWidth="1.6" />
                     <path d="M7 5L9.5 9.5L12 19L14.5 9.5L17 5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <h3 className="display-font text-3xl font-bold text-[var(--paper)] sm:text-4xl">
+                <h3 className="display-font text-2xl font-bold text-[var(--paper)] sm:text-3xl lg:text-4xl">
                   Valores
                 </h3>
-                <div className="mt-5 h-px w-16 bg-[var(--paper)]/60" />
-                <p className="mt-6 max-w-[260px] text-sm leading-relaxed text-[var(--paper)]/90">
+                <div className="mt-4 h-px w-12 bg-[var(--paper)]/60 sm:w-16" />
+                <p className="mt-5 max-w-[260px] text-xs sm:text-sm leading-relaxed text-[var(--paper)]/90">
                   Actuamos con claridad, criterio y comunidad para construir relaciones sólidas y decisiones sostenibles en el tiempo.
                 </p>
               </article>
             </div>
           </div>
-
-          <div className="mx-auto mt-16 max-w-3xl text-center sm:mt-20">
+          <div className="mx-auto mt-12 max-w-3xl text-center sm:mt-20">
             <p className="text-sm leading-relaxed text-[var(--ink-soft)] sm:text-base">
               Nuestra misión, visión y valores son el punto de partida de cada decisión que tomamos y de cada relación que construimos.
             </p>
