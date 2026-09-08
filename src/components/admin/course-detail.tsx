@@ -45,6 +45,40 @@ export function CourseDetail({ courseId }: { courseId: string }) {
     const [lessonTitle, setLessonTitle] = useState("");
     const [lessonError, setLessonError] = useState<string | null>(null);
 
+    /* Reproductor "en pantalla completa" de un video de lección (overlay fijo). */
+    const overlayRef = useRef<HTMLDivElement | null>(null);
+    const [watch, setWatch] = useState<{ url: string; title: string } | null>(null);
+
+    function openWatch(url: string, title: string) {
+        setWatch({ url, title });
+        // Pide fullscreen real sobre el overlay; si el navegador no lo permite,
+        // el overlay `fixed inset-0` ya cubre el viewport completo.
+        window.setTimeout(() => {
+            try {
+                void overlayRef.current?.requestFullscreen?.();
+            } catch {
+                /* sin Fullscreen API: el overlay ya es a pantalla completa */
+            }
+        }, 0);
+    }
+
+    function closeWatch() {
+        if (document.fullscreenElement) {
+            void document.exitFullscreen?.();
+        }
+        setWatch(null);
+    }
+
+    useEffect(() => {
+        if (!watch) return;
+        function onFullscreenChange() {
+            // Sale de fullscreen con Esc o el control del navegador → cierra el modal.
+            if (!document.fullscreenElement) setWatch(null);
+        }
+        document.addEventListener("fullscreenchange", onFullscreenChange);
+        return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+    }, [watch]);
+
     function pushToast(variant: ToastVariant, message: string) {
         const id = ++toastId.current;
         setToasts((current) => [...current, { id, variant, message }]);
@@ -216,42 +250,55 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--lime)] text-sm font-bold text-[var(--copper)]">{module.order + 1}</span>
                                     <h2 className="display-font text-2xl leading-none">{module.title}</h2>
                                 </div>
-                                <ul className="divide-y hairline">
+                                <div className="grid grid-cols-2 gap-4 px-5 py-5 sm:px-6 lg:grid-cols-4">
                                     {(module.lessons ?? []).sort((a, b) => a.order - b.order).map((lesson) => (
-                                        <li key={lesson.id} className="px-5 py-3 sm:px-6">
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-xs text-[var(--copper)]">▶</span>
-                                                <p className="text-sm font-semibold">{lesson.title}
-                                                    {lesson.videoUrl ? <span className="ml-2 rounded-full bg-[var(--lime)] px-2 py-0.5 text-[10px] font-bold text-[var(--copper)]">✦ video mp4</span> : null}
+                                        <div key={lesson.id} className="flex flex-col overflow-hidden rounded-xl border hairline bg-[var(--paper)]">
+                                            <div className="relative aspect-video overflow-hidden rounded-t-xl border-b hairline bg-black">
+                                                {lesson.videoUrl ? (
+                                                    <video
+                                                        key={`thumb-${lesson.videoUrl}`}
+                                                        playsInline
+                                                        preload="metadata"
+                                                        className="absolute inset-0 h-full w-full object-cover"
+                                                        src={lesson.videoUrl}
+                                                        aria-label={`Video de la lección: ${lesson.title}`}
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-full w-full items-center justify-center bg-[var(--line)] text-xs font-semibold text-[var(--ink-soft)]">
+                                                        Sin video
+                                                    </div>
+                                                )}
+                                                {lesson.videoUrl ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openWatch(lesson.videoUrl as string, lesson.title)}
+                                                        className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 text-sm font-bold text-white transition hover:bg-black/20"
+                                                        aria-label={`Ver ${lesson.title} en pantalla completa`}
+                                                    >
+                                                        <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[var(--copper)]" style={{ fontSize: 14 }}>▶</span>
+                                                        Ver
+                                                    </button>
+                                                ) : null}
+                                            </div>
+                                            <div className="flex flex-1 flex-col gap-2 p-3">
+                                                <p className="line-clamp-2 text-xs font-semibold leading-5">
+                                                    {lesson.order + 1}. {lesson.title}
                                                 </p>
+                                                <div className="mt-auto flex flex-wrap items-center gap-2">
+                                                    <label className="cursor-pointer rounded-full border hairline px-2.5 py-1 text-[10px] font-bold text-[var(--forest-deep)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
+                                                        {busy ? "…" : "Subir / reemplazar"}
+                                                        <input type="file" accept="video/mp4,video/webm" className="sr-only"
+                                                            disabled={busy}
+                                                            onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleLessonVideo(lesson.id, f); e.target.value = ""; }} />
+                                                    </label>
+                                                    <button type="button" onClick={() => void handleDeleteLessonVideo(lesson.id)} disabled={busy} className="rounded-full border hairline px-2.5 py-1 text-[10px] font-bold text-[var(--danger)] transition hover:border-[var(--danger)]">
+                                                        Quitar
+                                                    </button>
+                                                </div>
                                             </div>
-                                            {lesson.videoUrl ? (
-                                                <video
-                                                    key={lesson.videoUrl}
-                                                    controls
-                                                    playsInline
-                                                    preload="metadata"
-                                                    className="mt-3 max-w-full rounded-lg border hairline bg-black"
-                                                    src={lesson.videoUrl}
-                                                    aria-label={`Video de la lección: ${lesson.title}`}
-                                                >
-                                                    Tu navegador no soporta video.
-                                                </video>
-                                            ) : null}
-                                            <div className="mt-2 flex flex-wrap items-center gap-2">
-                                                <label className="cursor-pointer rounded-full border hairline px-3 py-1.5 text-xs font-semibold text-[var(--forest-deep)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
-                                                    {busy ? "…" : "Subir / reemplazar video (≤10 min)"}
-                                                    <input type="file" accept="video/mp4,video/webm" className="sr-only"
-                                                        disabled={busy}
-                                                        onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleLessonVideo(lesson.id, f); e.target.value = ""; }} />
-                                                </label>
-                                                <button type="button" onClick={() => void handleDeleteLessonVideo(lesson.id)} disabled={busy} className="rounded-full border hairline px-3 py-1.5 text-xs font-semibold text-[var(--danger)] transition hover:border-[var(--danger)]">
-                                                    Quitar video
-                                                </button>
-                                            </div>
-                                        </li>
+                                        </div>
                                     ))}
-                                </ul>
+                                </div>
                                 <div className="border-t hairline px-5 py-3 sm:px-6">
                                     {addingLessonFor === module.id ? (
                                         <div className="flex flex-wrap items-center gap-2">
@@ -306,6 +353,39 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                     </div>
                 ))}
             </div>
+
+            {watch ? (
+                <div
+                    ref={overlayRef}
+                    className="fixed inset-0 z-[999] flex items-center justify-center bg-black"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={`Reproduciendo: ${watch.title}`}
+                >
+                    <video
+                        key={watch.url}
+                        controls
+                        autoPlay
+                        playsInline
+                        className="h-full w-full object-contain"
+                        src={watch.url}
+                        aria-label={`Video de la lección: ${watch.title}`}
+                    >
+                        Tu navegador no soporta video.
+                    </video>
+                    <button
+                        type="button"
+                        onClick={closeWatch}
+                        className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-lg font-bold text-black transition hover:bg-white"
+                        aria-label="Cerrar video (pantalla completa)"
+                    >
+                        ✕
+                    </button>
+                    <p className="pointer-events-none absolute left-1/2 top-4 max-w-[80%] -translate-x-1/2 truncate rounded-full bg-black/50 px-4 py-1 text-xs font-semibold text-white">
+                        {watch.title}
+                    </p>
+                </div>
+            ) : null}
         </section>
     );
 }
