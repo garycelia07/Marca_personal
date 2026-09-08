@@ -136,6 +136,7 @@ export function CourseDetail({ courseId }: { courseId: string }) {
         try {
             await deleteLessonVideo(lessonId);
             pushToast("success", "Video eliminado de la lección.");
+            void load();
         } catch (err) {
             pushToast("error", errorMessage(err, "No se pudo eliminar el video."));
         } finally {
@@ -224,6 +225,19 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                                                     {lesson.videoUrl ? <span className="ml-2 rounded-full bg-[var(--lime)] px-2 py-0.5 text-[10px] font-bold text-[var(--copper)]">✦ video mp4</span> : null}
                                                 </p>
                                             </div>
+                                            {lesson.videoUrl ? (
+                                                <video
+                                                    key={lesson.videoUrl}
+                                                    controls
+                                                    playsInline
+                                                    preload="metadata"
+                                                    className="mt-3 max-w-full rounded-lg border hairline bg-black"
+                                                    src={lesson.videoUrl}
+                                                    aria-label={`Video de la lección: ${lesson.title}`}
+                                                >
+                                                    Tu navegador no soporta video.
+                                                </video>
+                                            ) : null}
                                             <div className="mt-2 flex flex-wrap items-center gap-2">
                                                 <label className="cursor-pointer rounded-full border hairline px-3 py-1.5 text-xs font-semibold text-[var(--forest-deep)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">
                                                     {busy ? "…" : "Subir / reemplazar video (≤10 min)"}
