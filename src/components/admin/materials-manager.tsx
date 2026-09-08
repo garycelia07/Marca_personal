@@ -9,6 +9,7 @@ import {
     type Material,
     type MaterialPagination,
 } from "@/lib/api/materials";
+import { listAdminCourses, type Course } from "@/lib/api/courses";
 import { MaterialFormModal } from "@/components/admin/material-form-modal";
 import { buildPageList } from "@/components/admin/students-utils";
 
@@ -59,7 +60,23 @@ export function MaterialsManager() {
         mode: "create" | "edit";
         material?: Material;
     }>({ open: false, mode: "create" });
+    const [courses, setCourses] = useState<Course[]>([]);
     const toastId = useRef(0);
+
+    function nameOfCourse(id?: string | null): string {
+        if (!id) return "—";
+        const found = courses.find((c) => c.id === id);
+        return found?.title ?? "Curso sin título";
+    }
+
+    async function loadCourses() {
+        try {
+            const result = await listAdminCourses({ page: 1, limit: 100 });
+            setCourses(result.items);
+        } catch {
+            setCourses([]);
+        }
+    }
 
     function pushToast(variant: ToastVariant, message: string) {
         const id = ++toastId.current;
@@ -83,6 +100,7 @@ export function MaterialsManager() {
 
     useEffect(() => {
         void Promise.resolve().then(() => refresh(1, false));
+        void loadCourses();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -98,14 +116,21 @@ export function MaterialsManager() {
         setModal({ open: false, mode: "create" });
     }
 
-    async function handleSubmit(input: { title: string; file?: File; courseId?: string; isPublic: boolean }) {
+    async function handleSubmit(input: { title: string; file?: File; courseId?: string | null; isPublic: boolean }) {
         setBusy(true);
         try {
+            // null = "sin curso"; lo normalizamos a undefined para no sobrescribir/limpiar backend no-lo-envía.
+            const payload: { title: string; file?: File; courseId?: string; isPublic: boolean } = {
+                title: input.title,
+                file: input.file,
+                courseId: input.courseId ?? undefined,
+                isPublic: input.isPublic,
+            };
             if (modal.mode === "edit" && modal.material) {
-                await updateMaterial(modal.material.id, input);
+                await updateMaterial(modal.material.id, payload);
                 pushToast("success", "Material actualizado.");
             } else {
-                await uploadMaterial({ ...input, file: input.file! });
+                await uploadMaterial({ ...payload, file: payload.file! });
                 pushToast("success", "Material subido.");
             }
             void refresh(pagination.page, false);
@@ -158,6 +183,7 @@ export function MaterialsManager() {
                         <tr className="border-b hairline text-xs uppercase tracking-[0.08em] text-[var(--ink-soft)]">
                             <th className="px-5 py-3 sm:px-8">Archivo</th>
                             <th className="px-5 py-3 sm:px-8">Título</th>
+                            <th className="px-5 py-3 sm:px-8">Curso</th>
                             <th className="px-5 py-3 sm:px-8">Tipo</th>
                             <th className="px-5 py-3 sm:px-8">Público</th>
                             <th className="px-5 py-3 sm:px-8">Fecha</th>
@@ -167,7 +193,7 @@ export function MaterialsManager() {
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={6} className="px-5 py-10 sm:px-8">
+                                <td colSpan={7} className="px-5 py-10 sm:px-8">
                                     <div className="flex items-center justify-center gap-3 text-[var(--ink-soft)]">
                                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--copper)] border-t-transparent" />
                                         Cargando materiales…
@@ -176,7 +202,7 @@ export function MaterialsManager() {
                             </tr>
                         ) : pagination.items.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="px-5 py-10 text-center text-sm text-[var(--ink-soft)] sm:px-8">
+                                <td colSpan={7} className="px-5 py-10 text-center text-sm text-[var(--ink-soft)] sm:px-8">
                                     Aún no hay materiales.
                                 </td>
                             </tr>
@@ -193,6 +219,11 @@ export function MaterialsManager() {
                                         {material.fileName && (
                                             <p className="text-xs text-[var(--ink-soft)]">{material.fileName}</p>
                                         )}
+                                    </td>
+                                    <td className="px-5 py-4 sm:px-8">
+                                        <span className={`rounded-full ${material.courseId ? "bg-[var(--lime)] px-2.5 py-1 text-xs font-semibold text-[var(--forest-deep)]" : "text-xs text-[var(--ink-soft)]"}`}>
+                                            {material.courseId ? nameOfCourse(material.courseId) : "Sin curso"}
+                                        </span>
                                     </td>
                                     <td className="px-5 py-4 text-xs text-[var(--ink-soft)] sm:px-8">
                                         {material.mimeType ?? "—"}
@@ -301,6 +332,7 @@ export function MaterialsManager() {
                 <MaterialFormModal
                     title={modal.mode === "edit" ? "Editar material" : "Subir material"}
                     initial={modal.mode === "edit" && modal.material ? modal.material : undefined}
+                    courses={courses}
                     busy={busy}
                     error={null}
                     onSubmit={handleSubmit}

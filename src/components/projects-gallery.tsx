@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { projectCoverUrl, projectVideoUrl } from "@/lib/site";
+import { projectCoverUrl, projectVideoUrl, whatsappHref, siteConfig } from "@/lib/site";
 import type { ProjectItemExt } from "@/lib/cms";
+import { LeadForm } from "@/components/lead-form";
 
 const TOTAL_SLOTS = 5;
 
@@ -130,6 +131,10 @@ export function ProjectsGallery({ items }: { items: ProjectItemExt[] }) {
 }
 
 function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => void }) {
+    const [showForm, setShowForm] = useState(false);
+    const [sent, setSent] = useState(false);
+    const waMessage = `Hola, me interesa el proyecto "${project.name || siteConfig.brand}". Quiero ser parte.`;
+
     return (
         <div
             className="fixed inset-0 z-[60] flex items-center justify-center p-4"
@@ -205,24 +210,66 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
                         );
                     })()}
 
-                    <div className="mt-8 flex flex-wrap gap-3">
-                        {project.link ? (
-                            <a
-                                href={project.link}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-2 rounded-full bg-[var(--copper)] px-6 py-3 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-105"
+                    <div className="mt-8">
+                        {sent ? (
+                            <p role="status" aria-live="polite" className="rounded-lg border border-[var(--forest)] bg-[var(--lime)] px-5 py-4 text-sm font-semibold text-[var(--forest-deep)]">
+                                ✓ Gracias, {project.name ? `te contactaremos sobre "${project.name}".` : "recibimos tus datos. ¡Te contactamos pronto!"}
+                            </p>
+                        ) : showForm ? (
+                            <div className="rounded-xl border hairline bg-[var(--lime)] p-5 sm:p-6">
+                                <p className="font-semibold">Quiero ser parte · {project.name}</p>
+                                <p className="mt-1 text-xs text-[var(--ink-soft)]">
+                                    Déjame tus datos y te alcanzo la información del proyecto.
+                                </p>
+                                <div className="mt-4">
+                                    <LeadForm
+                                        onSubmitted={(ok) => {
+                                            if (ok) {
+                                                setSent(true);
+                                                setShowForm(false);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-wrap gap-3">
+                                {project.link ? (
+                                    <a
+                                        href={project.link}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-2 rounded-full bg-[var(--copper)] px-6 py-3 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-105"
+                                    >
+                                        Quiero unirme →
+                                    </a>
+                                ) : null}
+                                <a
+                                    href={whatsappHref(waMessage)}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]"
+                                >
+                                    💬 Contáctame por WhatsApp
+                                </a>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowForm(true)}
+                                    className="inline-flex items-center gap-2 rounded-full border hairline px-6 py-3 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+                                >
+                                    Dejar mis datos
+                                </button>
+                            </div>
+                        )}
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="rounded-full border hairline px-6 py-3 text-sm font-semibold transition hover:border-[var(--forest)] hover:text-[var(--forest)]"
                             >
-                                Quiero unirme →
-                            </a>
-                        ) : null}
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="rounded-full border hairline px-6 py-3 text-sm font-semibold transition hover:border-[var(--forest)] hover:text-[var(--forest)]"
-                        >
-                            Cerrar
-                        </button>
+                                {showForm ? "Cancelar e cerrar" : "Cerrar"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

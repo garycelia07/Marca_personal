@@ -14,10 +14,13 @@ function formatBytes(bytes: number | undefined): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+type CourseOption = { id: string; title: string };
+
 export function MaterialFormModal({
     title,
     initial,
     courseId,
+    courses = [],
     busy,
     error,
     onSubmit,
@@ -26,14 +29,16 @@ export function MaterialFormModal({
     title: string;
     initial?: Material;
     courseId?: string;
+    courses?: CourseOption[];
     busy: boolean;
     error: string | null;
-    onSubmit: (input: { title: string; file?: File; courseId?: string; isPublic: boolean }) => void;
+    onSubmit: (input: { title: string; file?: File; courseId?: string | null; isPublic: boolean }) => void;
     onClose: () => void;
 }) {
     const [materialTitle, setMaterialTitle] = useState(initial?.title ?? "");
     const [file, setFile] = useState<File | null>(null);
     const [isPublic, setIsPublic] = useState(initial?.isPublic ?? false);
+    const [coursePick, setCoursePick] = useState<string>(initial?.courseId ?? courseId ?? "");
     const [fieldError, setFieldError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -73,7 +78,7 @@ export function MaterialFormModal({
         onSubmit({
             title: materialTitle.trim(),
             file: file ?? undefined,
-            courseId,
+            courseId: coursePick || null,
             isPublic,
         });
     }
@@ -113,6 +118,24 @@ export function MaterialFormModal({
                         />
                         {file && <p className="mt-2 text-xs text-[var(--ink-soft)]">{file.name} · {formatBytes(file.size)}</p>}
                         {initial && !file && <p className="mt-2 text-xs text-[var(--ink-soft)]">Archivo actual: {initial.fileName ?? "—"}</p>}
+                    </label>
+
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold">
+                            Vincular a curso {courses.length === 0 ? <span className="text-xs font-normal text-[var(--ink-soft)]">(sin cursos disponibles)</span> : <span className="text-xs font-normal text-[var(--ink-soft)]">(opcional: el estudiante lo verá en su perfil)</span>}
+                        </span>
+                        <select
+                            value={coursePick}
+                            onChange={(event) => setCoursePick(event.target.value)}
+                            className="w-full rounded-md border hairline bg-transparent px-3 py-2.5 text-sm outline-none transition focus:border-[var(--copper)]"
+                        >
+                            <option value="">— Material general (sin curso) —</option>
+                            {courses.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.title}
+                                </option>
+                            ))}
+                        </select>
                     </label>
 
                     <label className="flex cursor-pointer items-center gap-3">

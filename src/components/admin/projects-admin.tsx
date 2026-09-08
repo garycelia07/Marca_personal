@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getContentJson, saveContentJson } from "@/lib/api/content";
-import { directUploadPut } from "@/lib/api/direct-upload";
+import { directUploadPut, backendPublicOrigin } from "@/lib/api/direct-upload";
 
 type ProjectDraft = { name: string; slug: string; tagline: string; description: string; link: string; coverUrl?: string; videoUrl?: string };
 type ToastV = "success" | "error";
@@ -104,7 +104,8 @@ export function ProjectsAdmin() {
         setEditing({ ...EMPTY });
     }
 
-    /* Subir portada/video de un proyecto (subida directa al backend). */
+    /* Subir portada/video de un proyecto (subida directa al backend). Tras subir,
+       actualiza items/contenido y editing para mostrar la previsualización. */
     async function upload(kind: "cover" | "video", name: string, file: File, slug: string) {
         setBusy(true);
         try {
@@ -115,6 +116,32 @@ export function ProjectsAdmin() {
             const payload = await res.json().catch(() => null);
             if (!res.ok) throw { message: payload && typeof payload === "object" && "message" in payload ? (payload as { message: string }).message : "No se pudo subir." };
             toast("success", `${kind === "video" ? "Video" : "Imagen"} de "${name}" subida.`);
+
+            // URL pública (servida por el backend a partir del slug).
+            const mediaUrl = `${backendPublicOrigin()}/api/v1/content/projects/${encodeURIComponent(slug)}/${kind}`;
+
+            // 1) Refleja en la lista el medio nuevo.
+            setItems((curr) => {
+                const next = curr.map((i) => {
+                    const is = slug && (i.slug === slug || slugify(i.name) === slug || i.name === name);
+                    if (!is) return i;
+                    return kind === "cover"
+                        ? { ...i, coverUrl: mediaUrl }
+                        : { ...i, videoUrl: mediaUrl };
+                });
+                // 2) Lo persiste en el contenido PROJECTS para que sobreviva a la recarga.
+                void saveContentJson("PROJECTS", { title: "Proyectos.", items: next }).catch(() => undefined);
+                return next;
+            });
+
+            // 3) Si la subida viene desde el editor, actualiza el borrador para previsualizarlo al momento.
+            setEditing((curr) =>
+                curr && slug && (curr.slug === slug || slugify(curr.name) === slug)
+                    ? kind === "cover"
+                        ? { ...curr, coverUrl: mediaUrl }
+                        : { ...curr, videoUrl: mediaUrl }
+                    : curr
+            );
         } catch (e) {
             toast("error", errMessage(e, "No se pudo subir el archivo."));
         } finally {
@@ -149,9 +176,22 @@ export function ProjectsAdmin() {
                 <ul className="space-y-3">
                     {items.map((p) => (
                         <li key={p.slug || p.name} className="flex flex-col gap-3 rounded-2xl border hairline bg-[var(--paper)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-                            <div className="min-w-0">
-                                <p className="font-semibold">{p.name || "(sin nombre)"}</p>
-                                <span className="block max-w-md truncate text-xs text-[var(--ink-soft)]">{p.link || "sin enlace"}</span>
+                            <div className="flex flex-1 min-w-0 items-center gap-4">
+                                <div className="relative block h-14 w-24 shrink-0 overflow-hidden rounded-lg border hairline bg-[var(--line)]">
+                                    {p.coverUrl ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={p.coverUrl} alt={`Portada de ${p.name}`} className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+                                    ) : (
+                                        <span className="flex h-full w-full items-center justify-center text-xl" aria-hidden="true">🏗️</span>
+                                    )}
+                                    {p.videoUrl ? (
+                                        <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-[10px] text-white" aria-hidden="true">▶</span>
+                                    ) : null}
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="truncate font-semibold">{p.name || "(sin nombre)"}</p>
+                                    <span className="block max-w-md truncate text-xs text-[var(--ink-soft)]">{p.link || "sin enlace"}</span>
+                                </div>
                             </div>
                             <div className="flex shrink-0 flex-wrap items-center gap-2">
                                 <label className="inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
@@ -224,6 +264,12 @@ function Editor({ editing, patch, busy, onSave, onClose, onPickMedia }: {
                             onChange={(e) => { const f = e.target.files?.[0]; if (f && !busy) onPickMedia("cover", f); e.target.value = ""; }}
                         />
                         {busy ? <span className="ml-2 text-xs text-[var(--copper)]">Subiendo…</span> : null}
+                        {editing.coverUrl ? (
+                            <span className="mt-3 block h-40 w-full overflow-hidden rounded-lg border hairline bg-[var(--line)]">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={editing.coverUrl} alt={`Vista previa de ${editing.name}`} className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+                            </span>
+                        ) : null}
                     </label>
                     <label className="block text-sm"><span className="font-semibold">Video corto <span className="text-xs font-normal text-[var(--ink-soft)]">(se abre al hacer clic en la tarjeta)</span></span>
                         <input value={editing.videoUrl ?? ""} onChange={(e) => set({ ...editing, videoUrl: e.target.value })} className="mt-1 w-full border-b border-[var(--forest)] bg-transparent py-2 outline-none" placeholder="Si prefieres, pega aquí el enlace del video (mp4 o plataforma)" />
@@ -239,6 +285,11 @@ function Editor({ editing, patch, busy, onSave, onClose, onPickMedia }: {
                         />
                         {busy ? <span className="ml-2 text-xs text-[var(--copper)]">Subiendo…</span> : null}
                         <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Primero guarda con un nombre el proyecto; luego ya puedes elegir el archivo.</span>
+                        {editing.videoUrl ? (
+                            <video controls playsInline preload="metadata" className="mt-2 max-h-56 w-full rounded-lg border hairline bg-black" src={editing.videoUrl} aria-label={`Vista previa del video de ${editing.name}`}>
+                                Tu navegador no soporta video.
+                            </video>
+                        ) : null}
                     </label>
                 </div>
 

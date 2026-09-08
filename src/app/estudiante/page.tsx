@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/auth";
 import { backendFetch } from "@/lib/api/backend";
 import type { Enrollment } from "@/lib/api/enrollments";
+import { materialFileUrl, type Material } from "@/lib/api/materials";
 import { PageIntro, SectionLabel, SiteShell } from "@/components/site-shell";
 
 type Catalog = { id: string; title: string; description: string; coverImageUrl?: string | null; lessons: number };
@@ -36,6 +37,23 @@ export default async function EstudianteDashboard() {
     const mineIds = new Set(mine.map((m) => m.item.id));
     const locked = cat.filter((c) => !mineIds.has(c.id));
     const initials = user.fullName.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("");
+
+    // Materiales (PDF/imagen) vinculados a cada curso inscrito, para el perfil del estudiante.
+    const courseMaterials = new Map<string, Material[]>();
+    if (mine.length > 0) {
+        await Promise.all(mine.map(async (m) => {
+            try {
+                const resp = await backendFetch(`/materials/course/${encodeURIComponent(m.item.id)}?page=1&limit=100`);
+                const json = await resp.json().catch(() => null) as { data?: Material[]; items?: Material[] } | null;
+                const items = Array.isArray(json && (json as { data?: unknown }).data)
+                    ? (json as { data: Material[] }).data
+                    : (json?.items ?? []);
+                courseMaterials.set(m.item.id, items);
+            } catch {
+                courseMaterials.set(m.item.id, []);
+            }
+        }));
+    }
 
     return (
         <SiteShell hideHeader>
@@ -80,7 +98,68 @@ export default async function EstudianteDashboard() {
                 )}
 
                 <div className="mt-14 border-t hairline pt-10">
-                    <SectionLabel number="02">Catálogo disponible</SectionLabel>
+                    <SectionLabel number="02">Materiales de mis cursos</SectionLabel>
+                    <p className="mt-2 text-sm text-[var(--ink-soft)]">Documentos y archivos (PDF/imágenes) que cada curso pone a tu disposición. Ábrelos o descárgalos desde aquí.</p>
+                    <div className="mt-6 space-y-6">
+                        {mine.length === 0 ? (
+                            <p className="text-sm text-[var(--ink-soft)]">Cuando tengas cursos habilitados verás aquí sus materiales.</p>
+                        ) : (
+                            mine.map(({ item }) => {
+                                const files = courseMaterials.get(item.id) ?? [];
+                                return (
+                                    <div key={item.id} className="rounded-2xl border hairline bg-[var(--paper)] p-5">
+                                        <p className="text-sm font-semibold">{item.title}</p>
+                                        {files.length === 0 ? (
+                                            <p className="mt-3 text-sm text-[var(--ink-soft)]">Este curso aún no tiene materiales asignados.</p>
+                                        ) : (
+                                            <ul className="mt-3 divide-y hairline">
+                                                {files.map((material) => {
+                                                    const href = material.fileUrl ?? materialFileUrl(material.id);
+                                                    const icon = material.mimeType?.includes("pdf") ? "📄" : (material.mimeType?.includes("image") ? "🖼️" : "📎");
+                                                    return (
+                                                        <li key={material.id} className="flex flex-wrap items-center gap-3 py-3 sm:flex-nowrap sm:justify-between">
+                                                            <div className="flex min-w-0 items-center gap-3">
+                                                                <span aria-hidden="true" className="text-xl">{icon}</span>
+                                                                <div className="min-w-0">
+                                                                    <p className="truncate text-sm font-semibold">{material.title}</p>
+                                                                    {material.fileName && (
+                                                                        <p className="truncate text-xs text-[var(--ink-soft)]">{material.fileName}</p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex shrink-0 flex-wrap items-center gap-2">
+                                                                <a
+                                                                    href={href}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    aria-label={`Abrir ${material.title}`}
+                                                                    className="rounded-full bg-[var(--forest)] px-4 py-2 text-xs font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]"
+                                                                >
+                                                                    Abrir
+                                                                </a>
+                                                                <a
+                                                                    href={href}
+                                                                    download
+                                                                    aria-label={`Descargar ${material.title}`}
+                                                                    className="rounded-full border hairline px-4 py-2 text-xs font-semibold text-[var(--copper)] transition hover:border-[var(--copper)] hover:bg-[var(--copper)]"
+                                                                >
+                                                                    ⬇ Descargar
+                                                                </a>
+                                                            </div>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        )}
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>
+
+                <div className="mt-14 border-t hairline pt-10">
+                    <SectionLabel number="03">Catálogo disponible</SectionLabel>
                     <p className="mt-2 text-sm text-[var(--ink-soft)]">Otros cursos que aún no tienes. Al comprarlos, el administrador te habilita el acceso para verlos.</p>
                     <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {locked.length === 0 ? (
