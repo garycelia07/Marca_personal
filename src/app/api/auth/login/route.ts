@@ -57,7 +57,9 @@ export async function POST(request: Request) {
     const remember = body.remember === true;
     const cookieOptions = remember ? { maxAge: 60 * 60 * 24 * 7 } : {};
 
-    const result = NextResponse.json({ user });
+    // Devolvemos también el accessToken para que el cliente pueda hacer subidas
+    // directas al backend (archivos grandes) con Authorization: Bearer.
+    const result = NextResponse.json({ user, accessToken: payload.accessToken });
     result.cookies.set(ACCESS_TOKEN_COOKIE, payload.accessToken, {
       httpOnly: true,
       sameSite: "lax",

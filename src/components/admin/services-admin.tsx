@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getContentJson, saveContentJson } from "@/lib/api/content";
+import { directUploadPut, backendPublicOrigin } from "@/lib/api/direct-upload";
 
 type Svc = { name: string; slug: string; description: string; coverUrl?: string };
 type Timers = { id: number; variant: "success" | "error"; message: string };
@@ -78,11 +79,12 @@ export function ServicesAdmin() {
         try {
             const fd = new FormData();
             fd.append("file", file, file.name);
-            const res = await fetch(`/api/service-cover/${encodeURIComponent(slug)}`, { method: "PUT", body: fd });
+            // Subida DIRECTA al backend (evita el límite de Vercel para imágenes).
+            const res = await directUploadPut(`/api/v1/content/services/${encodeURIComponent(slug)}/cover`, fd);
             const payload = await res.json().catch(() => null);
             if (!res.ok) throw { message: payload && typeof payload === "object" && "message" in payload ? (payload as { message: string }).message : "No se pudo subir la portada." };
             // Persistir la portada en el ítem para que DESPUÉS se muestre (no solo en el disco).
-            const coverUrl = `/api/service-cover/${encodeURIComponent(slug)}`;
+            const coverUrl = `${backendPublicOrigin()}/api/v1/content/services/${encodeURIComponent(slug)}/cover`;
             const next = items.map((i) => {
                 if ((i.slug && i.slug === slug) || (i.slug || slugify(i.name)) === slug) return { ...i, coverUrl };
                 return i;

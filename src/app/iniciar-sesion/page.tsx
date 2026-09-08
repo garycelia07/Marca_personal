@@ -7,8 +7,9 @@ import { SiteShell } from "@/components/site-shell";
 import type { AuthUser } from "@/lib/api/auth";
 
 const USER_STORAGE_KEY = "aurea_user";
+const TOKEN_STORAGE_KEY = "aurea_access_token";
 
-type LoginResponseBody = { user?: AuthUser; message?: string };
+type LoginResponseBody = { user?: AuthUser; accessToken?: string; message?: string };
 type Field = "email" | "password";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -81,6 +82,13 @@ export default function IniciarSesion() {
                 window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
             } catch {
                 // El usuario sigue autenticado vía la cookie HttpOnly.
+            }
+            if (typeof data?.accessToken === "string") {
+                try {
+                    window.localStorage.setItem(TOKEN_STORAGE_KEY, data.accessToken);
+                } catch {
+                    // Token solo en memoria: subidas directas requerirán re-login.
+                }
             }
 
             // Redirige a la zona correspondiente según el rol del usuario:

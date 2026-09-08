@@ -1,3 +1,5 @@
+import { directUpload, directUploadPut } from "@/lib/api/direct-upload";
+
 export type Material = {
     id: string;
     title: string;
@@ -136,20 +138,30 @@ function buildFormData(input: { title: string; file?: File; courseId?: string; l
     return formData;
 }
 
-/** Sube un material (proxy → POST /api/materials, multipart). */
+/** Sube un material DIRECTAMENTE al backend (multipart), evitando el límite de ~4.5MB de Vercel. */
 export async function uploadMaterial(input: MaterialUploadInput): Promise<Material> {
-    return (await requestJson("/api/materials", {
-        method: "POST",
-        body: buildFormData(input),
-    })) as Material;
+    const response = await directUpload("/api/v1/materials", buildFormData(input));
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+        const message = payload && typeof payload === "object" && (payload as { message?: string }).message
+            ? String((payload as { message: string }).message)
+            : "No se pudo subir el material.";
+        throw { status: response.status, message };
+    }
+    return payload as Material;
 }
 
-/** Reemplaza archivo o metadata de un material (proxy → PUT /api/materials/{id}, multipart). */
+/** Reemplaza archivo o metadata de un material (DIRECTO al backend, multipart). */
 export async function updateMaterial(id: string, input: MaterialUpdateInput): Promise<Material> {
-    return (await requestJson(`/api/materials/${encodeURIComponent(id)}`, {
-        method: "PUT",
-        body: buildFormData(input),
-    })) as Material;
+    const response = await directUploadPut(`/api/v1/materials/${encodeURIComponent(id)}`, buildFormData(input));
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+        const message = payload && typeof payload === "object" && (payload as { message?: string }).message
+            ? String((payload as { message: string }).message)
+            : "No se pudo actualizar el material.";
+        throw { status: response.status, message };
+    }
+    return payload as Material;
 }
 
 /** Elimina un material (proxy → DELETE /api/materials/{id}). */
