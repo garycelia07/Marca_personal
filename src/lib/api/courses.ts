@@ -138,7 +138,6 @@ function jsonInit(method: "POST" | "PATCH" | "DELETE", body?: unknown): RequestI
     };
 }
 
-/** Lista cursos publicados (proxy → GET /api/courses). */
 export async function listPublishedCourses(params: CourseListParams = {}): Promise<CoursePagination> {
     const page = params.page ?? 1;
     const limit = params.limit ?? DEFAULT_LIMIT;
@@ -146,7 +145,6 @@ export async function listPublishedCourses(params: CourseListParams = {}): Promi
     return normalizeList(payload, page, limit);
 }
 
-/** Lista todos los cursos, publicados o borradores (proxy → GET /api/courses/admin). */
 export async function listAdminCourses(params: CourseListParams = {}): Promise<CoursePagination> {
     const page = params.page ?? 1;
     const limit = params.limit ?? DEFAULT_LIMIT;
@@ -154,38 +152,25 @@ export async function listAdminCourses(params: CourseListParams = {}): Promise<C
     return normalizeList(payload, page, limit);
 }
 
-/** Obtiene el detalle completo de un curso con módulos y lecciones (proxy → GET /api/courses/{id}). */
 export async function getCourse(id: string): Promise<Course> {
     return (await requestJson(`/api/courses/${encodeURIComponent(id)}`, { method: "GET" })) as Course;
 }
-
-/** Crea un curso (proxy → POST /api/courses). */
 export async function createCourse(input: CreateCourseInput): Promise<Course> {
     return (await requestJson("/api/courses", jsonInit("POST", input))) as Course;
 }
-
-/** Actualiza un curso (proxy → PATCH /api/courses/{id}). */
 export async function updateCourse(id: string, input: UpdateCourseInput): Promise<Course> {
     return (await requestJson(`/api/courses/${encodeURIComponent(id)}`, jsonInit("PATCH", input))) as Course;
 }
-
-/** Elimina un curso (proxy → DELETE /api/courses/{id}). */
 export async function deleteCourse(id: string): Promise<unknown> {
     return requestJson(`/api/courses/${encodeURIComponent(id)}`, jsonInit("DELETE"));
 }
-
-/** Agrega un módulo a un curso (proxy → POST /api/courses/{id}/modules). */
 export async function addModule(courseId: string, input: CreateModuleInput): Promise<Module> {
     return (await requestJson(`/api/courses/${encodeURIComponent(courseId)}/modules`, jsonInit("POST", input))) as Module;
 }
-
-/** Agrega una lección a un módulo (proxy → POST /api/courses/modules/{moduleId}/lessons). */
 export async function addLesson(moduleId: string, input: CreateLessonInput): Promise<Lesson> {
     return (await requestJson(`/api/courses/modules/${encodeURIComponent(moduleId)}/lessons`, jsonInit("POST", input))) as Lesson;
 }
 
-/** Sube o reemplaza el video (≤10 min) de una lección. Prefiere subida DIRECTA a Cloudinary
- * (no pasa por la función de Vercel y evita el 413); si no hay Cloudinary, cae a disco vía el proxy. */
 export async function uploadLessonVideo(lessonId: string, file: File): Promise<unknown> {
     // 1) Intentar subida directa a Cloudinary (firmada por el backend).
     try {
@@ -193,7 +178,7 @@ export async function uploadLessonVideo(lessonId: string, file: File): Promise<u
         if (signRes.ok) {
             const sign = (await signRes.json()) as {
                 cloudName?: string; apiKey?: string; signature?: string;
-                timestamp?: string; folder?: string; publicId?: string;
+                timestamp?: string; publicId?: string;
                 resourceType?: string; overwrite?: string;
             };
             if (sign.cloudName && sign.signature && sign.apiKey) {
@@ -202,10 +187,9 @@ export async function uploadLessonVideo(lessonId: string, file: File): Promise<u
                 cloudForm.append("api_key", sign.apiKey);
                 cloudForm.append("timestamp", sign.timestamp ?? "");
                 cloudForm.append("signature", sign.signature);
-                cloudForm.append("folder", sign.folder ?? "");
+                // public_id COMPLETO (con carpeta) para que la firma coincida; sin folder aparte.
                 if (sign.publicId) cloudForm.append("public_id", sign.publicId);
                 cloudForm.append("overwrite", sign.overwrite ?? "true");
-                if (file.type) cloudForm.append("type", file.type);
                 const cloudRes = await fetch(
                     `https://api.cloudinary.com/v1_1/${sign.cloudName}/video/upload`,
                     { method: "POST", body: cloudForm },
