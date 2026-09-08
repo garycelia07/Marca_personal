@@ -119,7 +119,20 @@ export function ServicesAdmin() {
                 <ul className="space-y-3">
                     {items.map((s) => (
                         <li key={s.slug || s.name} className="flex flex-col gap-3 rounded-2xl border hairline bg-[var(--paper)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-                            <div className="min-w-0"><p className="font-semibold">{s.name || "(sin nombre)"}</p></div>
+                            <div className="flex flex-1 min-w-0 items-center gap-4">
+                                <div className="relative block h-14 w-24 shrink-0 overflow-hidden rounded-lg border hairline bg-[var(--line)]">
+                                    {s.coverUrl ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={s.coverUrl} alt={`Portada de ${s.name}`} className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+                                    ) : (
+                                        <span className="flex h-full w-full items-center justify-center text-xl" aria-hidden="true">🛠️</span>
+                                    )}
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="font-semibold">{s.name || "(sin nombre)"}</p>
+                                    {s.description && <span className="block max-w-md truncate text-xs text-[var(--ink-soft)]">{s.description}</span>}
+                                </div>
+                            </div>
                             <div className="flex shrink-0 flex-wrap items-center gap-2">
                                 <label className="inline-flex cursor-pointer items-center gap-1 rounded-full border hairline px-3 py-1.5 text-xs font-semibold transition hover:border-[var(--copper)]">
                                     Portada
@@ -184,6 +197,12 @@ function DraftCard({ draft, set, busy, onSave, onClose, onUploadFile }: {
                             />
                             {busy ? <span className="text-xs text-[var(--copper)]">Subiendo…</span> : null}
                         </div>
+                        {draft.coverUrl ? (
+                            <span className="mt-3 block h-44 w-full overflow-hidden rounded-lg border hairline bg-[var(--line)]">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={draft.coverUrl} alt={`Vista previa de ${draft.name}`} className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+                            </span>
+                        ) : null}
                         <span className="block pt-1 text-[11px] text-[var(--ink-soft)]">Primero guarda con un nombre el servicio; luego ya puedes elegir el archivo.</span>
                     </label>
                 </div>

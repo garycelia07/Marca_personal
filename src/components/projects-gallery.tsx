@@ -7,6 +7,20 @@ import { LeadForm } from "@/components/lead-form";
 
 const TOTAL_SLOTS = 5;
 
+/** Detecta un enlace de YouTube/Vimeo… (solo YouTube) en una URL o devuelve null. */
+function youtubeInfo(url: string): { id: string; embed: string; thumb: string } | null {
+    const clean = (url || "").trim();
+    if (!clean) return null;
+    const m = /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/.exec(clean);
+    if (!m) return null;
+    const id = m[1];
+    return {
+        id,
+        embed: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`,
+        thumb: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+    };
+}
+
 export function ProjectsGallery({ items }: { items: ProjectItemExt[] }) {
     const [open, setOpen] = useState<ProjectItemExt | null>(null);
     const [activeProject, setActiveProject] = useState<number>(-1);
@@ -133,6 +147,8 @@ export function ProjectsGallery({ items }: { items: ProjectItemExt[] }) {
 function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => void }) {
     const [showForm, setShowForm] = useState(false);
     const [sent, setSent] = useState(false);
+    const [playEmbed, setPlayEmbed] = useState(false);
+
     const waMessage = `Hola, me interesa el proyecto "${project.name || siteConfig.brand}". Quiero ser parte.`;
 
     return (
@@ -178,13 +194,47 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
                     )}
 
                     {(() => {
-                        const mediaIfAny = project.videoUrl && project.videoUrl.trim();
-                        const src = mediaIfAny || projectVideoUrl(project.name ?? "");
-                        const isEmbed = /\.(mp4|webm|ogg)(\?|#|$)/i.test(src);
-                        if (!src) return null;
+                                                                        const mediaIfAny = project.videoUrl && project.videoUrl.trim();
+                        // Link de YouTube pegado en el admin: se muestra primero el poster (precarga ligera)
+                        // y al dar clic en ▶ se monta el iframe autoplay.
+                        const yt = mediaIfAny ? youtubeInfo(mediaIfAny) : null;
+                        const src = yt ? null : mediaIfAny || projectVideoUrl(project.name || "");
+                        const isEmbed = !yt && /\.(mp4|webm|ogg)(\?|#|$)/i.test(src || "");
+                        if (!yt && !src) return null;
                         return (
                             <div className="mt-6">
-                                {isEmbed ? (
+                                {yt ? (
+                                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border hairline bg-black">
+                                        {!playEmbed ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => setPlayEmbed(true)}
+                                                className="absolute inset-0 z-10 flex h-full w-full items-center justify-center bg-black/40 transition hover:bg-black/20"
+                                                aria-label={`Reproducir el video del proyecto ${project.name || "proyecto"}`}
+                                            >
+                                                {/* Pre-carga: miniatura ligera de YouTube */}
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img
+                                                    src={yt.thumb}
+                                                    alt="Portada del video"
+                                                    loading="lazy"
+                                                    className="absolute inset-0 h-full w-full object-cover opacity-90"
+                                                />
+                                                <span className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-xl text-[var(--copper)] shadow-xl sm:h-20 sm:w-20">
+                                                    ▶
+                                                </span>
+                                            </button>
+                                        ) : (
+                                            <iframe
+                                                className="h-full w-full"
+                                                src={yt.embed}
+                                                title={`Video de ${project.name || "proyecto"}`}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                                                allowFullScreen
+                                            />
+                                        )}
+                                    </div>
+                                ) : isEmbed ? (
                                     <video
                                         key={src}
                                         src={src}
@@ -208,7 +258,7 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
                                 )}
                             </div>
                         );
-                    })()}
+})()}
 
                     <div className="mt-8">
                         {sent ? (
