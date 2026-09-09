@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { backendFetch } from "@/lib/api/backend";
 
-type Context = { params: Promise<{ courseId: string }> };
+type Context = { params: Promise<{ id: string }> };
 
-/** GET /api/courses/{courseId}/cover-sign — firma de subida directa a Cloudinary de la portada de un curso (admin). */
+/** GET /api/courses/{id}/cover-sign — firma de subida directa a Cloudinary de la portada de un curso (admin). */
 export async function GET(_request: Request, { params }: Context) {
-    const { courseId } = await params;
+    const { id } = await params;
     try {
-        const response = await backendFetch(`/courses/${encodeURIComponent(courseId)}/cover-sign`);
+        const response = await backendFetch(`/courses/${encodeURIComponent(id)}/cover-sign`);
         const payload = await response.json().catch(() => null);
         if (!response.ok) {
             const message = payload && typeof payload === "object" && "message" in payload && payload.message

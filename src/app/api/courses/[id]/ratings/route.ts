@@ -1,17 +1,13 @@
 import { NextResponse } from "next/server";
 import { backendFetch } from "@/lib/api/backend";
 
-type Context = { params: Promise<{ courseId: string }> };
+type Context = { params: Promise<{ id: string }> };
 
-function rawCourseId(courseId: string): string {
-    return courseId;
-}
-
-/** GET /api/courses/{courseId}/ratings — lista pública de calificaciones + promedio. */
+/** GET /api/courses/{id}/ratings — lista pública de calificaciones + promedio. */
 export async function GET(_request: Request, { params }: Context) {
-    const { courseId } = await params;
+    const { id } = await params;
     try {
-        const upstream = await backendFetch(`/ratings/course/${encodeURIComponent(rawCourseId(courseId))}`);
+        const upstream = await backendFetch(`/ratings/course/${encodeURIComponent(id)}`);
         const payload = await upstream.json().catch(() => null);
         return NextResponse.json(payload ?? { ratings: [], average: 0, total: 0 }, { status: upstream.ok ? 200 : upstream.status });
     } catch {
@@ -19,9 +15,9 @@ export async function GET(_request: Request, { params }: Context) {
     }
 }
 
-/** POST /api/courses/{courseId}/ratings — guarda/añade la calificación del estudiante autenticado. */
+/** POST /api/courses/{id}/ratings — guarda/añade la calificación del estudiante autenticado. */
 export async function POST(request: Request, { params }: Context) {
-    const { courseId } = await params;
+    const { id } = await params;
     let body: { stars?: unknown; comment?: unknown };
     try {
         body = (await request.json()) as { stars?: unknown; comment?: unknown };
@@ -36,7 +32,7 @@ export async function POST(request: Request, { params }: Context) {
     const comment = typeof body.comment === "string" && body.comment.trim() ? body.comment.trim().slice(0, 1000) : undefined;
 
     try {
-        const upstream = await backendFetch(`/ratings/${encodeURIComponent(courseId)}`, {
+        const upstream = await backendFetch(`/ratings/${encodeURIComponent(id)}`, {
             method: "POST",
             body: comment !== undefined ? { stars, comment } : { stars },
         });
