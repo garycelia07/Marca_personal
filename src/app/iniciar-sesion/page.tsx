@@ -105,10 +105,6 @@ export default function IniciarSesion() {
         <SiteShell>
             <main className="grid min-h-[calc(100vh-170px)] lg:grid-cols-[0.9fr_1.1fr]">
                 <section className="flex flex-col justify-between bg-[#171713] p-8 text-[#fffdf4] sm:p-12 lg:p-16">
-                    <div className="flex items-center gap-2">
-                        <span aria-hidden="true" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-lg font-bold text-[#f4c542]">G</span>
-                        <Link href="/" className="display-font text-2xl">Gary <span className="text-[#f4c542]">Mayhua</span></Link>
-                    </div>
                     <div className="max-w-md">
                         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f4c542]">Tu espacio de crecimiento</p>
                         <h1 className="display-font mt-7 text-5xl leading-[0.92] sm:text-7xl">
