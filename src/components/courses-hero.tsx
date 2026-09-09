@@ -3,56 +3,56 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { listPublishedCourses, getCourse, type Course } from "@/lib/api/courses";
-import { publicBackendOrigin } from "@/lib/site";
+import { publicBackendOrigin, whatsappHref } from "@/lib/site";
+import { LeadForm } from "@/components/lead-form";
 
-interface HeroState {
+// Imagen fija y elegante que representa a toda la sección de cursos.
+const ELEGANT_IMG =
+    "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=2000&q=80";
+
+interface HeroCourse {
     course: Course;
-    video?: string;
-    title: string;
+    cover: string;
+    video: string | undefined;
 }
 
 export function CoursesHero() {
-    const [hero, setHero] = useState<HeroState | null>(null);
-    const [state, setState] = useState<"loading" | "none" | "ready">("loading");
+    const [data, setData] = useState<HeroCourse | null>(null);
+    const [state, setState] = useState<"load" | "none" | "ok">("load");
+    const [play, setPlay] = useState(false);
+    const [sub, setSub] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
         (async () => {
             try {
                 const result = await listPublishedCourses({ page: 1, limit: 50 });
-                // El "más antiguo disponible": si se elimina cualquiera, seguimos con el siguiente más antiguo.
+                // siempre el más antiguo disponible; si se borra, toma el siguiente.
                 const ordered = [...result.items].sort((a, b) =>
                     (a.createdAt ?? "").localeCompare(b.createdAt ?? "")
                 );
-
-                for (const candidate of ordered.slice(0, 8)) {
+                for (const cand of ordered.slice(0, 8)) {
                     if (cancelled) return;
-                    let firstVideo: string | undefined;
+                    let video: string | undefined;
                     try {
-                        const detail = await getCourse(candidate.id);
+                        const detail = await getCourse(cand.id);
                         const mods = [...(detail.modules ?? [])].sort((a, b) => a.order - b.order);
-                        if (mods.length) {
-                            const lessons = [...(mods[0].lessons ?? [])].sort((a, b) => a.order - b.order);
-                            const withVideo = lessons.find((lesson) => lesson.videoUrl && lesson.videoUrl.trim());
-                            if (withVideo?.videoUrl) {
-                                firstVideo = withVideo.videoUrl;
-                                if (!/^https?:\/\//.test(firstVideo)) {
-                                    // Ruta relativa del backend servida en el mismo host.
-                                    firstVideo = `${publicBackendOrigin()}${firstVideo.startsWith("/") ? firstVideo : `/${firstVideo}`}`;
-                                }
-                            }
+                        const first = (mods[0]?.lessons ?? [])
+                            .slice()
+                            .sort((a, b) => a.order - b.order)
+                            .find((l) => l.videoUrl && l.videoUrl.trim())?.videoUrl;
+                        if (first) {
+                            const raw = first.trim();
+                            video = /^https?:\/\//.test(raw)
+                                ? raw
+                                : `${publicBackendOrigin()}${raw.startsWith("/") ? raw : `/${raw}`}`;
                         }
                     } catch {
-                        /* sin detalle de ese curso: probamos el siguiente */
+                        /* probar el siguiente */
                     }
-
                     if (cancelled) return;
-                    setHero({
-                        course: candidate,
-                        title: candidate.title,
-                        video: firstVideo,
-                    });
-                    setState("ready");
+                    setData({ course: cand, cover: ELEGANT_IMG, video });
+                    setState("ok");
                     return;
                 }
                 setState("none");
@@ -66,54 +66,98 @@ export function CoursesHero() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    if (state !== "ready" || !hero) {
-        return state === "none" ? null : <div className="h-72 animate-pulse bg-[var(--line)]" />;
-    }
+    if (state === "none") return null;
+    if (state === "load" || !data) return <div className="h-80 animate-pulse bg-[var(--line)]" />;
 
-    const cover = hero.course.coverImageUrl ?? "";
-    const src = hero.video ?? cover;
-    const isVideo = Boolean(hero.video);
-    const href = `/cursos/${hero.course.id}`;
 
     return (
-        <div className="relative isolate overflow-hidden">
-            <div className="absolute inset-0 -z-10 bg-[#171713]">
-                {isVideo ? (
-                    <video
-                        className="h-full w-full object-cover"
-                        src={src}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        poster={cover || undefined}
-                    />
-                ) : cover ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={cover} alt="" className="h-full w-full object-cover" loading="eager" />
-                ) : null}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#171713]/95 via-[#171713]/60 to-[#171713]/40" />
-            </div>
+        <section className="mx-auto max-w-[1440px] px-5 pt-8 sm:px-8 lg:px-12 lg:pt-10">
+            <div className="relative overflow-hidden rounded-3xl border hairline bg-[#171713] text-white">
+                <div className="relative aspect-video w-full sm:aspect-[21/9]">
+                    {play && data.video ? (
+                        <>
+                            <video
+                                key={data.video}
+                                src={data.video}
+                                controls
+                                autoPlay
+                                playsInline
+                                className="h-full w-full bg-black object-contain"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setPlay(false)}
+                                aria-label="Cerrar video"
+                                className="absolute right-3 top-3 z-10 rounded-full border border-white/30 bg-black/40 px-4 py-2 text-xs font-semibold backdrop-blur-sm transition hover:bg-black/70"
+                            >
+                                ✕ Cerrar
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setPlay(true)}
+                            aria-label="Ver video de muestra (primera clase)"
+                            className="group relative flex h-full w-full items-center justify-center"
+                        >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={data.cover} alt="Programas de aprendizaje Gary Mayhua" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                            <span className="absolute inset-0 bg-gradient-to-t from-[#171713]/90 via-[#171713]/25 to-transparent" />
+                            {data.video ? (
+                                <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[var(--copper)] pl-1 text-4xl text-[var(--forest-deep)] shadow-2xl transition group-hover:scale-110 sm:h-24 sm:w-24">▶</span>
+                            ) : null}
+                        </button>
+                    )}
+                </div>
 
-            <div className="mx-auto flex min-h-[440px] max-w-[1440px] flex-col justify-end gap-6 px-5 pb-10 pt-16 sm:px-8 lg:min-h-[560px] lg:px-12">
-                <p className="eyebrow text-[var(--copper)]">Programa destacado</p>
-                <h2 className="display-font max-w-3xl text-4xl leading-[0.98] text-white sm:text-6xl lg:text-7xl">
-                    {hero.title}
-                </h2>
-                {hero.course.description ? (
-                    <p className="max-w-xl text-base leading-7 text-white/85 sm:text-lg">{hero.course.description}</p>
-                ) : null}
-                <div>
-                    <Link
-                        href={href}
-                        className="group inline-flex items-center gap-3 rounded-full bg-[var(--copper)] px-7 py-3.5 text-base font-bold text-[var(--forest-deep)] transition hover:brightness-110"
-                    >
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--forest-deep)] pl-0.5 text-xs text-[var(--copper)]">▶</span>
-                        Ver el programa completo
-                        <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
-                    </Link>
+
+                <div className="relative flex flex-wrap items-end justify-between gap-6 px-5 py-6 sm:px-8 sm:py-8 lg:px-10">
+                    <div className="max-w-xl">
+                        <p className="eyebrow text-[var(--copper)]">Primera clase · {data.course.title}</p>
+                        <h2 className="display-font mt-2 text-3xl font-display leading-tight sm:text-4xl">
+                            Empieza hoy: mira la primera lección del curso {data.course.title}
+                        </h2>
+                        <p className="mt-3 text-sm leading-6 text-white/80">
+                            Continúa aprendiendo a tu ritmo. Suscríbete para no perderte los próximos contenidos.
+                        </p>
+                        {sub ? (
+                            <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-sm sm:p-6">
+                                <p className="mb-1 text-sm font-semibold">Suscríbete</p>
+                                <LeadForm
+                                    courseName={`Newsletter/curso ${data.course.title}`}
+                                    onSubmitted={(ok) => {
+                                        if (ok) setSub(false);
+                                    }}
+                                />
+                            </div>
+                        ) : null}
+                    </div>
+
+                    <div className="flex flex-col items-start gap-3">
+                        <Link
+                            href={`/cursos/${data.course.id}`}
+                            className="inline-flex items-center gap-2 rounded-full bg-[var(--copper)] px-6 py-3 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-110"
+                        >
+                            Continuar aprendiendo →
+                        </Link>
+                        <button
+                            type="button"
+                            onClick={() => setSub((s) => !s)}
+                            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                        >
+                            🔔 Suscribirme a novedades{sub ? " (cerrar)" : ""}
+                        </button>
+                        <a
+                            href={whatsappHref(`Hola, vi la primera clase de "${data.course.title}" y quiero más información.`)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition hover:brightness-105"
+                        >
+                            💬 WhatsApp
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }
