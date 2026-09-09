@@ -17,8 +17,11 @@ type PageHeroProps = {
 const FALLBACKS: Record<Slot, string> = {
     hero: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=2200&q=80",
     proyectos: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2200&q=80",
-    servicios: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2200&q=80",
+    // Imagen local de la sección Servicios (public/servicios.png), usada mientras
+    // el admin no suba una distinta en /admin/contenido.
+    servicios: "/servicios.png",
 };
+
 
 /**
  * Banner principal de una página pública. La foto se toma del slot editable del
