@@ -57,19 +57,18 @@ export function FeaturedCourses() {
                     </div>
                 ) : (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        {courses.map((course, index) => (
-                            <Link key={course.id} href={`/cursos/${course.id}`} className="group card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]">
+                        {courses.map((course) => (
+                            <Link key={course.id} href="/cursos" className="group card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]">
                                 <div className="relative aspect-[4/3] overflow-hidden">
                                     {course.coverImageUrl ? (
                                         <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 480px" className="object-cover transition duration-700 group-hover:scale-110" />
                                     ) : (
                                         <div className="flex h-full w-full items-center justify-center bg-[var(--forest)]">
-                                            <span className="display-font text-5xl text-[var(--background)]">{String(index + 1).padStart(2, "0")}</span>
+                                            <span className="display-font text-5xl text-[var(--background)]">
+                                                {course.title.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("") || "C"}
+                                            </span>
                                         </div>
                                     )}
-                                    <span className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--copper)]/40 bg-[var(--lime)]/90 text-sm font-bold text-[var(--copper)] backdrop-blur-sm">
-                                        {String(index + 1).padStart(2, "0")}
-                                    </span>
                                 </div>
                                 <div className="flex flex-1 flex-col px-4 py-5 sm:px-5 sm:py-6">
                                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">{formatModulesCount(course.modules?.length)}</p>

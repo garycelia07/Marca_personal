@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageIntro, SiteShell } from "@/components/site-shell";
+import { SiteShell } from "@/components/site-shell";
 import { CoursesGrid } from "@/components/courses-grid";
+import { CoursesHero } from "@/components/courses-hero";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
     title: "Cursos | Gary Mayhua",
@@ -11,12 +14,14 @@ export const metadata: Metadata = {
 export default function CursosPage() {
     return (
         <SiteShell>
-            <PageIntro
-                eyebrow="Aprendizaje"
-                title="Cursos que transforman tu perspectiva."
-                description="Programas diseñados para crecer con intención, invertir con claridad y construir una vida con más posibilidades."
-            />
-            <section className="mx-auto max-w-[1440px] px-5 pb-20 sm:px-8 lg:px-12 lg:py-14">
+            <CoursesHero />
+            <section className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 lg:px-12 lg:py-16">
+                <div className="mb-8 flex items-end justify-between border-b hairline pb-6">
+                    <div>
+                        <p className="eyebrow">Aprendizaje</p>
+                        <h1 className="display-font mt-3 text-4xl leading-[0.98] sm:text-6xl">Cursos que transforman tu perspectiva.</h1>
+                    </div>
+                </div>
                 <CoursesGrid />
             </section>
             <section className="border-t hairline bg-[var(--forest)] text-[var(--background)]">
