@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { listPublishedCourses, getCourse, type Course } from "@/lib/api/courses";
 import { publicBackendOrigin, whatsappHref } from "@/lib/site";
 import { LeadForm } from "@/components/lead-form";
@@ -20,7 +20,9 @@ export function CoursesHero() {
     const [data, setData] = useState<HeroCourse | null>(null);
     const [state, setState] = useState<"load" | "none" | "ok">("load");
     const [play, setPlay] = useState(false);
-    const [sub, setSub] = useState(false);
+    const [subOpen, setSubOpen] = useState(false);
+    const [afterContinue, setAfterContinue] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         let cancelled = false;
@@ -65,6 +67,20 @@ export function CoursesHero() {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    function openSubscribeOnly() {
+        setAfterContinue(null);
+        setSubOpen(true);
+    }
+    function continueAfterSubscribe(href: string) {
+        setAfterContinue(href);
+        setSubOpen(true);
+    }
+    function handleSubDone(ok: boolean) {
+        if (!ok) return;
+        setSubOpen(false);
+        if (afterContinue) router.push(afterContinue);
+    }
 
     if (state === "none") return null;
     if (state === "load" || !data) return <div className="h-80 animate-pulse bg-[var(--line)]" />;
@@ -120,32 +136,22 @@ export function CoursesHero() {
                         <p className="mt-3 text-sm leading-6 text-white/80">
                             Continúa aprendiendo a tu ritmo. Suscríbete para no perderte los próximos contenidos.
                         </p>
-                        {sub ? (
-                            <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-sm sm:p-6">
-                                <p className="mb-1 text-sm font-semibold">Suscríbete</p>
-                                <LeadForm
-                                    courseName={`Newsletter/curso ${data.course.title}`}
-                                    onSubmitted={(ok) => {
-                                        if (ok) setSub(false);
-                                    }}
-                                />
-                            </div>
-                        ) : null}
                     </div>
 
                     <div className="flex flex-col items-start gap-3">
-                        <Link
-                            href={`/cursos/${data.course.id}`}
+                        <button
+                            type="button"
+                            onClick={() => continueAfterSubscribe(`/cursos/${data.course.id}`)}
                             className="inline-flex items-center gap-2 rounded-full bg-[var(--copper)] px-6 py-3 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-110"
                         >
                             Continuar aprendiendo →
-                        </Link>
+                        </button>
                         <button
                             type="button"
-                            onClick={() => setSub((s) => !s)}
+                            onClick={openSubscribeOnly}
                             className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                         >
-                            🔔 Suscribirme a novedades{sub ? " (cerrar)" : ""}
+                            🔔 Suscribirme a novedades
                         </button>
                         <a
                             href={whatsappHref(`Hola, vi la primera clase de "${data.course.title}" y quiero más información.`)}
@@ -158,6 +164,51 @@ export function CoursesHero() {
                     </div>
                 </div>
             </div>
+            {subOpen && data ? (
+                <SubscribeModal
+                    courseTitle={data.course.title}
+                    onClose={() => setSubOpen(false)}
+                    onSubmitted={handleSubDone}
+                />
+            ) : null}
         </section>
+    );
+}
+
+function SubscribeModal({
+    courseTitle,
+    onClose,
+    onSubmitted,
+}: {
+    courseTitle: string;
+    onClose: () => void;
+    onSubmitted: (ok: boolean) => void;
+}) {
+    return (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Suscríbete a novedades">
+            <div className="absolute inset-0 z-0 bg-[#171713]/85 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border hairline bg-[var(--paper)] p-6 text-[var(--foreground)] sm:p-8">
+                <button
+                    type="button"
+                    onClick={onClose}
+                    aria-label="Cerrar"
+                    className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border hairline text-sm font-bold hover:border-[var(--copper)] hover:text-[var(--copper)]"
+                >
+                    ✕
+                </button>
+                <p className="eyebrow">Newsletter</p>
+                <h3 className="display-font mt-2 text-3xl leading-tight">Suscríbete</h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
+                    Deja tu correo para recibir novedades y el acceso al programa “{courseTitle}”.
+                </p>
+                <div className="mt-5">
+                    <LeadForm
+                        courseName={`Newsletter: ${courseTitle}`}
+                        submitLabel="Quiero suscribirme"
+                        onSubmitted={onSubmitted}
+                    />
+                </div>
+            </div>
+        </div>
     );
 }
