@@ -43,7 +43,7 @@ export default async function Servicios() {
 
   return (
     <SiteShell>
-      <PageHero slot="servicios">
+      <PageHero slot="servicios" big>
         Acompaño a profesionales y emprendedores en liderazgo, educación financiera e inversión
         inmobiliaria con formatos cercanos y accionables — presencial o remoto.
       </PageHero>

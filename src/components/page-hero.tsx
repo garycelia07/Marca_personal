@@ -11,6 +11,8 @@ type PageHeroProps = {
     title?: React.ReactNode;
     /** Subtítulo corto (clarito debajo del titular). */
     children?: React.ReactNode;
+    /** Versión destacada en grande y dorado (para héroes sin titular grande). */
+    big?: boolean;
     minHeightClass?: string;
 };
 
@@ -28,7 +30,7 @@ const FALLBACKS: Record<Slot, string> = {
  * panel /admin/contenido (PUT/DELETE sobre /api/site/{slot}). Si el admin borró
  * o aún no subió su imagen, se muestra la foto elegante por defecto.
  */
-export function PageHero({ slot, eyebrow, title, children, minHeightClass = "min-h-[420px] lg:min-h-[520px]" }: PageHeroProps) {
+export function PageHero({ slot, eyebrow, title, children, big, minHeightClass = "min-h-[420px] lg:min-h-[520px]" }: PageHeroProps) {
     const [img, setImg] = useState<string | null>(null);
     const [broken, setBroken] = useState(false);
 
@@ -70,7 +72,13 @@ export function PageHero({ slot, eyebrow, title, children, minHeightClass = "min
                     </h1>
                 ) : null}
                 {children ? (
-                    <div className={`mt-6 text-base leading-7 text-white/90 sm:text-lg ${title ? "" : "max-w-2xl"}`}>
+                    <div
+                        className={
+                            big
+                                ? "display-font mt-5 max-w-4xl text-4xl leading-[1.05] text-[var(--copper)] sm:text-6xl"
+                                : `mt-6 text-base leading-7 text-white/90 sm:text-lg ${title ? "" : "max-w-2xl"}`
+                        }
+                    >
                         {children}
                     </div>
                 ) : null}
