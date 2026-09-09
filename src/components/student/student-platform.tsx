@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode, type SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { getCourse, type Course, type Lesson, type Module } from "@/lib/api/courses";
 import { materialFileUrl, materialDownloadUrl, type Material } from "@/lib/api/materials";
@@ -8,6 +8,7 @@ import { createLead } from "@/lib/api/leads";
 import { publicBackendOrigin } from "@/lib/site";
 import { getMyProgress, markLessonDone } from "@/lib/api/progress";
 import { RatingSection } from "@/components/rating-section";
+import { BookIcon, AttachmentIcon, ChartIcon, UsersIcon } from "@/components/admin/admin-icons";
 
 export type StudentUser = { id: string; email: string; fullName: string };
 export type CatCourse = { id: string; title: string; description?: string; coverImageUrl?: string | null; lessons: number };
@@ -48,7 +49,8 @@ function flatLessons(course: Course): Lesson[] {
 }
 
 type SectionId = "cursos" | "materiales" | "progreso";
-type NavTab = { id: SectionId; label: string; icon: string };
+type NavIcon = typeof BookIcon;
+type NavTab = { id: SectionId; label: string; icon: NavIcon };
 
 export function StudentPlatform({
   user,
@@ -218,7 +220,9 @@ export function StudentPlatform({
                   : "text-[var(--ink-soft)] hover:bg-[var(--lime)] hover:text-[var(--forest)]"
               }`}
             >
-              <span aria-hidden="true">{tab.icon}</span>
+              <span aria-hidden="true" className="h-[18px] w-[18px] shrink-0">
+                <tab.icon />
+              </span>
               {tab.label}
             </button>
           ))}
@@ -230,7 +234,8 @@ export function StudentPlatform({
             onClick={() => { void handleLogout(); }}
             className="flex w-full items-center justify-center gap-2 rounded-full border hairline px-4 py-2.5 text-sm font-semibold text-[var(--danger)] transition hover:bg-[var(--danger)] hover:text-white"
           >
-            ⏻ Cerrar sesión
+            <LogoutIcon className="h-5 w-5 shrink-0" />
+            Cerrar sesión
           </button>
         </div>
       </aside>
@@ -244,7 +249,7 @@ export function StudentPlatform({
               {sectionHeading(section)}
             </h1>
           </div>
-          <p className="text-sm text-[var(--ink-soft)]">Bienvenido de nuevo 👋</p>
+          <p className="text-sm text-[var(--ink-soft)]">Bienvenido de nuevo</p>
         </header>
 
         {section === "cursos" ? (
@@ -299,9 +304,9 @@ export function StudentPlatform({
 }
 
 const NAV_TABS: NavTab[] = [
-  { id: "cursos", label: "Mis cursos", icon: "🎓" },
-  { id: "materiales", label: "Materiales", icon: "📎" },
-  { id: "progreso", label: "Mi progreso", icon: "📈" },
+  { id: "cursos", label: "Mis cursos", icon: BookIcon },
+  { id: "materiales", label: "Materiales", icon: AttachmentIcon },
+  { id: "progreso", label: "Mi progreso", icon: ChartIcon },
 ];
 
 function initials(fullName: string): string {
@@ -325,6 +330,103 @@ function coverFallback(title: string, withPad: number): string {
   let h = 0;
   for (let i = 0; i < title.length; i += 1) h = (h * 31 + title.charCodeAt(i)) >>> 0;
   return palette[h % palette.length];
+}
+
+function PlayIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M8 5.5v13a9 9 0 0 1 7 2v-3a9 9 0 0 0-4 10l1.8 3.6.7-3.6l1.1 6.1.7-6.1" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M4 12h8l4 4h7M15.5 12l-4-4" />
+    </svg>
+  );
+}
+
+function ArrowLeftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M20 12h-8l-4 4h-7M8.5 12l4-4" />
+    </svg>
+  );
+}
+
+function PadlockIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="7" y="9" width="10" height="11" rx="2" />
+      <path d="M9 9v-5H15v5" />
+      <path d="M12 13v4" />
+    </svg>
+  );
+}
+
+function MonitorIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="3" y="4" width="18" height="12" rx="2" />
+      <path d="M9.5 5.5v3.5l3.5 0M13 9l-3.5 0" />
+    </svg>
+  );
+}
+
+function CheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M8 6l3.2 3.2h6.3M17.2 9.2l-5.2 5.2" />
+    </svg>
+  );
+}
+
+function DownloadIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M12.5 3v6M11.5 6V9.3a3 3 0 0 1-1.5 1.6M11.5 9.6l3 5M14.5 14.6l1.8-4.5" />
+    </svg>
+  );
+}
+
+function FileIcon({ pdf, ...props }: { pdf?: boolean } & SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M8 5v16h8" />
+      {pdf ? <path d="M9 9h6M10 12h4M9.5 15h5" /> : <circle cx="13" cy="12" r="2.6" />}
+    </svg>
+  );
+}
+
+function LogoutIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="9" y="4" width="8" height="14.5" rx="1.2" />
+      <path d="M6.5 12h4M10.5 12l-3 3h-3M6.5 12l1.5-1.5" />
+    </svg>
+  );
+}
+
+function LightbulbIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="11" r="6.5" />
+      <path d="M9.5 17.5h5M11 17.5v-3.5" />
+    </svg>
+  );
+}
+
+function TargetIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+    </svg>
+  );
 }
 
 function CourseThumb({ img, title }: { img?: string | null; title: string }) {
@@ -364,21 +466,28 @@ function CourseGrid({ course, detail, progress, onPlay, onBack }: CourseGridProp
 
   return (
     <div>
-      <button type="button" onClick={onBack} className="editorial-link text-sm font-semibold">
-        ← Volver a mis cursos
+      <button type="button" onClick={onBack} className="editorial-link inline-flex items-center gap-2 text-sm font-semibold">
+        <ArrowLeftIcon className="h-4 w-4" />
+        Volver a mis cursos
       </button>
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <p className="eyebrow">Contenido del curso</p>
           <h2 className="display-font mt-2 text-3xl leading-tight sm:text-4xl">{headline}</h2>
-          <p className="mt-2 text-sm text-[var(--ink-soft)]">
-            {lessons.length} lecciones · {doneCount} vistas · {pct}% completado
-          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[var(--ink-soft)]">
+            <span className="inline-flex items-center gap-1.5"><MonitorIcon className="h-3.5 w-3.5" />{lessons.length} lecciones</span>
+            <span aria-hidden="true" className="text-[var(--copper)]">·</span>
+            <span className="inline-flex items-center gap-1.5"><CheckIcon className="h-3.5 w-3.5" />{doneCount} vistas</span>
+          </div>
+        </div>
+        <div className="rounded-full border hairline bg-[var(--paper)] px-4 py-2 text-sm font-bold">
+          <span className="text-[var(--copper)]">{pct}%</span>
+          <span className="text-[var(--ink-soft)]"> completado</span>
         </div>
       </div>
 
-      <div className="mt-6 h-2 w-full overflow-hidden rounded-full bg-[var(--line)]">
-        <div className="h-full rounded-full bg-[var(--copper)] transition-all" style={{ width: `${pct}%` }} />
+      <div className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-[var(--line)]">
+        <div className="h-full rounded-full bg-gradient-to-r from-[var(--copper)] to-[var(--forest)] shadow-sm transition-all" style={{ width: `${pct}%` }} />
       </div>
 
       {lessons.length === 0 ? (
@@ -387,38 +496,51 @@ function CourseGrid({ course, detail, progress, onPlay, onBack }: CourseGridProp
         </p>
       ) : (
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {lessons.map((lesson) => (
-            <button
-              key={lesson.id}
-              type="button"
-              onClick={() => onPlay(lesson)}
-              className="group flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left transition hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-xl"
-            >
-              <div className="relative aspect-video overflow-hidden bg-[#171713]">
-                <CourseThumb img={youtubeThumb(lesson.videoUrl)} title={lesson.title} />
-                <span className="absolute inset-0 flex items-center justify-center bg-black/25 transition group-hover:bg-black/10">
-                  <span className={`flex h-11 w-11 items-center justify-center rounded-full pl-0.5 transition ${
-                    progress.includes(lesson.id)
-                      ? "bg-[var(--forest)] text-[var(--background)]"
-                      : "bg-[var(--copper)] text-[var(--forest-deep)]"
+          {lessons.map((lesson) => {
+            const viewed = progress.includes(lesson.id);
+            return (
+              <button
+                key={lesson.id}
+                type="button"
+                onClick={() => onPlay(lesson)}
+                className="group flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-2xl"
+              >
+                <div className="relative aspect-video overflow-hidden bg-[#171713]">
+                  <CourseThumb img={youtubeThumb(lesson.videoUrl)} title={lesson.title} />
+                  <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+                  <span className="absolute inset-0 flex items-center justify-center transition group-hover:bg-black/10">
+                    <span className={`flex h-12 w-12 items-center justify-center rounded-full border-2 transition ${
+                      viewed
+                        ? "border-[var(--forest)] bg-[var(--forest)] text-[var(--background)] group-hover:scale-110"
+                        : "border-white/60 bg-white/15 backdrop-blur-sm text-white group-hover:scale-110 group-hover:bg-[var(--copper)] group-hover:text-[var(--forest-deep)]"
+                    }`}>
+                      {viewed ? <CheckIcon className="h-6 w-6" /> : <PlayIcon className="h-6 w-6" />}
+                    </span>
+                  </span>
+                  {viewed ? (
+                    <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--forest)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--background)]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--lime)]" />
+                      Visto
+                    </span>
+                  ) : (
+                    <span className="absolute right-3 top-3 rounded-full border border-white/50 bg-black/40 px-2.5 py-1 text-[10px] font-bold text-white">
+                      #{lesson.order}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col border-t hairline p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--copper)]">Lección</p>
+                  <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug">{lesson.title}</h3>
+                  <span className={`mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.12em] transition ${
+                    viewed ? "text-[var(--forest)]" : "text-[var(--copper)] group-hover:gap-2.5"
                   }`}>
-                    {progress.includes(lesson.id) ? "✓" : "▶"}
+                    {viewed ? "Repasar" : "Reproducir"}
+                    <ArrowRightIcon className="h-3.5 w-3.5" />
                   </span>
-                </span>
-                {progress.includes(lesson.id) && (
-                  <span className="absolute right-2 top-2 rounded-full bg-[var(--copper)] px-2 py-0.5 text-[10px] font-bold text-[var(--forest-deep)]">
-                    ✓ Visto
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-1 flex-col gap-1 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--copper)]">
-                  Lección #{lesson.order}
-                </p>
-                <h3 className="line-clamp-2 text-sm font-semibold">{lesson.title}</h3>
-              </div>
-            </button>
-          ))}
+                </div>
+              </button>
+            );
+          })}
         </div>
       )}
       <RatingSection courseId={course.id} courseTitle={course.title || detail.title} canRate />
@@ -473,8 +595,9 @@ function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onB
       {!full && (
         <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <button type="button" onClick={onBack} className="editorial-link text-sm font-semibold">
-              ← Volver a las lecciones
+            <button type="button" onClick={onBack} className="editorial-link inline-flex items-center gap-2 text-sm font-semibold">
+              <ArrowLeftIcon className="h-4 w-4" />
+              Volver a las lecciones
             </button>
             <p className="eyebrow mt-4">Lección #{lesson.order}</p>
             <h2 className="display-font mt-2 text-3xl leading-tight">{lesson.title}</h2>
@@ -494,9 +617,10 @@ function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onB
         <button
           type="button"
           onClick={() => onToggle(lesson.id)}
-          className={`rounded-full px-5 py-2 text-sm font-semibold ${done ? "border border-[var(--forest)] text-[var(--forest)]" : "bg-[var(--forest)] text-[var(--background)]"}`}
+          className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition ${done ? "border border-[var(--forest)] text-[var(--forest)]" : "bg-[var(--forest)] text-[var(--background)]"}`}
         >
-          {done ? "✓ Marcar como no visto" : "Marcar como visto"}
+          <CheckIcon className="h-4 w-4" />
+          {done ? "Marcar como no visto" : "Marcar como visto"}
         </button>
         <button
           type="button"
@@ -524,18 +648,20 @@ function playerNavi(
         <button
           type="button"
           onClick={() => onEnded(prevLesson)}
-          className="rounded-full border hairline px-5 py-2 text-sm transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+          className="inline-flex items-center gap-2 rounded-full border hairline px-5 py-2 text-sm transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
         >
-          ← Anterior
+          <ArrowLeftIcon className="h-4 w-4" />
+          Anterior
         </button>
       ) : null}
       {nextLesson ? (
         <button
           type="button"
           onClick={() => onEnded(nextLesson)}
-          className="rounded-full border hairline px-5 py-2 text-sm transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+          className="inline-flex items-center gap-2 rounded-full border hairline px-5 py-2 text-sm transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
         >
-          Siguiente →
+          Siguiente
+          <ArrowRightIcon className="h-4 w-4" />
         </button>
       ) : null}
     </>
@@ -575,36 +701,71 @@ function CoursesOverview({ mine, stats, locked, buying, user, onOpen, onBuy, onC
           </div>
         ) : (
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {mine.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => onOpen(c.id)}
-                className="group flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left transition hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-xl"
-              >
-                <div className="relative aspect-video overflow-hidden">
-                  <CourseThumb img={c.coverImageUrl} title={c.title} />
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/20 transition group-hover:bg-black/5">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--copper)] pl-0.5 text-[var(--forest-deep)]">▶</span>
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col p-5">
-                  <h3 className="display-font text-xl leading-tight">{c.title}</h3>
-                  {(() => {
-                    const s = statBy.get(c.id);
-                    return (
-                      <p className="mt-2 text-xs text-[var(--ink-soft)]">
-                        {s?.total ? `${s.total} leccion${s.total === 1 ? "" : "es"} · ` : `${c.lessons} leccion${c.lessons === 1 ? "" : "es"} · `}
-                        {s && s.total ? `${s.pct}% visto` : "0% por ahora"}
-                      </p>
-                    );
-                  })()}
-                  <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--copper)]">
-                    Continuar <span>→</span>
-                  </span>
-                </div>
-              </button>
-            ))}
+            {mine.map((c) => {
+              const s = statBy.get(c.id);
+              const total = s?.total ?? c.lessons;
+              const done = s?.done ?? 0;
+              const pct = s && s.total ? s.pct : 0;
+              const started = pct > 0;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => onOpen(c.id)}
+                  className="group flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-2xl"
+                >
+                  <div className="relative aspect-video overflow-hidden bg-[#171713]">
+                    <CourseThumb img={c.coverImageUrl} title={c.title} />
+                    {/* Gradiente inferior para la legibilidad */}
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                    {/* Badge de estado */}
+                    <span className={`absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${
+                      started ? "bg-[var(--forest)] text-[var(--background)]" : "border border-white/50 bg-black/40 text-white"
+                    }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${started ? "bg-[var(--lime)]" : "bg-white/80"}`} />
+                      {started ? "En progreso" : "Comenzar"}
+                    </span>
+                    {/* Porcentaje en esquina */}
+                    <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/50 px-2 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
+                      <ChartIcon className="h-3 w-3" />
+                      {pct}%
+                    </span>
+                    {/* Anillo de reproducción */}
+                    <span className="absolute inset-0 flex items-center justify-center transition group-hover:bg-black/10">
+                      <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/60 bg-white/15 backdrop-blur-sm transition group-hover:scale-110 group-hover:bg-[var(--copper)]">
+                        <PlayIcon className="h-7 w-7 text-white transition group-hover:text-[var(--forest-deep)]" />
+                      </span>
+                    </span>
+                  </div>
+
+                  <div className="flex flex-1 flex-col border-t hairline p-5">
+                    <h3 className="display-font text-lg leading-tight line-clamp-1">{c.title}</h3>
+                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-[var(--ink-soft)]">
+                      <MonitorIcon className="h-3.5 w-3.5 shrink-0" />
+                      {total} leccion{total === 1 ? "" : "es"}
+                    </p>
+
+                    <div className="mt-4 flex items-center justify-between text-[11px] font-semibold">
+                      <span className="text-[var(--ink-soft)]">{done}/{total} vistas</span>
+                      <span className="text-[var(--copper)]">{pct}% completado</span>
+                    </div>
+                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--line)]">
+                      <span
+                        className="block h-full rounded-full bg-gradient-to-r from-[var(--copper)] to-[var(--forest)] transition-all duration-500"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+
+                    <span className="mt-4 inline-flex w-full items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-[var(--copper)] transition group-hover:gap-3 group-hover:text-[var(--forest)]">
+                      Continuar
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--copper)]/10">
+                        <ArrowRightIcon className="h-4 w-4" />
+                      </span>
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </section>
@@ -633,7 +794,9 @@ function CoursesOverview({ mine, stats, locked, buying, user, onOpen, onBuy, onC
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">🔒 Cerrado</p>
+                  <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">
+                    <PadlockIcon className="h-3.5 w-3.5" /> Cerrado
+                  </p>
                   <h3 className="display-font mt-2 text-xl leading-tight">{c.title}</h3>
                   <p className="mt-2 line-clamp-2 text-sm text-[var(--ink-soft)]">{c.description ?? ""}</p>
                   <button
@@ -641,7 +804,8 @@ function CoursesOverview({ mine, stats, locked, buying, user, onOpen, onBuy, onC
                     onClick={() => onBuy(c.id)}
                     className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-[var(--copper)] px-5 py-2.5 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-105"
                   >
-                    🔓 Inscribirme
+                    <UsersIcon className="h-4 w-4" />
+                    Inscribirme
                   </button>
                 </div>
               </article>
@@ -701,7 +865,7 @@ function BuyModal({ title, user, onClose }: { title: string; user: StudentUser; 
         <p className="eyebrow">Compra de curso</p>
         <h3 className="display-font mt-2 text-2xl leading-tight">Inscribirme · {title}</h3>
         <p className="mt-2 text-xs text-[var(--ink-soft)]">
-          Deja tus datos o usa <button type="button" onClick={() => { setAuto(true); applyMine(); }} className="font-semibold underline">📋 autocompletar con mi perfil</button>. El equipo te contactará para coordinar el pago y activar el acceso.
+          Deja tus datos o usa <button type="button" onClick={() => { setAuto(true); applyMine(); }} className="inline-flex items-center gap-1.5 font-semibold underline"><UsersIcon className="h-4 w-4" /> autocompletar con mi perfil</button>. El equipo te contactará para coordinar el pago y activar el acceso.
         </p>
 
         {status === "ok" ? (
@@ -772,7 +936,11 @@ function MaterialsOverview({
                     const isPdf = material.mimeType?.toLowerCase().includes("pdf");
                     return (
                       <li key={material.id} className="flex flex-wrap items-center gap-3 rounded-xl border hairline bg-[var(--paper)] p-4">
-                        <span aria-hidden="true" className="text-2xl">{isPdf ? "📄" : "🖼️"}</span>
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--lime)] text-[var(--forest)]">
+                          <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center">
+                            <FileIcon pdf={isPdf} className="h-6 w-6" />
+                          </span>
+                        </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-semibold">{material.title || material.fileName || "Documento"}</p>
                           {material.fileName ? <p className="truncate text-xs text-[var(--ink-soft)]">{material.fileName}</p> : null}
@@ -785,8 +953,9 @@ function MaterialsOverview({
                           >
                             Ver
                           </button>
-                          <a href={materialDownloadUrl(material.id)} aria-label={`Descargar ${material.title}`} className="rounded-full border hairline px-4 py-2 text-xs font-semibold text-[var(--copper)] transition hover:border-[var(--copper)]">
-                            ⬇ Descargar
+                          <a href={materialDownloadUrl(material.id)} aria-label={`Descargar ${material.title}`} className="inline-flex items-center gap-1.5 rounded-full border hairline px-4 py-2 text-xs font-semibold text-[var(--copper)] transition hover:border-[var(--copper)]">
+                            <DownloadIcon className="h-3.5 w-3.5" />
+                            Descargar
                           </a>
                         </div>
                       </li>
@@ -820,13 +989,17 @@ function MaterialPreview({ material, src, onClose }: { material: Material; src: 
       aria-label={`Vista previa de ${material.title}`}
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3 text-white">
-        <p className="truncate text-sm font-semibold">📄 {material.title || material.fileName || "Documento"}</p>
+        <p className="flex items-center gap-2 truncate text-sm font-semibold">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center text-[var(--copper)]"><FileIcon pdf={isPdf} className="h-5 w-5" /></span>
+          {material.title || material.fileName || "Documento"}
+        </p>
         <div className="flex items-center gap-3">
           <a
             href={materialDownloadUrl(material.id)}
-            className="rounded-full bg-[var(--copper)] px-5 py-2 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-105"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--copper)] px-5 py-2 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-105"
           >
-            ⬇ Descargar PDF
+            <DownloadIcon className="h-4 w-4" />
+            Descargar PDF
           </a>
           <button
             type="button"
@@ -875,10 +1048,10 @@ function ProgressOverview({
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Cursos activos" value={mine.length} icon="🎓" />
-        <StatCard label="Videos totales" value={stats.reduce((n, s) => n + s.total, 0)} icon="🎬" />
-        <StatCard label="Videos vistos" value={totalWatched} icon="✅" />
-        <StatCard label="% Completado" value={`${globalPct}%`} icon="📊" />
+        <StatCard label="Cursos activos" value={mine.length} icon={<BookIcon className="h-4 w-4" />} />
+        <StatCard label="Videos totales" value={stats.reduce((n, s) => n + s.total, 0)} icon={<MonitorIcon className="h-4 w-4" />} />
+        <StatCard label="Videos vistos" value={totalWatched} icon={<CheckIcon className="h-4 w-4" />} />
+        <StatCard label="% Completado" value={`${globalPct}%`} icon={<ChartIcon className="h-4 w-4" />} />
       </div>
 
       <div className="mt-8 rounded-2xl border hairline bg-[var(--paper)] p-6 sm:p-8">
@@ -915,21 +1088,24 @@ function ProgressOverview({
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border hairline bg-[var(--lime)] p-5 text-sm leading-6 text-[var(--forest-deep)]">
-          💡 Marca como <strong>visto</strong> cada video al terminar para llevar tu gráfica al día.
+        <div className="flex items-start gap-3 rounded-xl border hairline bg-[var(--lime)] p-5 text-sm leading-6 text-[var(--forest-deep)]">
+          <span className="mt-0.5 shrink-0 text-[var(--copper)]"><LightbulbIcon className="h-5 w-5" /></span>
+          <span>Marca como <strong>visto</strong> cada video al terminar para llevar tu gráfica al día.</span>
         </div>
-        <div className="rounded-xl border hairline bg-[var(--lime)] p-5 text-sm leading-6 text-[var(--forest-deep)]">
-          🎯 {totalWatched === 0 ? "Reproduce tu primera lección para empezar a medir tu avance." : globalPct >= 100 ? "¡Lo completaste! Felicitaciones." : `Llevas ${globalPct}% de tu plan. Sigue así.`}
+        <div className="flex items-start gap-3 rounded-xl border hairline bg-[var(--lime)] p-5 text-sm leading-6 text-[var(--forest-deep)]">
+          <span className="mt-0.5 shrink-0 text-[var(--copper)]"><TargetIcon className="h-5 w-5" /></span>
+          <span>{totalWatched === 0 ? "Reproduce tu primera lección para empezar a medir tu avance." : globalPct >= 100 ? "¡Lo completaste! Felicitaciones." : `Llevas ${globalPct}% de tu plan. Sigue así.`}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value, icon }: { label: string; value: string | number; icon: string }) {
+function StatCard({ label, value, icon }: { label: string; value: string | number; icon: ReactNode }) {
   return (
-    <div className="rounded-xl border hairline bg-[var(--paper)] p-5">
-      <p className="eyebrow">{icon ? `${icon} ` : ""}{label}</p><p className="display-font mt-3 text-4xl leading-none">{value}</p>
+    <div className="rounded-xl border hairline bg-[var(--paper)] p-5 transition hover:border-[var(--copper)]">
+      <p className="eyebrow flex items-center gap-2">{icon}{label}</p>
+      <p className="display-font mt-3 text-4xl leading-none">{value}</p>
     </div>
   );
 }
