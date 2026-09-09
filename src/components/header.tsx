@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const navigation = [
@@ -14,7 +14,20 @@ const navigation = [
 ];
 
 function ThemeToggle() {
-    const [dark, setDark] = useState(false);
+    // Por defecto el sitio inicia en MODO OSCURO.
+    const [dark, setDark] = useState(true);
+
+    useEffect(() => {
+        try {
+            // Respeta una preferencia previa explícita del usuario (solo si eligió claro).
+            if (window.localStorage.getItem("mp-theme") === "light") {
+                setDark(false);
+                document.documentElement.classList.remove("dark");
+            }
+        } catch {
+            /* mantener el modo oscuro por defecto */
+        }
+    }, []);
 
     function toggleTheme() {
         const nextDark = !dark;
