@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { listPublishedCourses, type Course } from "@/lib/api/courses";
+import { whatsappHref } from "@/lib/site";
+import { LeadForm } from "@/components/lead-form";
+import { WhatsAppIcon, UserPlusIcon } from "@/components/ui-icons";
 
 function formatModulesCount(count: number | undefined): string {
     if (!count) return "Sin módulos";
@@ -14,6 +17,7 @@ export function CoursesGrid() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [contactTitle, setContactTitle] = useState<string | null>(null);
 
     useEffect(() => {
         void Promise.resolve().then(async () => {
@@ -64,28 +68,44 @@ export function CoursesGrid() {
         <>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {shown.map((course) => (
-                    <Link key={course.id} href={`/cursos/${course.id}`} className="group card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]">
-                        <div className="relative aspect-[16/10] overflow-hidden">
+                    <div key={course.id} className="card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition hover:border-[var(--copper)]">
+                        <Link href={`/cursos/${course.id}`} className="group relative aspect-[16/10] block overflow-hidden">
                             {course.coverImageUrl ? (
                                 <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-cover transition duration-700 group-hover:scale-110" />
                             ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-[var(--forest)]">
+                                <span className="flex h-full w-full items-center justify-center bg-[var(--forest)]">
                                     <span className="display-font text-5xl text-[var(--background)]">
                                         {course.title.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("") || "C"}
                                     </span>
-                                </div>
+                                </span>
                             )}
-                        </div>
-                        <div className="flex flex-1 flex-col px-5 py-6 sm:px-6 sm:py-7">
-                            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]">{formatModulesCount(course.modules?.length)}</p>
-                            <h3 className="display-font mt-4 text-2xl leading-tight sm:text-3xl">{course.title}</h3>
-                            {course.description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>}
-                            <div className="mt-auto flex items-center gap-2 pt-6 text-xs font-bold text-[var(--ink-soft)] transition group-hover:text-[var(--copper)]">
-                                <span className="eyebrow">Ver curso</span>
-                                <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1.5">→</span>
+                            <span className="absolute inset-0 bg-[#171713]/0 transition group-hover:bg-[#171713]/15" />
+                        </Link>
+                        <div className="flex flex-1 flex-col px-5 py-5 sm:px-5 sm:py-6">
+                            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">{formatModulesCount(course.modules?.length)}</p>
+                            <Link href={`/cursos/${course.id}`} className="display-font mt-2 text-2xl leading-tight hover:text-[var(--copper)] sm:text-3xl">{course.title}</Link>
+                            {course.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>}
+                            <div className="mt-auto flex flex-col gap-2 pt-5">
+                                <button
+                                    type="button"
+                                    onClick={() => setContactTitle(course.title)}
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--copper)] px-4 py-2.5 text-xs font-bold text-[var(--forest-deep)] transition hover:brightness-105"
+                                >
+                                    <UserPlusIcon />
+                                    Inscribirme / Contactar
+                                </button>
+                                <a
+                                    href={whatsappHref(`Hola, me interesa el curso "${course.title}". Quiero inscribirme.`)}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#25D366]/40 px-4 py-2.5 text-xs font-bold text-[#128C7E] transition hover:bg-[#25D366]/10"
+                                >
+                                    <WhatsAppIcon />
+                                    WhatsApp
+                                </a>
                             </div>
                         </div>
-                    </Link>
+                    </div>
                 ))}
             </div>
 
@@ -106,6 +126,32 @@ export function CoursesGrid() {
                     <button type="button" onClick={() => setPage(activePage + 1)} disabled={activePage >= totalPages} aria-label="Página siguiente" className="rounded-full border hairline px-4 py-2 text-sm disabled:opacity-40">→</button>
                 </nav>
             ) : null}
+
+            {contactTitle ? (
+                <CourseContactModal title={contactTitle} onClose={() => setContactTitle(null)} />
+            ) : null}
         </>
+    );
+}
+
+function CourseContactModal({ title, onClose }: { title: string; onClose: () => void }) {
+    const waLink = whatsappHref(`Hola, me interesa el curso "${title}". Quiero inscribirme.`);
+    return (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={`Inscribirme: ${title}`}>
+            <div className="absolute inset-0 bg-[#171713]/85 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative z-10 max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl border hairline bg-[var(--paper)] p-6 text-[var(--foreground)] sm:p-8">
+                <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border hairline text-sm font-bold hover:text-[var(--copper)]">✕</button>
+                <p className="eyebrow">Quiero este curso</p>
+                <h3 className="display-font mt-2 text-3xl leading-tight">Inscribirme · {title}</h3>
+                <p className="mt-2 text-sm text-[var(--ink-soft)]">Deja tus datos para que el equipo te contacte (llegará como un contacto para el admin).</p>
+                <div className="mt-5 flex flex-col gap-3">
+                    <LeadForm courseName={title} submitLabel="Solicitar inscripción" onSubmitted={(ok) => { if (ok) onClose(); }} />
+                    <a href={waLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white transition hover:brightness-105">
+                        <WhatsAppIcon />
+                        O prefieres WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
     );
 }

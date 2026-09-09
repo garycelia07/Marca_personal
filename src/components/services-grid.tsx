@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { serviceCoverUrl, whatsappHref } from "@/lib/site";
 import { LeadForm } from "@/components/lead-form";
+import { WhatsAppIcon, UserPlusIcon } from "@/components/ui-icons";
 
 type ServiceItem = { name?: string; slug?: string; tagline?: string; description?: string; coverUrl?: string };
 
@@ -79,10 +80,11 @@ function ServiceModal({ service, onClose }: { service: ServiceItem; onClose: () 
                 ) : (
                     <div className="mt-6 flex flex-wrap items-center gap-3">
                         <button type="button" onClick={() => setShowForm(true)} className="rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]">
-                            📝 Dejar mis datos
+                            <UserPlusIcon /> Dejar mis datos
                         </button>
                         <a href={whatsappHref(waMsg)} target="_blank" rel="noreferrer" className="rounded-full border hairline px-6 py-3 text-sm font-semibold text-[var(--copper)] transition hover:border-[var(--copper)]">
-                            💬 Contactarme por WhatsApp
+                            <WhatsAppIcon />
+                            Contactarme por WhatsApp
                         </a>
                     </div>
                 )}

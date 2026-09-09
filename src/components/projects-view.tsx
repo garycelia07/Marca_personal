@@ -10,6 +10,7 @@ import {
 import type { ProjectItemExt } from "@/lib/cms";
 import { LeadForm } from "@/components/lead-form";
 import { PageHero } from "@/components/page-hero";
+import { WhatsAppIcon } from "@/components/ui-icons";
 
 const PAGE_SIZE = 8; // 4 columnas x 2 filas en escritorio
 
@@ -383,7 +384,8 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
                     target="_blank"
                     className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:brightness-110"
                   >
-                    💬 Contáctame por WhatsApp
+                    <WhatsAppIcon />
+                    Contáctame por WhatsApp
                   </a>
                   <button
                     type="button"
