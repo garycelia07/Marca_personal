@@ -64,7 +64,13 @@ export function whatsappHref(message?: string): string {
 
 /** Origen público del backend (sin cola /api/v1), p.ej. https://api.garymayhua.com */
 export function publicBackendOrigin(): string {
-    const v = read("NEXT_PUBLIC_BACKEND_URL", "http://localhost:3001");
+    // En productos (build) el navegador NO lee .env del servidor: si no se
+    // inlineo NEXT_PUBLIC_BACKEND_URL, usamos el host público real y nunca localhost.
+    const fallback =
+        typeof process !== "undefined" && process.env?.NODE_ENV === "production"
+            ? "https://api.garymayhua.com"
+            : "http://localhost:3001";
+    const v = read("NEXT_PUBLIC_BACKEND_URL", fallback);
     return v.replace(/\/+$/, "").replace(/\/api\/v1$/, "");
 }
 
