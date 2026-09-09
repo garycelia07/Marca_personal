@@ -104,21 +104,21 @@ export default function IniciarSesion() {
     return (
         <SiteShell>
             <main className="grid min-h-[calc(100vh-170px)] lg:grid-cols-[0.9fr_1.1fr]">
-                <section className="auth-panel flex flex-col justify-between p-8 text-[var(--background)] sm:p-12 lg:p-16">
+                <section className="flex flex-col justify-between bg-[#171713] p-8 text-[#fffdf4] sm:p-12 lg:p-16">
                     <div className="flex items-center gap-2">
-                        <span aria-hidden="true" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--copper-soft)]/40 bg-[var(--forest-deep)] text-lg font-bold text-[var(--copper-soft)]">G</span>
-                        <Link href="/" className="display-font text-2xl">Gary <span className="text-[var(--copper-soft)]">Mayhua</span></Link>
+                        <span aria-hidden="true" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-lg font-bold text-[#f4c542]">G</span>
+                        <Link href="/" className="display-font text-2xl">Gary <span className="text-[#f4c542]">Mayhua</span></Link>
                     </div>
                     <div className="max-w-md">
-                        <p className="eyebrow text-[var(--copper-soft)]">Tu espacio de crecimiento</p>
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f4c542]">Tu espacio de crecimiento</p>
                         <h1 className="display-font mt-7 text-5xl leading-[0.92] sm:text-7xl">
-                            Vuelve a tu <em className="script-font text-[var(--copper-soft)]">próxima</em> decisión.
+                            Vuelve a tu <em className="script-font text-[#f4c542]">próxima</em> decisión.
                         </h1>
-                        <p aria-hidden="true" className="mt-10 h-[1px] w-14 bg-[var(--copper-soft)]" />
+                        <p aria-hidden="true" className="mt-10 h-[1px] w-14 bg-[#f4c542]/70" />
                     </div>
-                    <div className="space-y-5">
-                        <p className="max-w-sm text-sm leading-6 text-[var(--copper-soft)]">Accede a tus programas, recursos y conversaciones en curso.</p>
-                        <p className="max-w-sm text-xs leading-5 text-[var(--copper-soft)]">¿Aún no tienes acceso? <Link href="/" className="underline decoration-solid underline-offset-4 transition hover:text-[var(--copper)]">Escríbenos</Link> y te contamos cómo empezar.</p>
+                    <div className="space-y-5 text-[#fffdf4]/85">
+                        <p className="max-w-sm text-sm leading-6">Accede a tus programas, recursos y conversaciones en curso.</p>
+                        <p className="max-w-sm text-xs leading-5">¿Aún no tienes acceso? <Link href="/" className="text-[#f4c542] underline decoration-solid underline-offset-4 transition hover:text-[#ffee8a]">Escríbenos</Link> y te contamos cómo empezar.</p>
                     </div>
                 </section>
 <section className="flex items-center justify-center p-6 sm:p-12 lg:p-20">

@@ -96,8 +96,7 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
       {/* Hero: imagen editable desde /admin/contenido (slot proyectos) */}
       <PageHero
         slot="proyectos"
-        eyebrow="Proyectos · 04"
-        title={<>Ideas que se vuelven <em className="script-font text-[var(--copper)]">obra.</em></>}
+        title={<>Construir ideas para hacerlas <em className="script-font text-[var(--copper)]">realidad.</em></>}
       >
         Una mirada a las apuestas que construimos con visión: tiempo, capital y ejecución al
         servicio de transformar ciudades y comunidades.
