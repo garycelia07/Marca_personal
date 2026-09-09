@@ -6,9 +6,9 @@ type Slot = "hero" | "proyectos" | "servicios";
 
 type PageHeroProps = {
     slot: Slot;
-    eyebrow: string;
-    /** Contenido del titular grande. */
-    title: React.ReactNode;
+    eyebrow?: string;
+    /** Contenido del titular grande (opcional: se omite para no mostrar título). */
+    title?: React.ReactNode;
     /** Subtítulo corto (clarito debajo del titular). */
     children?: React.ReactNode;
     minHeightClass?: string;
@@ -63,12 +63,14 @@ export function PageHero({ slot, eyebrow, title, children, minHeightClass = "min
             </div>
 
             <div className={`relative mx-auto flex ${minHeightClass} max-w-[1440px] flex-col justify-end px-5 py-20 sm:px-8 lg:px-12`}>
-                <p className="eyebrow">{eyebrow}</p>
-                <h1 className="display-font mt-5 max-w-4xl text-5xl leading-[0.95] text-white sm:text-7xl lg:text-[6.5rem]">
-                    {title}
-                </h1>
+                {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
+                {title ? (
+                    <h1 className="display-font mt-5 max-w-4xl text-5xl leading-[0.95] text-white sm:text-7xl lg:text-[6.5rem]">
+                        {title}
+                    </h1>
+                ) : null}
                 {children ? (
-                    <div className="mt-6 max-w-2xl text-base leading-7 text-white/90 sm:text-lg">
+                    <div className={`mt-6 text-base leading-7 text-white/90 sm:text-lg ${title ? "" : "max-w-2xl"}`}>
                         {children}
                     </div>
                 ) : null}

@@ -43,11 +43,7 @@ export default async function Servicios() {
 
   return (
     <SiteShell>
-      <PageHero
-        slot="servicios"
-        eyebrow="Servicios · 05"
-        title={<>Mentoría que te hace <em className="script-font text-[var(--copper)]">avanzar.</em></>}
-      >
+      <PageHero slot="servicios">
         Acompaño a profesionales y emprendedores en liderazgo, educación financiera e inversión
         inmobiliaria con formatos cercanos y accionables — presencial o remoto.
       </PageHero>
