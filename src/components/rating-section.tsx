@@ -33,7 +33,9 @@ export function RatingSection({ courseId, canRate, courseTitle }: { courseId: st
     const [stars, setStars] = useState(5);
     const [comment, setComment] = useState("");
     const [sending, setSending] = useState(false);
+    const [showAll, setShowAll] = useState(false);
     const [feedback, setFeedback] = useState<"ok" | "error" | null>(null);
+    const visibleRatings = showAll ? summary.ratings : summary.ratings.slice(0, 3);
 
     async function load() {
         try {
@@ -120,7 +122,7 @@ export function RatingSection({ courseId, canRate, courseTitle }: { courseId: st
                     </li>
                 ) : null}
                 {loaded
-                    ? summary.ratings.map((r: RatingItem) => (
+                    ? visibleRatings.map((r: RatingItem) => (
                           <li key={r.id} className="rounded-xl border hairline bg-[var(--paper)] p-5">
                               <div className="flex flex-wrap items-center justify-between gap-2">
                                   <p className="text-sm font-semibold">{r.fullName ?? "Estudiante"}</p>
@@ -131,6 +133,16 @@ export function RatingSection({ courseId, canRate, courseTitle }: { courseId: st
                       ))
                     : null}
             </ul>
+
+            {loaded && summary.ratings.length > 3 ? (
+                <button
+                    type="button"
+                    onClick={() => setShowAll((s) => !s)}
+                    className="mt-5 rounded-full border hairline px-5 py-2 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+                >
+                    {showAll ? "Ver menos" : `Ver más comentarios (${summary.ratings.length - 3})`}
+                </button>
+            ) : null}
         </section>
     );
 }

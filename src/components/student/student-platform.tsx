@@ -459,7 +459,9 @@ function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onB
           controlsList="nodownload"
           className="h-full w-full"
           onEnded={() => {
-            onToggle(lesson.id);
+            if (!progress.includes(lesson.id)) {
+              onToggle(lesson.id); // suma al llegar al final (no lo desmarca)
+            }
             void markLessonDone(lesson.id); // solo al terminar: persiste en el backend
             if (nextLesson) onEnded(nextLesson);
           }}
