@@ -90,24 +90,24 @@ function BrandIcon({ brand }: { brand: SocialBrand }) {
 
 export function SiteFooter() {
     return (
-        <footer className="w-full bg-[#1F1A17] text-white/80">
+        <footer className="site-footer w-full">
             <div className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-14">
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-8 lg:gap-20">
                     <div className="max-w-xs">
                         <p className="display-font text-3xl uppercase leading-none tracking-tight">
-                            <span className="text-[#f4c542]">Gary</span>{" "}
-                            <span className="text-white">Mayhua</span>
+                            <span className="use-ft-gold">Gary</span>{" "}
+                            <span className="use-ft-head">Mayhua</span>
                         </p>
-                        <p className="mt-5 text-sm leading-6 text-white/60">
+                        <p className="use-ft-soft mt-5 text-sm leading-6">
                             Conferencista internacional, inversor inmobiliario y mentor de líderes en toda Latinoamérica.
                         </p>
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/55">Navegación</p>
+                        <p className="use-ft-soft text-xs font-bold uppercase tracking-[0.2em]">Navegación</p>
                         <ul className="mt-6 space-y-3 text-sm">
                             {NAV_LINKS.map((item) => (
                                 <li key={item.label}>
-                                    <Link href={item.href} className="text-white/70 transition hover:text-[#f4c542]">
+                                    <Link href={item.href} className="use-ft-gold-hover">
                                         {item.label}
                                     </Link>
                                 </li>
@@ -115,7 +115,7 @@ export function SiteFooter() {
                         </ul>
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/55">Redes sociales</p>
+                        <p className="use-ft-soft text-xs font-bold uppercase tracking-[0.2em]">Redes sociales</p>
                         <div className="mt-6 flex items-center gap-3">
                             {SOCIALS.map((social) => (
                                 <a
@@ -124,7 +124,7 @@ export function SiteFooter() {
                                     target="_blank"
                                     rel="noreferrer"
                                     aria-label={`Visitar ${social.label}`}
-                                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/5 transition hover:border-white/30 hover:bg-white/10"
+                                    className="use-soc flex h-11 w-11 items-center justify-center rounded-xl border"
                                 >
                                     <BrandIcon brand={social.brand} />
                                 </a>
@@ -133,8 +133,8 @@ export function SiteFooter() {
                     </div>
                 </div>
             </div>
-            <div className="border-t border-[#f4c542]/60">
-                <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-14">
+            <div className="use-ft-rule border-t">
+                <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6 text-xs use-ft-soft sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-14">
                     <span>© 2026 Gary Mayhua. Todos los derechos reservados.</span>
                     <span>Desarrollado con propósito…</span>
                 </div>

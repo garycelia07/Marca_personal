@@ -6,6 +6,7 @@ import {
     uploadMaterial,
     updateMaterial,
     deleteMaterial,
+    materialFileUrl,
     type Material,
     type MaterialPagination,
 } from "@/lib/api/materials";
@@ -244,17 +245,16 @@ export function MaterialsManager() {
                                     </td>
                                     <td className="px-5 py-4 sm:px-8">
                                         <div className="flex items-center justify-end gap-2">
-                                            {material.fileUrl && (
-                                                <a
-                                                    href={material.fileUrl}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    aria-label={`Ver ${material.title}`}
-                                                    className="rounded-full border hairline px-3 py-1.5 text-xs font-semibold text-[var(--copper)] transition hover:border-[var(--copper)] hover:bg-[var(--copper)]"
-                                                >
-                                                    Ver
-                                                </a>
-                                            )}
+                                            <a
+                                                href={materialFileUrl(material.id)}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                aria-label={`Ver ${material.title}`}
+                                                title={`Abrir ${material.title}`}
+                                                className="rounded-full border hairline px-3 py-1.5 text-xs font-semibold text-[var(--copper)] transition hover:border-[var(--copper)] hover:bg-[var(--copper)]"
+                                            >
+                                                Ver
+                                            </a>
                                             <button
                                                 type="button"
                                                 onClick={() => openEdit(material)}

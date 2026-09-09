@@ -204,8 +204,25 @@ export function CoursesManager() {
                             filteredItems.map((course) => (
                                 <tr key={course.id} className="border-b hairline transition hover:bg-[var(--lime)]">
                                     <td className="px-5 py-4 sm:px-8">
-                                        <p className="text-sm font-semibold">{course.title}</p>
-                                        {course.description ? <p className="mt-1 max-w-md truncate text-xs text-[var(--ink-soft)]">{course.description}</p> : null}
+                                        <div className="flex items-center gap-4">
+                                            {course.coverImageUrl ? (
+                                                <span className="block h-14 w-20 shrink-0 overflow-hidden rounded-lg border hairline bg-[var(--line)]">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img
+                                                        src={course.coverImageUrl}
+                                                        alt={`Portada de ${course.title}`}
+                                                        className="h-full w-full object-cover"
+                                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }}
+                                                    />
+                                                </span>
+                                            ) : (
+                                                <span className="flex h-14 w-20 shrink-0 items-center justify-center rounded-lg border hairline bg-[var(--lime)] text-lg" aria-hidden="true">🖼️</span>
+                                            )}
+                                            <span className="min-w-0">
+                                                <p className="truncate text-sm font-semibold">{course.title}</p>
+                                                {course.description ? <p className="mt-1 max-w-md truncate text-xs text-[var(--ink-soft)]">{course.description}</p> : null}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td className="px-5 py-4 sm:px-8">
                                         <p className="font-mono text-xs text-[var(--ink-soft)]">{course.slug}</p>

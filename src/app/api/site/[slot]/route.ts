@@ -62,3 +62,21 @@ export async function PUT(request: Request, { params }: Context) {
         return NextResponse.json({ message: "No se pudo conectar con el servidor." }, { status: 503 });
     }
 }
+
+/** DELETE /api/site/{slot} — borra la imagen pública de una sección (admin). */
+export async function DELETE(_request: Request, { params }: Context) {
+    const { slot } = await params;
+    if (!(VALID_SLOTS as readonly string[]).includes(slot)) {
+        return NextResponse.json({ message: "Slot no válido." }, { status: 400 });
+    }
+    try {
+        const upstream = await backendFetch(`/content/site/${slot}`, { method: "DELETE" });
+        if (!upstream.ok) {
+            const payload = await upstream.json().catch(() => null);
+            return NextResponse.json({ message: payload?.message ?? "No fue posible eliminar la imagen." }, { status: upstream.status });
+        }
+        return NextResponse.json({ ok: true });
+    } catch {
+        return NextResponse.json({ message: "No se pudo conectar con el servidor." }, { status: 503 });
+    }
+}

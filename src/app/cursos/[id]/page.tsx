@@ -8,6 +8,7 @@ import { EnrollCourseButton } from "@/components/course-enroll";
 import { getCurrentUser } from "@/lib/api/auth";
 import { backendFetch } from "@/lib/api/backend";
 import { publicBackendOrigin } from "@/lib/site";
+import { RatingSection } from "@/components/rating-section";
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -155,6 +156,10 @@ export default async function CursoDetallePage({ params }: Props) {
                             </Link>
                         </div>
                     </aside>
+                </div>
+
+                <div className="mt-6 max-w-3xl">
+                    <RatingSection courseId={course.id} courseTitle={course.title} canRate={Boolean(hasAccess)} />
                 </div>
             </section>
         </SiteShell>

@@ -124,6 +124,10 @@ export function ContentManager() {
                     </div>
                     <Link href="/cursos" className="hidden" aria-hidden="true">x</Link>
                 </div>
+                <div className="mt-6 rounded-2xl border hairline bg-transparent">
+                    <SectionImageUploader slot={SECTION_SLOT[section] === "proyectos" ? "proyectos" : "servicios"} />
+                </div>
+
                 <div className="mt-6">
                     {section === "PROJECTS" ? <ProjectsAdmin /> : <ServicesAdmin />}
                 </div>

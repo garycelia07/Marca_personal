@@ -185,7 +185,12 @@ export async function listCourseMaterials(courseId: string, params: MaterialList
     return normalizeList(payload, page, limit);
 }
 
-/** URL del stream binario del archivo (para <a download> o previsualización). */
+/** URL del stream binario del archivo (inline: se ve en la web / iframe). */
 export function materialFileUrl(id: string): string {
     return `/api/materials/${encodeURIComponent(id)}/file`;
+}
+
+/** URL que fuerza la descarga real del archivo (Content-Disposition: attachment). */
+export function materialDownloadUrl(id: string): string {
+    return `/api/materials/${encodeURIComponent(id)}/file?download=1`;
 }

@@ -120,6 +120,68 @@ html { scroll-behavior: smooth; }
 }
 
 .hairline { border-color: var(--line); }
+.site-footer {
+  --ft-bg: #1f1a17;
+  --ft-head: #ffffff;
+  --ft-text: rgba(255, 255, 255, 0.85);
+  --ft-soft: rgba(255, 255, 255, 0.55);
+  --ft-gold: #f4c542;
+  --ft-rule: rgba(244, 197, 66, 0.6);
+  --ft-soc-border: rgba(255, 255, 255, 0.15);
+  --ft-soc-bg: rgba(255, 255, 255, 0.05);
+
+  background: var(--ft-bg);
+  color: var(--ft-text);
+}
+
+/* En MODO OSCURO del sitio el footer cambia a fondo claro (fondo blanco, texto oscuro). */
+html.dark .site-footer {
+  --ft-bg: #ffffff;
+  --ft-head: #171713;
+  --ft-text: #24231f;
+  --ft-soft: #6b685e;
+  --ft-gold: #8a6a06;
+  --ft-rule: rgba(138, 106, 6, 0.35);
+  --ft-soc-border: rgba(23, 23, 19, 0.18);
+  --ft-soc-bg: rgba(23, 23, 19, 0.05);
+}
+
+.site-footer a { transition: color 180ms ease; }
+.site-footer .use-ft-text { color: var(--ft-text); }
+.site-footer .use-ft-soft { color: var(--ft-soft); }
+.site-footer .use-ft-head { color: var(--ft-head); }
+.site-footer .use-ft-gold { color: var(--ft-gold); }
+.site-footer .use-ft-gold-hover { color: var(--ft-text); }
+.site-footer .use-ft-gold-hover:hover { color: var(--ft-gold); }
+.site-footer .use-ft-rule { border-color: var(--ft-rule); }
+.site-footer .use-soc {
+  border-color: var(--ft-soc-border);
+  background: var(--ft-soc-bg);
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+.site-footer .use-soc:hover {
+  border-color: var(--ft-gold);
+  background: color-mix(in srgb, var(--ft-gold) 22%, transparent);
+}
+
+/* Cinta / marquee animado de la página de Proyectos */
+.marquee-mask {
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: inline-flex;
+  width: max-content;
+  animation: marquee-scroll 30s linear infinite;
+}
+.marquee-mask:hover .marquee-track { animation-play-state: paused; }
+
+@keyframes marquee-scroll {
+  to { transform: translateX(-50%); }
+}
+
 
 .auth-panel {
   background:

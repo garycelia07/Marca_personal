@@ -1,6 +1,6 @@
-import { PageIntro, SiteShell } from "@/components/site-shell";
-import { fetchAllContent, pickSection, projectTitle, projectItems } from "@/lib/cms";
-import { ProjectsGallery } from "@/components/projects-gallery";
+import { SiteShell } from "@/components/site-shell";
+import { fetchAllContent, pickSection, projectItems } from "@/lib/cms";
+import { ProjectsView } from "@/components/projects-view";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +10,7 @@ export default async function Proyectos() {
 
   return (
     <SiteShell>
-      <PageIntro eyebrow="Proyectos / 04" title={projectTitle(projects)}
-        description="Iniciativas y apuestas orientadas a liderazgo e inversión inmobiliaria." />
-      <section className="mx-auto max-w-[1440px] px-5 pb-20 sm:px-8 lg:px-12">
-        <ProjectsGallery items={projectItems(projects)} />
-      </section>
+      <ProjectsView items={projectItems(projects)} />
     </SiteShell>
   );
 }
