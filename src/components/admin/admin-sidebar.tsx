@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { BookIcon, DashboardIcon, EditIcon, ExternalLinkIcon, MailIcon, UsersGroupIcon, AttachmentIcon } from "@/components/admin/admin-icons";
 
 type NavIcon = typeof DashboardIcon;
@@ -27,11 +28,15 @@ export function AdminSidebar() {
 
     return (
         <aside aria-label="Navegación de administración" className="flex w-full flex-col border-r hairline bg-[var(--paper)] lg:w-60 lg:min-w-60">
-            <div className="flex items-center gap-2.5 border-b hairline px-5 py-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--forest)]">
-                    <span className="display-font text-base text-[var(--background)]">G</span>
-                </span>
-                <span className="display-font text-lg text-[var(--foreground)]">Gary <span className="text-[var(--copper)]">Mayhua</span></span>
+            <div className="flex justify-center overflow-hidden px-4 py-3">
+                <Image
+                    src="/gary.avif"
+                    alt="Gary Mayhua"
+                    width={100}
+                    height={50}
+                    className="h-15 w-50 shrink-0 rounded-xl object-cover"
+                    priority
+                />
             </div>
 
             <nav className="flex-1 space-y-1 px-3 py-4" aria-label="Menú principal">

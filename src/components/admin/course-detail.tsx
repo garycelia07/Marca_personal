@@ -14,6 +14,7 @@ import {
     type Module,
 } from "@/lib/api/courses";
 import { CourseEnrollments } from "@/components/admin/course-enrollments";
+import { checkUploadSize } from "@/lib/upload-limits";
 
 type ToastVariant = "success" | "error";
 type Toast = { id: number; variant: ToastVariant; message: string };
@@ -153,6 +154,11 @@ export function CourseDetail({ courseId }: { courseId: string }) {
     }
 
     async function handleLessonVideo(lessonId: string, file: File) {
+        const sizeError = checkUploadSize(file);
+        if (sizeError) {
+            pushToast("error", sizeError);
+            return;
+        }
         setBusy(true);
         try {
             await uploadLessonVideo(lessonId, file);

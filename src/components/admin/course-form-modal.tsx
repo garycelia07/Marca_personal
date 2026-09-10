@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Course, CreateCourseInput, UpdateCourseInput } from "@/lib/api/courses";
 import { uploadCourseCover } from "@/lib/api/courses";
+import { checkUploadSize } from "@/lib/upload-limits";
 
 export function CourseFormModal({
     title,
@@ -124,6 +125,11 @@ export function CourseFormModal({
                                         const f = event.target.files?.[0];
                                         event.target.value = "";
                                         if (!f || uploading) return;
+                                        const sizeError = checkUploadSize(f);
+                                        if (sizeError) {
+                                            setFieldError(sizeError);
+                                            return;
+                                        }
                                         setUploading(true);
                                         setFieldError(null);
                                         try {

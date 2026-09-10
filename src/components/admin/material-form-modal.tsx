@@ -127,11 +127,11 @@ export function MaterialFormModal({
                         <select
                             value={coursePick}
                             onChange={(event) => setCoursePick(event.target.value)}
-                            className="w-full rounded-md border hairline bg-transparent px-3 py-2.5 text-sm outline-none transition focus:border-[var(--copper)]"
+                            className="w-full rounded-md border hairline bg-[var(--paper)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--copper)] [color-scheme:light]"
                         >
-                            <option value="">— Material general (sin curso) —</option>
+                            <option value="" className="bg-[var(--paper)] text-[var(--foreground)]">— Material general (sin curso) —</option>
                             {courses.map((c) => (
-                                <option key={c.id} value={c.id}>
+                                <option key={c.id} value={c.id} className="bg-[var(--paper)] text-[var(--foreground)]">
                                     {c.title}
                                 </option>
                             ))}

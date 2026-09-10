@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getContentJson, saveContentJson } from "@/lib/api/content";
 import { directUploadPut, backendPublicOrigin } from "@/lib/api/direct-upload";
+import { checkUploadSize } from "@/lib/upload-limits";
 
 type ProjectDraft = { name: string; slug: string; tagline: string; description: string; link: string; coverUrl?: string; videoUrl?: string };
 type ToastV = "success" | "error";
@@ -139,6 +140,8 @@ export function ProjectsAdmin() {
     /* Subir portada/video de un proyecto (subida directa al backend). Tras subir,
        actualiza items/contenido y editing para mostrar la previsualización. */
     async function upload(kind: "cover" | "video", name: string, file: File, slug: string) {
+        const sizeError = checkUploadSize(file);
+        if (sizeError) { toast("error", sizeError); return; }
         setBusy(true);
         try {
             const mediaUrl = await uploadProjectCloud(kind, file, slug);

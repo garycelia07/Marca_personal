@@ -1,5 +1,11 @@
 import { directUpload, directUploadPut } from "@/lib/api/direct-upload";
 
+export type MaterialCourseRef = {
+    id: string;
+    title: string;
+    slug?: string;
+};
+
 export type Material = {
     id: string;
     title: string;
@@ -12,6 +18,8 @@ export type Material = {
     isPublic?: boolean;
     createdAt?: string;
     updatedAt?: string;
+    /** Curso resumido, presente en los endpoints del alumno (/me y /me/course/:id). */
+    course?: MaterialCourseRef | null;
 };
 
 export type MaterialPagination = {

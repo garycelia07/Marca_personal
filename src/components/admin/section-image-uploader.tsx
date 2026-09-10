@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { checkUploadSize } from "@/lib/upload-limits";
 
 const SLOT_LABEL: Record<string, string> = {
     hero: "Imagen principal (Home)",
@@ -16,6 +17,11 @@ export function SectionImageUploader({ slot }: { slot: "hero" | "proyectos" | "s
     const previewUrl = exists ? `/api/site/${slot}?v=${previewKey}` : undefined;
 
     async function handleFile(file: File) {
+        const sizeError = checkUploadSize(file);
+        if (sizeError) {
+            setMessage({ ok: false, text: sizeError });
+            return;
+        }
         setBusy("upload");
         setMessage(null);
         try {

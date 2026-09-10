@@ -57,6 +57,8 @@ function normalizePayload(payload: unknown, page: number, limit: number) {
 }
 
 /** POST /api/students — crea un estudiante. */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function POST(request: Request) {
     let body: CreateStudentInput;
     try {
@@ -72,11 +74,19 @@ export async function POST(request: Request) {
         );
     }
 
+    const email = body.email.trim().toLowerCase();
+    if (!EMAIL_RE.test(email)) {
+        return NextResponse.json(
+            { message: "El correo electrónico no es válido." },
+            { status: 400 }
+        );
+    }
+
     try {
         const response = await backendFetch("/students", {
             method: "POST",
             body: {
-                email: body.email.trim(),
+                email,
                 fullName: body.fullName.trim(),
                 password: body.password,
                 accessExpiresAt: body.accessExpiresAt || undefined,

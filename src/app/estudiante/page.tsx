@@ -39,18 +39,24 @@ export default async function EstudianteDashboard() {
 
     const mineCourseIds = Array.from(new Set(enrollment.map((e) => e.courseId).filter((x): x is string => Boolean(x))));
 
+    // Materiales del alumno: se usan los endpoints propios del estudiante (/materials/me),
+    // NUNCA el de admin (/materials/course/:id) que devuelve 403 al estudiante.
+    // El backend ya filtra solo los cursos con inscripción activa del alumno.
     const materialsByCourse: Record<string, Material[]> = {};
-    await Promise.all(mineCourseIds.map(async (courseId) => {
-        try {
-            const resp = await backendFetch(`/materials/course/${encodeURIComponent(courseId)}?page=1&limit=100`);
-            const json = await resp.json().catch(() => null) as { data?: Material[]; items?: Material[] } | null;
-            materialsByCourse[courseId] = Array.isArray(json && (json as { data?: unknown }).data)
-                ? (json as { data: Material[] }).data
-                : (json?.items ?? []);
-        } catch {
-            materialsByCourse[courseId] = [];
+    try {
+        const resp = await backendFetch("/materials/me?page=1&limit=100");
+        const json = await resp.json().catch(() => null) as { data?: Material[]; items?: Material[] } | null;
+        const myMaterials = Array.isArray(json && (json as { data?: unknown }).data)
+            ? (json as { data: Material[] }).data
+            : (json?.items ?? []);
+        for (const material of myMaterials) {
+            const courseId = material.course?.id ?? material.courseId;
+            if (!courseId) continue;
+            (materialsByCourse[courseId] ??= []).push(material);
         }
-    }));
+    } catch {
+        /* sin materiales */
+    }
 
     return (
         <StudentPlatform

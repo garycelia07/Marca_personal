@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getContentJson, saveContentJson } from "@/lib/api/content";
 import { directUploadPut, backendPublicOrigin } from "@/lib/api/direct-upload";
+import { checkUploadSize } from "@/lib/upload-limits";
 
 type Svc = { name: string; slug: string; description: string; coverUrl?: string };
 type Timers = { id: number; variant: "success" | "error"; message: string };
@@ -100,6 +101,8 @@ export function ServicesAdmin() {
     }
 
     async function upload(file: File, name: string, slug: string) {
+        const sizeError = checkUploadSize(file);
+        if (sizeError) { toast("error", sizeError); return; }
         setBusy(true);
         try {
             // Portada → Cloudinary (siempre URL pública cargable).

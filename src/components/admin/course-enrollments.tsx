@@ -166,10 +166,10 @@ return (
                             value={selectedStudent}
                             onChange={(event) => { setSelectedStudent(event.target.value); setAssignError(null); }}
                             aria-label="Seleccionar estudiante"
-                            className="max-w-52 rounded-full border hairline bg-transparent px-4 py-2 text-sm outline-none transition focus:border-[var(--copper)]"
+                            className="max-w-52 rounded-full border hairline bg-[var(--paper)] px-4 py-2 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--copper)] [color-scheme:light]"
                         >
-                            <option value="">Selecciona…</option>
-                            {students.map((student) => <option key={student.id} value={student.id}>{student.fullName}</option>)}
+                            <option value="" className="bg-[var(--paper)] text-[var(--foreground)]">Selecciona…</option>
+                            {students.map((student) => <option key={student.id} value={student.id} className="bg-[var(--paper)] text-[var(--foreground)]">{student.fullName}</option>)}
                         </select>
                         <input
                             type="date"

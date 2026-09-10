@@ -112,9 +112,9 @@ export function ContentManager() {
                             value={section}
                             onChange={(event) => setSection(event.target.value as ContentSection)}
                             aria-label="Seleccionar sección"
-                            className="mt-2 rounded-full border hairline bg-transparent px-4 py-2 text-sm outline-none transition focus:border-[var(--copper)]"
+                            className="mt-2 rounded-full border hairline bg-[var(--paper)] px-4 py-2 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--copper)] [color-scheme:light]"
                         >
-                            {CONTENT_SECTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                            {CONTENT_SECTIONS.map((option) => <option key={option} value={option} className="bg-[var(--paper)] text-[var(--foreground)]">{option}</option>)}
                         </select>
                         <p className="mt-2 text-xs text-[var(--ink-soft)]">
                             {section === "PROJECTS"
@@ -144,9 +144,9 @@ return (
                         value={section}
                         onChange={(event) => setSection(event.target.value as ContentSection)}
                         aria-label="Seleccionar sección"
-                        className="mt-2 rounded-full border hairline bg-transparent px-4 py-2 text-sm outline-none transition focus:border-[var(--copper)]"
+                        className="mt-2 rounded-xl border hairline bg-[var(--paper)] px-4 py-2 text-sm text-[var(--foreground)] outline-none transition focus:border-[var(--copper)] [color-scheme:light]"
                     >
-                        {CONTENT_SECTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                        {CONTENT_SECTIONS.map((option) => <option key={option} value={option} className="bg-[var(--paper)] text-[var(--foreground)]">{option}</option>)}
                     </select>
                 </div>
                 <button type="button" onClick={() => void handleSave()} disabled={busy || loading} className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-6 py-2.5 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] disabled:opacity-50">
