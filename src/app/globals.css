@@ -227,7 +227,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   left: 50%;
   pointer-events: none;
   position: absolute;
-  top: -4rem;
+  top: -2.95rem;
   transform-origin: 50% 100%;
   z-index: 3;
 }
@@ -235,6 +235,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .whatsapp-float-hand svg {
   display: block;
   filter: drop-shadow(0 0.45rem 0.85rem rgba(0, 0, 0, 0.3));
+  transform: rotate(180deg);
+  transform-origin: center;
 }
 
 .whatsapp-float:hover .whatsapp-float-icon,
@@ -283,7 +285,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
   44% {
     opacity: 1;
-    transform: translate(-50%, 0.15rem) scale(1.03);
+    transform: translate(-50%, 0.35rem) scale(1.03);
   }
   52% {
     opacity: 1;

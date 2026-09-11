@@ -44,7 +44,7 @@ export function WhatsAppLeadButton() {
             <svg
                 aria-hidden="true"
                 viewBox="0 0 24 24"
-                className="whatsapp-float-icon h-12 w-12 drop-shadow-lg"
+                className="whatsapp-float-icon h-[3.35rem] w-[3.35rem] drop-shadow-lg"
             >
                 <path
                     fill="#25D366"
