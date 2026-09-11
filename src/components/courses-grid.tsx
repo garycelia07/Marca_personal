@@ -66,9 +66,9 @@ export function CoursesGrid() {
 
     return (
         <>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 md:grid md:grid-cols-2 xl:grid-cols-4">
                 {shown.map((course) => (
-                    <div key={course.id} className="card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition hover:border-[var(--copper)]">
+                    <div key={course.id} className="card-pop shrink-0 w-[270px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition hover:border-[var(--copper)]">
                         <Link href={`/cursos/${course.id}`} className="group relative aspect-[16/10] block overflow-hidden">
                             {course.coverImageUrl ? (
                                 <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-cover transition duration-700 group-hover:scale-110" />
@@ -81,11 +81,11 @@ export function CoursesGrid() {
                             )}
                             <span className="absolute inset-0 bg-[#171713]/0 transition group-hover:bg-[#171713]/15" />
                         </Link>
-                        <div className="flex flex-1 flex-col px-5 py-5 sm:px-5 sm:py-6">
+                        <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-6">
                             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">{formatModulesCount(course.modules?.length)}</p>
-                            <Link href={`/cursos/${course.id}`} className="display-font mt-2 text-2xl leading-tight hover:text-[var(--copper)] sm:text-3xl">{course.title}</Link>
+                            <Link href={`/cursos/${course.id}`} className="display-font mt-2 text-xl leading-tight hover:text-[var(--copper)] sm:text-3xl">{course.title}</Link>
                             {course.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>}
-                            <div className="mt-auto flex flex-col gap-2 pt-5">
+                            <div className="mt-auto flex flex-col gap-2 pt-4">
                                 <button
                                     type="button"
                                     onClick={() => setContactTitle(course.title)}
