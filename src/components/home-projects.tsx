@@ -57,9 +57,9 @@ export function HomeProjects() {
       </div>
 
       {loading ? (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="animate-pulse overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
+            <div key={n} className="animate-pulse shrink-0 w-[270px] snap-start overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
               <div className="aspect-[4/3] bg-[var(--line)]" />
               <div className="space-y-3 p-5">
                 <div className="h-3 w-24 rounded bg-[var(--line)]" />
@@ -74,7 +74,7 @@ export function HomeProjects() {
           Aún no hay proyectos publicados.
         </p>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-4">
           {items.map((project, index) => {
             const href = project.slug ? `/proyectos#${project.slug}` : "/proyectos";
             const cover = project.coverUrl && project.coverUrl.trim()
@@ -84,7 +84,7 @@ export function HomeProjects() {
               <Link
                 key={project.slug || project.name || index}
                 href={href}
-                className="group card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]"
+                className="group card-pop shrink-0 w-[270px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-[var(--line)]">
                   {cover ? (
@@ -104,7 +104,7 @@ export function HomeProjects() {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-1 flex-col px-4 py-5 sm:px-5 sm:py-6">
+                <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-6">
                   {project.tagline && (
                     <p className="eyebrow">{project.tagline}</p>
                   )}

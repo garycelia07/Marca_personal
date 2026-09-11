@@ -43,9 +43,9 @@ export function FeaturedCourses() {
                 </div>
 
                 {loading ? (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-4">
                         {[1, 2, 3, 4].map((item) => (
-                            <div key={item} className="animate-pulse rounded-2xl border hairline bg-[var(--paper)]">
+                            <div key={item} className="animate-pulse shrink-0 w-[260px] snap-start rounded-2xl border hairline bg-[var(--paper)]">
                                 <div className="aspect-[4/3] rounded-t-2xl bg-[var(--line)]" />
                                 <div className="space-y-3 p-5">
                                     <div className="h-3 w-20 rounded bg-[var(--line)]" />
@@ -56,9 +56,9 @@ export function FeaturedCourses() {
                         ))}
                     </div>
                 ) : (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-4">
                         {courses.map((course) => (
-                            <Link key={course.id} href="/cursos" className="group card-pop flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]">
+                            <Link key={course.id} href="/cursos" className="group card-pop shrink-0 w-[260px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]">
                                 <div className="relative aspect-[4/3] overflow-hidden">
                                     {course.coverImageUrl ? (
                                         <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 480px" className="object-cover transition duration-700 group-hover:scale-110" />
@@ -70,7 +70,7 @@ export function FeaturedCourses() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-1 flex-col px-4 py-5 sm:px-5 sm:py-6">
+                                <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-6">
                                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">{formatModulesCount(course.modules?.length)}</p>
                                     <h3 className="display-font mt-3 text-2xl leading-tight">{course.title}</h3>
                                     {course.description && <p className="mt-3 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>}

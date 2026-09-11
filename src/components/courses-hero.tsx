@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { whatsappHref } from "@/lib/site";
 
 export function CoursesHero() {
     return (
@@ -46,8 +47,9 @@ export function CoursesHero() {
                             Iniciar sesión
                         </Link>
                         <a
-                            href="#"
-                            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }}
+                            href={whatsappHref()}
+                            target="_blank"
+                            rel="noreferrer"
                             className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-semibold text-white transition hover:brightness-105"
                         >
                             Escríbenos por WhatsApp

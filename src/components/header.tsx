@@ -86,20 +86,52 @@ export function SiteHeader() {
                 </div>
             </div>
 
-            {open && (
-                <nav className="border-t hairline bg-[var(--background)] px-5 py-5 lg:hidden" aria-label="Navegación móvil">
-                    <div className="flex flex-col gap-4">
-                        {navigation.map((item) => (
-                            <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="text-lg text-[var(--ink-soft)] transition hover:text-[var(--copper)]">
-                                {item.label}
-                            </Link>
-                        ))}
-                        <Link href="/iniciar-sesion" onClick={() => setOpen(false)} className="text-lg text-[var(--ink-soft)] transition hover:text-[var(--copper)]">
-                            Login
+            {/* Overlay para cerrar y oscurecer el fondo */}
+            <div
+                className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+                onClick={() => setOpen(false)}
+                aria-hidden="true"
+            />
+            {/* Panel deslizante desde la derecha */}
+            <div
+                className={`fixed right-0 top-0 z-50 flex h-full w-[78vw] max-w-sm transform-gpu flex-col overflow-y-auto border-l hairline bg-[var(--background)] px-7 py-6 shadow-2xl transition-transform duration-300 ease-out lg:hidden ${open ? "translate-x-0" : "translate-x-full"}`}
+                aria-label="Navegación móvil"
+                aria-hidden={!open}
+            >
+                <div className="mb-6 flex items-center justify-between">
+                    <Link href="/" onClick={() => setOpen(false)} className="flex items-center">
+                        <img src="/gary.avif" alt="Gary Mayhua" className="h-10 w-auto object-contain" />
+                    </Link>
+                    <button
+                        type="button"
+                        onClick={() => setOpen(false)}
+                        aria-label="Cerrar menú"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border hairline text-lg transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <nav className="flex flex-col gap-1" aria-label="Navegación móvil">
+                    {navigation.map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setOpen(false)}
+                            className={`rounded-lg px-4 py-3 text-lg transition hover:bg-[var(--line)] hover:text-[var(--copper)] ${pathname === item.href ? "font-semibold text-[var(--copper)]" : "text-[var(--ink-soft)]"}`}
+                        >
+                            {item.label}
                         </Link>
-                    </div>
+                    ))}
+                    <Link
+                        href="/iniciar-sesion"
+                        onClick={() => setOpen(false)}
+                        className="mt-3 rounded-full border border-[var(--forest)] px-4 py-3 text-center text-base font-semibold text-[var(--forest)] transition hover:bg-[var(--forest)] hover:text-[var(--background)]"
+                    >
+                        Login
+                    </Link>
                 </nav>
-            )}
+            </div>
         </header>
     );
 }

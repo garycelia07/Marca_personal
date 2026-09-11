@@ -33,10 +33,6 @@ export default function AboutPage() {
 
             {/* Columna Izquierda: Contenido puro */}
             <div className="flex flex-col lg:col-span-6 xl:col-span-7">
-              <span className="eyebrow inline-flex self-start items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--paper)] px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--copper)]">
-                Nosotros / 01
-              </span>
-
               <h1 className="display-font mt-6 text-5xl leading-[0.95] tracking-tight sm:text-7xl lg:text-7xl xl:text-8xl text-[var(--foreground)]">
                 Crecer con <em className="script-font text-[var(--copper)] font-normal">raíz.</em>
               </h1>
