@@ -146,7 +146,7 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
               aria-label={`Ver el proyecto ${project.name ?? "sin título"}`}
               className="group shrink-0 w-[240px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left transition duration-300 hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-xl"
             >
-              <div className="relative aspect-[4/5] overflow-hidden bg-[var(--line)]">
+              <div className="relative aspect-[5/4] overflow-hidden bg-[var(--line)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={coverOf(project)}
@@ -162,12 +162,12 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
                   </svg>
                 </span>
               </div>
-              <div className="flex flex-1 flex-col p-5">
+              <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-4 sm:py-5">
                 <h3 className="display-font text-lg leading-tight">{project.name}</h3>
                 {project.tagline ? (
-                  <p className="mt-1 line-clamp-2 text-xs text-[var(--ink-soft)]">{project.tagline}</p>
+                  <p className="mt-1 line-clamp-3 text-xs text-[var(--ink-soft)]">{project.tagline}</p>
                 ) : null}
-                <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--copper)] transition group-hover:gap-3">
+                <span className="mt-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--copper)] transition group-hover:gap-3">
                   Ver proyecto <span>→</span>
                 </span>
               </div>

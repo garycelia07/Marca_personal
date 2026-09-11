@@ -12,6 +12,19 @@ const quickLinks = [
     { title: "Editar contenido", href: "/admin/contenido", desc: "Actualiza las secciones del landing page.", icon: EditIcon },
 ];
 
+/** Formatea una fecha ISO como texto corto en español (ej. "10 sep 2026, 14:30"). */
+function formatWhen(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "nuevo";
+    return new Intl.DateTimeFormat("es-PE", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    }).format(date);
+}
+
 export default async function AdminDashboard() {
     const user = await getCurrentUser();
 
@@ -35,7 +48,7 @@ export default async function AdminDashboard() {
         students?: { total?: number; active?: number };
         courses?: { total?: number; published?: number };
         enrollments?: { total?: number };
-        leads?: { total?: number; recent?: { id: string; email?: string; name?: string; message?: string | null }[] };
+        leads?: { total?: number; recent?: { id: string; email?: string; name?: string; message?: string | null; createdAt?: string }[] };
     } = {};
     try {
         const res = await backendFetch("/dashboard/stats");
@@ -55,7 +68,7 @@ export default async function AdminDashboard() {
         key: lead.id,
         who: lead.name || lead.email || "Contacto",
         what: (lead.message || "Solicitó información").slice(0, 60),
-        when: "nuevo",
+        when: lead.createdAt ? formatWhen(lead.createdAt) : "nuevo",
     }));
 
     return (
