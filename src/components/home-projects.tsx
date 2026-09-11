@@ -22,7 +22,7 @@ export function HomeProjects() {
       try {
         const data = await getContentJson("PROJECTS");
         const raw = Array.isArray(data.items) ? (data.items as Record<string, unknown>[]) : [];
-        setItems(raw.slice(0, 4).map((r) => ({
+        setItems(raw.slice(0, 5).map((r) => ({
           name: String(r.name ?? ""),
           slug: String(r.slug ?? ""),
           tagline: String(r.tagline ?? ""),
@@ -57,8 +57,8 @@ export function HomeProjects() {
       </div>
 
       {loading ? (
-        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-x-3">
-          {[1, 2, 3, 4].map((n) => (
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
+          {[1, 2, 3, 4, 5].map((n) => (
             <div key={n} className="animate-pulse shrink-0 w-[240px] snap-start overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
               <div className="aspect-[4/3] bg-[var(--line)]" />
               <div className="space-y-3 p-5">
@@ -74,7 +74,7 @@ export function HomeProjects() {
           Aún no hay proyectos publicados.
         </p>
       ) : (
-        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-x-3">
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
           {items.map((project, index) => {
             const href = project.slug ? `/proyectos#${project.slug}` : "/proyectos";
             const cover = project.coverUrl && project.coverUrl.trim()
@@ -108,7 +108,7 @@ export function HomeProjects() {
                   {project.tagline && (
                     <p className="eyebrow">{project.tagline}</p>
                   )}
-                  <h3 className="display-font mt-2.5 text-lg leading-tight sm:text-2xl">
+                  <h3 className="display-font mt-2.5 text-lg leading-tight">
                     {project.name || "Proyecto"}
                   </h3>
                   {project.description && (

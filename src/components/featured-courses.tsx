@@ -17,7 +17,7 @@ export function FeaturedCourses() {
     useEffect(() => {
         void Promise.resolve().then(async () => {
             try {
-                const result = await listPublishedCourses({ page: 1, limit: 4 });
+                const result = await listPublishedCourses({ page: 1, limit: 5 });
                 setCourses(result.items);
             } catch {
                 setCourses([]);
@@ -43,8 +43,8 @@ export function FeaturedCourses() {
                 </div>
 
                 {loading ? (
-                    <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-x-3">
-                        {[1, 2, 3, 4].map((item) => (
+                    <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
+                        {[1, 2, 3, 4, 5].map((item) => (
                             <div key={item} className="animate-pulse shrink-0 w-[240px] snap-start rounded-2xl border hairline bg-[var(--paper)]">
                                 <div className="aspect-[4/3] rounded-t-2xl bg-[var(--line)]" />
                                 <div className="space-y-3 p-5">
@@ -56,7 +56,7 @@ export function FeaturedCourses() {
                         ))}
                     </div>
                 ) : (
-                    <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-x-3">
+                    <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
                         {courses.map((course) => (
                             <Link key={course.id} href="/cursos" className="group card-pop shrink-0 w-[240px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]">
                                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -70,9 +70,9 @@ export function FeaturedCourses() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-5 sm:py-6">
+                                <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-4 sm:py-5">
                                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">{formatModulesCount(course.modules?.length)}</p>
-                                    <h3 className="display-font mt-2.5 text-xl leading-tight">{course.title}</h3>
+                                    <h3 className="display-font mt-2.5 text-lg leading-tight">{course.title}</h3>
                                     {course.description && <p className="mt-2.5 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>}
                                     <div className="mt-auto flex items-center gap-2 pt-4 text-xs font-bold text-[var(--ink-soft)] transition group-hover:text-[var(--copper)]">
                                         <span className="eyebrow">Explorar curso</span>
