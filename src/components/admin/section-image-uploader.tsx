@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SLOT_LABEL: Record<string, string> = {
     hero: "Imagen principal (Home)",
@@ -11,9 +11,26 @@ const SLOT_LABEL: Record<string, string> = {
 export function SectionImageUploader({ slot }: { slot: "hero" | "proyectos" | "servicios" }) {
     const [busy, setBusy] = useState<"upload" | "delete" | null>(null);
     const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
-    const [exists, setExists] = useState(true);
-    const [previewKey, setPreviewKey] = useState<number>(Date.now());
+    const [exists, setExists] = useState(false);
+    const [previewKey, setPreviewKey] = useState<number>(() => Date.now());
     const previewUrl = exists ? `/api/site/${slot}?v=${previewKey}` : undefined;
+
+    useEffect(() => {
+        let cancelled = false;
+        fetch(`/api/site/${slot}`, { method: "HEAD", cache: "no-store" })
+            .then((res) => {
+                if (!cancelled) {
+                    setExists(res.ok);
+                    setPreviewKey(Date.now());
+                }
+            })
+            .catch(() => {
+                if (!cancelled) setExists(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [slot]);
 
     async function handleFile(file: File) {
         setBusy("upload");
@@ -72,7 +89,7 @@ export function SectionImageUploader({ slot }: { slot: "hero" | "proyectos" | "s
             <div className="mt-4 flex flex-wrap items-center gap-4">
                 {previewUrl ? (
                     <a href={previewUrl} target="_blank" rel="noreferrer" className="block h-20 w-28 shrink-0 overflow-hidden rounded-md border hairline bg-[var(--line)]">
-                        <img src={previewUrl} alt="Imagen actual" className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        <img key={previewUrl} src={previewUrl} alt="Imagen actual" className="h-full w-full object-cover" onError={() => setExists(false)} />
                     </a>
                 ) : (
                     <span className="flex h-20 w-28 shrink-0 items-center justify-center rounded-md border border-dashed hairline text-[11px] text-[var(--ink-soft)]">

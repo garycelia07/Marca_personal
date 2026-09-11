@@ -5,7 +5,9 @@ import Link from "next/link";
 import { SocialIcon, type SocialIconName } from "@/components/footer";
 import { LeadForm } from "@/components/lead-form";
 import { FeaturedCourses } from "@/components/featured-courses";
+import { HomeLookVideo } from "@/components/home-look-video";
 import { HomeProjects } from "@/components/home-projects";
+import { SiteImage } from "@/components/site-image";
 import { SiteShell } from "@/components/site-shell";
 
 const contactChannels: { label: string; value: string; href: string; icon: SocialIconName }[] = [
@@ -27,12 +29,22 @@ export default function Home() {
   return (
     <SiteShell>
       <section className="hero-portrait-bg relative overflow-hidden text-[var(--foreground)]">
+        <div className="absolute inset-0">
+          <SiteImage
+            slot="hero"
+            fallbackSrc="/foto.avif"
+            alt=""
+            priority
+            className="h-full w-full object-cover opacity-35"
+          />
+          <div className="absolute inset-0 bg-[var(--background)]/55" />
+        </div>
         {/* Eyebrow pegado al encabezado (borde superior del hero) */}
-        <div className="mx-auto max-w-[1440px] px-4 pt-6 sm:px-8 sm:pt-8 lg:px-12">
+        <div className="relative z-10 mx-auto max-w-[1440px] px-4 pt-6 sm:px-8 sm:pt-8 lg:px-12">
           <p className="eyebrow">Liderazgo · Patrimonio · Propósito</p>
         </div>
 
-        <div className="hero-panel-in mx-auto grid min-h-[540px] max-w-[1440px] overflow-hidden pt-6 lg:grid-cols-[0.9fr_1.35fr] lg:pt-2">
+        <div className="hero-panel-in relative z-10 mx-auto grid min-h-[540px] max-w-[1440px] overflow-hidden pt-6 lg:grid-cols-[0.9fr_1.35fr] lg:pt-2">
           <div className="hero-copy order-2 flex flex-col justify-center px-6 pb-12 sm:px-12 lg:order-1 lg:px-14">
             <h1 className="script-font text-7xl leading-[0.74] text-[var(--copper)] sm:text-8xl lg:text-[7rem]">Gary Mayhua</h1>
             <p className="mt-8 max-w-md text-2xl leading-tight sm:text-3xl lg:text-4xl">Los grandes sueños comienzan siendo un simple sueño.</p>
@@ -62,28 +74,16 @@ export default function Home() {
         </div>
       </section>
       <section className="border-y hairline bg-[var(--paper)]">
-        <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.7fr_1.3fr] lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12 lg:py-24">
           <div className="reveal">
-            <div className="flex items-center gap-4">
-              <span aria-hidden="true" className="h-px w-8 bg-[var(--copper)]" />
-              <span className="display-font text-3xl leading-none text-[var(--foreground)] sm:text-4xl lg:text-5xl">La mirada</span>
-            </div>
-            <p className="mt-9 max-w-xs text-lg leading-8 text-[var(--ink-soft)] sm:text-xl">Una filosofía práctica para convertir intención en movimiento.</p>
-            <div className="mt-14 border-t hairline pt-8">
-              <p className="eyebrow text-sm">Pilares</p>
-              <ul className="mt-6 flex flex-wrap gap-3 text-sm font-semibold text-[var(--ink-soft)] sm:text-base">
-                <li className="float-y rounded-full border hairline px-4 py-2 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "0ms" }}>Visión</li>
-                <li className="float-y rounded-full border hairline px-4 py-2 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "600ms" }}>Disciplina</li>
-                <li className="float-y rounded-full border hairline px-4 py-2 transition-colors hover:border-[var(--copper)] hover:text-[var(--copper)]" style={{ animationDelay: "1200ms" }}>Comunidad</li>
-              </ul>
-            </div>
-          </div>
-          <div className="reveal delay-1">
             <h2 className="display-font max-w-4xl text-4xl leading-[1.02] sm:text-6xl">No se trata solo de llegar más lejos. <em className="script-font text-[var(--copper)]">Se trata</em> de saber para qué.</h2>
             <div className="mt-10 flex flex-col gap-8 border-t hairline pt-8 sm:flex-row sm:items-start sm:justify-between">
               <p className="max-w-md text-base leading-7 text-[var(--ink-soft)]">Gary Mayhua nace de una convicción sencilla: las decisiones que cambian una vida combinan visión, disciplina y una comunidad que te devuelve perspectiva.</p>
               <Link href="/nosotros" className="editorial-link shrink-0 text-sm font-semibold">Nuestra forma de trabajar</Link>
             </div>
+          </div>
+          <div className="reveal delay-1">
+            <HomeLookVideo />
           </div>
         </div>
       </section>

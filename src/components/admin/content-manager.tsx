@@ -28,12 +28,80 @@ function errorMessage(error: unknown, fallback: string): string {
     return fallback;
 }
 
+function upsertField(fields: { key: string; value: string }[], key: string, value: string) {
+    const found = fields.some((field) => field.key === key);
+    if (found) {
+        return fields.map((field) => field.key === key ? { ...field, value } : field);
+    }
+    return [...fields, { key, value }];
+}
+
+function HomeVideoEditor({
+    value,
+    busy,
+    onSave,
+    onUpload,
+}: {
+    value: string;
+    busy: boolean;
+    onSave: (url: string) => void;
+    onUpload: (file: File) => void;
+}) {
+    const [draft, setDraft] = useState(value);
+
+    return (
+        <div className="rounded-xl border hairline bg-[var(--paper)] p-5">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">
+                Actualizar video Home
+            </p>
+            <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto_auto] lg:items-center">
+                <input
+                    type="url"
+                    value={draft}
+                    onChange={(event) => setDraft(event.target.value)}
+                    placeholder="Pega enlace de YouTube, Vimeo o MP4"
+                    aria-label="Enlace del video Home"
+                    className="w-full rounded-md border hairline bg-transparent px-3 py-2.5 text-sm outline-none transition placeholder:text-[var(--ink-soft)] focus:border-[var(--copper)]"
+                />
+                <button
+                    type="button"
+                    onClick={() => onSave(draft)}
+                    disabled={busy}
+                    className="rounded-full bg-[var(--forest)] px-5 py-2.5 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] disabled:opacity-50"
+                >
+                    {busy ? "Guardando..." : "Guardar video"}
+                </button>
+                <label className="inline-flex cursor-pointer items-center justify-center rounded-full border hairline px-5 py-2.5 text-sm font-semibold text-[var(--copper)] transition hover:border-[var(--copper)] disabled:opacity-50">
+                    Subir local
+                    <input
+                        type="file"
+                        accept="video/mp4,video/webm"
+                        disabled={busy}
+                        className="sr-only"
+                        onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) onUpload(file);
+                            event.target.value = "";
+                        }}
+                    />
+                </label>
+            </div>
+            {value ? (
+                <p className="mt-3 truncate text-xs text-[var(--ink-soft)]">
+                    Actual: {value}
+                </p>
+            ) : null}
+        </div>
+    );
+}
+
 export function ContentManager() {
     const [section, setSection] = useState<ContentSection>("HERO");
     const [fields, setFields] = useState<{ key: string; value: string }[]>([]);
     const [newKey, setNewKey] = useState("");
     const [loading, setLoading] = useState(true);
     const [busy, setBusy] = useState(false);
+    const [videoBusy, setVideoBusy] = useState(false);
     const [toasts, setToasts] = useState<Toast[]>([]);
     const toastId = useRef(0);
 
@@ -100,6 +168,44 @@ export function ContentManager() {
             setBusy(false);
         }
     }
+
+    async function saveHomeVideoUrl(url: string) {
+        const nextFields = upsertField(fields, "homeVideoUrl", url.trim());
+        const data: Record<string, string> = {};
+        for (const field of nextFields) {
+            const key = field.key.trim();
+            if (key) data[key] = field.value;
+        }
+        setVideoBusy(true);
+        try {
+            await saveContentSection("HERO", data);
+            setFields(nextFields);
+            pushToast("success", "Video Home actualizado.");
+        } catch (error) {
+            pushToast("error", errorMessage(error, "No fue posible guardar el video Home."));
+        } finally {
+            setVideoBusy(false);
+        }
+    }
+
+    async function uploadHomeVideo(file: File) {
+        setVideoBusy(true);
+        try {
+            const form = new FormData();
+            form.append("video", file, file.name);
+            const response = await fetch("/api/projects-media/video/home-video", { method: "PUT", body: form });
+            const payload = await response.json().catch(() => null) as { url?: string; message?: string } | null;
+            if (!response.ok || !payload?.url) {
+                throw new Error(payload?.message ?? "No fue posible subir el video.");
+            }
+            await saveHomeVideoUrl(payload.url);
+        } catch (error) {
+            pushToast("error", errorMessage(error, "No fue posible subir el video Home."));
+        } finally {
+            setVideoBusy(false);
+        }
+    }
+
     const isCardsSection = section === "PROJECTS" || section === "SERVICES";
 
     if (isCardsSection) {
@@ -165,6 +271,18 @@ return (
                         {SECTION_SLOT[section] && (
                             <div className="border-b hairline px-5 py-5 sm:px-8">
                                 <SectionImageUploader slot={SECTION_SLOT[section]} />
+                            </div>
+                        )}
+                        {section === "HERO" && (
+                            <div className="border-b hairline px-5 py-5 sm:px-8">
+                                <div key={fields.find((field) => field.key === "homeVideoUrl")?.value ?? "empty-home-video"}>
+                                    <HomeVideoEditor
+                                        value={fields.find((field) => field.key === "homeVideoUrl")?.value ?? ""}
+                                        busy={videoBusy}
+                                        onSave={(url) => void saveHomeVideoUrl(url)}
+                                        onUpload={(file) => void uploadHomeVideo(file)}
+                                    />
+                                </div>
                             </div>
                         )}
                         <div className="divide-y hairline">

@@ -34,11 +34,11 @@ export default function AboutPage() {
             {/* Columna Izquierda: Contenido puro */}
             <div className="flex flex-col lg:col-span-6 xl:col-span-7">
               <h1 className="display-font mt-6 text-5xl leading-[0.95] tracking-tight sm:text-7xl lg:text-7xl xl:text-8xl text-[var(--foreground)]">
-                Crecer con <em className="script-font text-[var(--copper)] font-normal">raíz.</em>
+                Diseñar futuro con <em className="script-font text-[var(--copper)] font-normal">criterio.</em>
               </h1>
 
               <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--ink-soft)] lg:text-lg">
-                Somos una plataforma de pensamiento y acción para quienes entienden el patrimonio como una herramienta de libertad, no como una cifra en pantalla.
+                Acompañamos a quienes quieren convertir visión, decisiones y patrimonio en una forma concreta de libertad.
               </p>
             </div>
             <div className="relative lg:col-span-6 xl:col-span-5">

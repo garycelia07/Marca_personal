@@ -6,9 +6,13 @@ type Slot = (typeof VALID_SLOTS)[number];
 
 type Context = { params: Promise<{ slot: string }> };
 
+function isValidSlot(slot: string): slot is Slot {
+    return (VALID_SLOTS as readonly string[]).includes(slot);
+}
+
 export async function GET(_request: Request, { params }: Context) {
     const { slot } = await params;
-    if (!(VALID_SLOTS as readonly string[]).includes(slot)) {
+    if (!isValidSlot(slot)) {
         return NextResponse.json({ message: "Slot no válido." }, { status: 400 });
     }
 
@@ -31,9 +35,32 @@ export async function GET(_request: Request, { params }: Context) {
     }
 }
 
+export async function HEAD(_request: Request, { params }: Context) {
+    const { slot } = await params;
+    if (!isValidSlot(slot)) {
+        return new NextResponse(null, { status: 400 });
+    }
+
+    try {
+        const upstream = await backendFetch(`/content/site/${slot}/file`);
+        if (!upstream.ok) {
+            return new NextResponse(null, { status: 404 });
+        }
+        return new NextResponse(null, {
+            status: 200,
+            headers: {
+                "Content-Type": upstream.headers.get("content-type") ?? "application/octet-stream",
+                "Cache-Control": "public, max-age=3600",
+            },
+        });
+    } catch {
+        return new NextResponse(null, { status: 502 });
+    }
+}
+
 export async function PUT(request: Request, { params }: Context) {
     const { slot } = await params;
-    if (!(VALID_SLOTS as readonly string[]).includes(slot)) {
+    if (!isValidSlot(slot)) {
         return NextResponse.json({ message: "Slot no válido." }, { status: 400 });
     }
 
@@ -66,7 +93,7 @@ export async function PUT(request: Request, { params }: Context) {
 /** DELETE /api/site/{slot} — borra la imagen pública de una sección (admin). */
 export async function DELETE(_request: Request, { params }: Context) {
     const { slot } = await params;
-    if (!(VALID_SLOTS as readonly string[]).includes(slot)) {
+    if (!isValidSlot(slot)) {
         return NextResponse.json({ message: "Slot no válido." }, { status: 400 });
     }
     try {

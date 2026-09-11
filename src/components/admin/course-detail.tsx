@@ -13,7 +13,9 @@ import {
     type Course,
     type Module,
 } from "@/lib/api/courses";
+import { uploadMaterial } from "@/lib/api/materials";
 import { CourseEnrollments } from "@/components/admin/course-enrollments";
+import { MaterialFormModal } from "@/components/admin/material-form-modal";
 
 type ToastVariant = "success" | "error";
 type Toast = { id: number; variant: ToastVariant; message: string };
@@ -43,7 +45,10 @@ export function CourseDetail({ courseId }: { courseId: string }) {
 
     const [addingLessonFor, setAddingLessonFor] = useState<string | null>(null);
     const [lessonTitle, setLessonTitle] = useState("");
+    const [lessonVideoFile, setLessonVideoFile] = useState<File | null>(null);
     const [lessonError, setLessonError] = useState<string | null>(null);
+    const [addingMaterial, setAddingMaterial] = useState(false);
+    const [materialError, setMaterialError] = useState<string | null>(null);
 
     /* Reproductor "en pantalla completa" de un video de lección (overlay fijo). */
     const overlayRef = useRef<HTMLDivElement | null>(null);
@@ -137,12 +142,22 @@ export function CourseDetail({ courseId }: { courseId: string }) {
         setBusy(true);
         setLessonError(null);
         try {
-            await addLesson(module.id, {
+            const created = await addLesson(module.id, {
                 title: lessonTitle.trim(),
                 order: nextOrder(module.lessons ?? []),
             });
-            pushToast("success", "Lección agregada correctamente.");
+            if (lessonVideoFile) {
+                try {
+                    await uploadLessonVideo(created.id, lessonVideoFile);
+                    pushToast("success", "Lección y video agregados correctamente.");
+                } catch (err) {
+                    pushToast("error", errorMessage(err, "La lección se creó, pero no se pudo subir el video."));
+                }
+            } else {
+                pushToast("success", "Lección agregada correctamente.");
+            }
             setLessonTitle("");
+            setLessonVideoFile(null);
             setAddingLessonFor(null);
             void load();
         } catch (err) {
@@ -173,6 +188,26 @@ export function CourseDetail({ courseId }: { courseId: string }) {
             void load();
         } catch (err) {
             pushToast("error", errorMessage(err, "No se pudo eliminar el video."));
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function handleAddMaterial(input: { title: string; file?: File; courseId?: string | null; isPublic: boolean }) {
+        if (!course || !input.file) return;
+        setBusy(true);
+        setMaterialError(null);
+        try {
+            await uploadMaterial({
+                title: input.title,
+                file: input.file,
+                courseId: course.id,
+                isPublic: input.isPublic,
+            });
+            pushToast("success", "Material agregado al curso.");
+            setAddingMaterial(false);
+        } catch (err) {
+            setMaterialError(errorMessage(err, "No fue posible subir el material."));
         } finally {
             setBusy(false);
         }
@@ -212,7 +247,17 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                 <p className="eyebrow">Detalle del curso</p>
                 <h1 className="display-font mt-4 text-4xl leading-none sm:text-5xl">{course.title}</h1>
                 {course.description && <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--ink-soft)]">{course.description}</p>}
-                <p className="font-mono text-xs text-[var(--ink-soft)]">/{course.slug}</p>
+                <div className="flex flex-wrap items-center gap-3">
+                    <p className="font-mono text-xs text-[var(--ink-soft)]">/{course.slug}</p>
+                    <button
+                        type="button"
+                        onClick={() => { setMaterialError(null); setAddingMaterial(true); }}
+                        disabled={busy}
+                        className="rounded-full border hairline px-4 py-2 text-xs font-semibold text-[var(--copper)] transition hover:border-[var(--copper)] disabled:opacity-50"
+                    >
+                        + Subir material
+                    </button>
+                </div>
             </div>
 <div className="mt-10 border-t hairline pt-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -246,12 +291,25 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                     ) : (
                         sortedModules.map((module) => (
                             <article key={module.id} className="overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
-                                <div className="flex items-center gap-3 border-b hairline px-5 py-4 sm:px-6">
+                                <div className="flex flex-wrap items-center gap-3 border-b hairline px-5 py-4 sm:px-6">
                                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--lime)] text-sm font-bold text-[var(--copper)]">{module.order + 1}</span>
                                     <h2 className="display-font text-2xl leading-none">{module.title}</h2>
+                                    {addingLessonFor !== module.id ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => { setLessonError(null); setLessonVideoFile(null); setAddingLessonFor(module.id); }}
+                                            className="ml-auto rounded-full border hairline px-4 py-2 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+                                        >
+                                            + Lección / video
+                                        </button>
+                                    ) : null}
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 px-5 py-5 sm:px-6 lg:grid-cols-4">
-                                    {(module.lessons ?? []).sort((a, b) => a.order - b.order).map((lesson) => (
+                                    {(module.lessons ?? []).length === 0 ? (
+                                        <div className="col-span-full rounded-xl border hairline bg-[var(--lime)] px-5 py-6 text-center text-sm text-[var(--ink-soft)]">
+                                            Este módulo aún no tiene lecciones. Agrega una lección y podrás subir su video.
+                                        </div>
+                                    ) : (module.lessons ?? []).sort((a, b) => a.order - b.order).map((lesson) => (
                                         <div key={lesson.id} className="flex flex-col overflow-hidden rounded-xl border hairline bg-[var(--paper)]">
                                             <div className="relative aspect-video overflow-hidden rounded-t-xl border-b hairline bg-black">
                                                 {lesson.videoUrl ? (
@@ -310,11 +368,25 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                                                 placeholder="Título de la lección"
                                                 className="w-64 rounded-full border hairline bg-transparent px-3 py-2 text-sm outline-none transition placeholder:text-[var(--ink-soft)] focus:border-[var(--copper)]"
                                             />
+                                            <label className="block text-xs font-semibold text-[var(--ink-soft)]">
+                                                Video de la lección
+                                                <input
+                                                    type="file"
+                                                    accept="video/mp4,video/webm"
+                                                    disabled={busy}
+                                                    onChange={(event) => {
+                                                        setLessonVideoFile(event.target.files?.[0] ?? null);
+                                                        setLessonError(null);
+                                                    }}
+                                                    className="mt-1 w-64 rounded-md border hairline bg-transparent px-3 py-2 text-xs file:mr-3 file:rounded-full file:border-0 file:bg-[var(--forest)] file:px-3 file:py-1 file:text-[10px] file:font-semibold file:text-[var(--background)]"
+                                                />
+                                                {lessonVideoFile ? <span className="mt-1 block max-w-64 truncate font-normal">{lessonVideoFile.name}</span> : null}
+                                            </label>
                                             <button type="button" onClick={() => void handleAddLesson(module)} disabled={busy} className="rounded-full bg-[var(--forest)] px-4 py-2 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] disabled:opacity-50">Guardar</button>
-                                            <button type="button" onClick={() => { setAddingLessonFor(null); setLessonTitle(""); setLessonError(null); }} disabled={busy} className="rounded-full border hairline px-4 py-2 text-sm font-semibold transition hover:border-[var(--forest)] hover:text-[var(--forest)]">Cancelar</button>
+                                            <button type="button" onClick={() => { setAddingLessonFor(null); setLessonTitle(""); setLessonVideoFile(null); setLessonError(null); }} disabled={busy} className="rounded-full border hairline px-4 py-2 text-sm font-semibold transition hover:border-[var(--forest)] hover:text-[var(--forest)]">Cancelar</button>
                                         </div>
                                     ) : (
-                                        <button type="button" onClick={() => { setLessonError(null); setAddingLessonFor(module.id); }} className="rounded-full border hairline px-4 py-2 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">+ Lección</button>
+                                        <button type="button" onClick={() => { setLessonError(null); setLessonVideoFile(null); setAddingLessonFor(module.id); }} className="rounded-full border hairline px-4 py-2 text-sm font-semibold transition hover:border-[var(--copper)] hover:text-[var(--copper)]">+ Lección / video</button>
                                     )}
                                     {lessonError && addingLessonFor === module.id && <p role="alert" className="mt-2 text-xs text-[var(--danger)]">{lessonError}</p>}
                                 </div>
@@ -344,6 +416,18 @@ export function CourseDetail({ courseId }: { courseId: string }) {
             </div>
 
             <CourseEnrollments courseId={course.id} />
+
+            {addingMaterial ? (
+                <MaterialFormModal
+                    title={`Subir material · ${course.title}`}
+                    courseId={course.id}
+                    courses={[{ id: course.id, title: course.title }]}
+                    busy={busy}
+                    error={materialError}
+                    onSubmit={(input) => void handleAddMaterial(input)}
+                    onClose={() => { setAddingMaterial(false); setMaterialError(null); }}
+                />
+            ) : null}
 
             <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-3">
                 {toasts.map((toast) => (

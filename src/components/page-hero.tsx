@@ -30,7 +30,7 @@ const FALLBACKS: Record<Slot, string> = {
  */
 export function PageHero({ slot, eyebrow, title, children, minHeightClass = "min-h-[420px] lg:min-h-[520px]" }: PageHeroProps) {
     const [img, setImg] = useState<string | null>(null);
-    const [broken, setBroken] = useState(false);
+    const [brokenSrc, setBrokenSrc] = useState<string | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -45,7 +45,7 @@ export function PageHero({ slot, eyebrow, title, children, minHeightClass = "min
         };
     }, [slot]);
 
-    const src = img && !broken ? img : FALLBACKS[slot];
+    const src = img && brokenSrc !== img ? img : FALLBACKS[slot];
 
     return (
         <section className="relative overflow-hidden">
@@ -54,7 +54,7 @@ export function PageHero({ slot, eyebrow, title, children, minHeightClass = "min
                 <img
                     src={src}
                     alt=""
-                    onError={() => setBroken(true)}
+                    onError={() => setBrokenSrc(src)}
                     className="h-full w-full object-cover"
                     loading="eager"
                 />

@@ -10,13 +10,15 @@ export function WhatsAppLeadButton() {
             rel="noreferrer"
             aria-label="Escribir por WhatsApp"
             title="Escribir por WhatsApp"
-            className="fixed bottom-5 right-5 z-30 flex h-12 w-12 items-center justify-center transition hover:scale-110 sm:bottom-8 sm:right-8"
+            className="whatsapp-float group fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center transition hover:scale-110 sm:bottom-8 sm:right-8"
         >
+            <span className="whatsapp-float-ring" aria-hidden="true" />
+            <span className="whatsapp-float-hand" aria-hidden="true">☝</span>
             {/* Glifo oficial de WhatsApp en verde, sin fondo */}
             <svg
                 aria-hidden="true"
                 viewBox="0 0 24 24"
-                className="h-full w-full drop-shadow-lg"
+                className="whatsapp-float-icon h-12 w-12 drop-shadow-lg"
             >
                 <path
                     fill="#25D366"

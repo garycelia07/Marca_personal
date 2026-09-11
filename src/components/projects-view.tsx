@@ -83,14 +83,6 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
     setPage(next);
   }
 
-  if (safeItems.length === 0) {
-    return (
-      <p className="rounded-2xl border hairline bg-[var(--paper)] px-6 py-16 text-center text-sm text-[var(--ink-soft)]">
-        Aún no hay proyectos publicados.
-      </p>
-    );
-  }
-
   return (
     <>
       {/* Hero: imagen editable desde /admin/contenido (slot proyectos) */}
@@ -127,6 +119,12 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
 
       {/* Grilla + paginación */}
       <section className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+        {safeItems.length === 0 ? (
+          <p className="rounded-2xl border hairline bg-[var(--paper)] px-6 py-16 text-center text-sm text-[var(--ink-soft)]">
+            Aún no hay proyectos publicados.
+          </p>
+        ) : (
+          <>
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="eyebrow">Portafolio</p>
@@ -212,6 +210,8 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
             </button>
           </nav>
         ) : null}
+          </>
+        )}
       </section>
 
       {selected ? <Modal project={selected} onClose={() => setSelected(null)} /> : null}

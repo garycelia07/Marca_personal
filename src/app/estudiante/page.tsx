@@ -42,7 +42,7 @@ export default async function EstudianteDashboard() {
     const materialsByCourse: Record<string, Material[]> = {};
     await Promise.all(mineCourseIds.map(async (courseId) => {
         try {
-            const resp = await backendFetch(`/materials/course/${encodeURIComponent(courseId)}?page=1&limit=100`);
+            const resp = await backendFetch(`/materials/me/course/${encodeURIComponent(courseId)}?page=1&limit=100`);
             const json = await resp.json().catch(() => null) as { data?: Material[]; items?: Material[] } | null;
             materialsByCourse[courseId] = Array.isArray(json && (json as { data?: unknown }).data)
                 ? (json as { data: Material[] }).data
