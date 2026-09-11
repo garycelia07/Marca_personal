@@ -11,34 +11,44 @@ type Milestone = {
 
 const MILESTONES: Milestone[] = [
   {
-    year: "2009",
-    title: "El comienzo",
-    body: "Partí desde cero, sin recursos económicos pero con una visión clara de lo que quería lograr. Empecé a formarme en ventas y marketing digital.",
-  },
-  {
-    year: "2013",
-    title: "Ingreso al sector inmobiliario",
-    body: "Me uní a Ciudapolis, la primera franquicia inmobiliaria peruana, dando mis primeros pasos como agente inmobiliario.",
-  },
-  {
     year: "2016",
-    title: "Primera inversión",
-    body: "Adquirí mi primera propiedad invirtiendo todos mis ahorros. Ese momento cambió mi comprensión del dinero para siempre.",
+    title: "Culminé mi carrera",
+    body: "Terminé mi carrera de Administración de Negocios Internacionales. Soy de Huancavelica, quechua hablante, con grandes sueños y la convicción de construir un mejor futuro. El conocimiento fue el primer paso para transformar mi vida.",
   },
   {
-    year: "2019",
-    title: "Expansión como speaker",
-    body: "Comencé a dictar charlas y asesorías personalizadas de ventas, formando a emprendedores en mentalidad de inversión y liderazgo.",
+    year: "2017",
+    title: "Primer contacto con el mercadeo en red",
+    body: "Conocí la industria de network marketing. Fui consumidor de productos, pero aún no lograba entender el sistema ni su verdadero potencial. Una semilla que más adelante comenzaría a dar frutos.",
   },
   {
-    year: "2022",
-    title: "Proyectos propios",
-    body: "Impulsé proyectos inmobiliarios como Residencial Amazon Garden en Tingo María, consolidando mi rol como inversionista activo.",
+    year: "2020",
+    title: "Volví a intentarlo",
+    body: "Junto a mi hermana ingresé nuevamente al mercadeo en red. Esta vez con una mentalidad de aprender, desarrollar habilidades y emprender de verdad. Aprendí que todo fracaso es una oportunidad de crecer.",
+  },
+  {
+    year: "2021",
+    title: "Descubrí los bienes raíces",
+    body: "Ingresé al mundo inmobiliario y me dediqué al 100% a aprender. Dejé temporalmente el mercadeo en red para enfocarme en este rubro. Aprendí ventas e inversiones, y descubrí un mundo fascinante. Los bienes raíces me enseñaron a construir patrimonio y libertad financiera.",
+  },
+  {
+    year: "2023",
+    title: "Tres años de gran aprendizaje",
+    body: "Fueron tres años maravillosos donde aprendí todo sobre el desarrollo inmobiliario, ventas e inversiones. Continué invirtiendo porque entendí que es una forma de generar riqueza a largo plazo.",
+  },
+  {
+    year: "2024",
+    title: "Un nuevo comienzo",
+    body: "Conocí a un gran amigo en bienes raíces que me presentó nuevamente la industria del network marketing. Ingresé en junio de 2024, esta vez de forma profesional, con más información, práctica y experiencia. La experiencia me dio claridad para construir en grande.",
+  },
+  {
+    year: "2025",
+    title: "Crecimiento acelerado",
+    body: "Nuestra comunidad comenzó a expandirse rápidamente, formando equipos, desarrollando líderes y generando oportunidades en diferentes regiones del Perú y otros países. Las personas correctas multiplican los resultados.",
   },
   {
     year: "2026",
-    title: "Plataforma digital y nuevas marcas",
-    body: "Lancé presencia en nuevas plataformas de inversión (Yala) y marcas asociadas (Cluv360), integrando marketing, bienes raíces e inversión bajo una sola visión.",
+    title: "Expansión global",
+    body: "Hoy ya somos más de 2,000 socios en 18 departamentos del Perú, con presencia en 9 países de América y Europa, trabajando en una compañía dentro de cuatro industrias. Seguimos construyendo un legado de libertad, impacto y oportunidades en todo el mundo.",
   },
 ];
 
