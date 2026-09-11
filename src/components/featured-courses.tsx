@@ -70,11 +70,11 @@ export function FeaturedCourses() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-6">
+                                <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-5 sm:py-6">
                                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">{formatModulesCount(course.modules?.length)}</p>
-                                    <h3 className="display-font mt-3 text-2xl leading-tight">{course.title}</h3>
-                                    {course.description && <p className="mt-3 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>}
-                                    <div className="mt-auto flex items-center gap-2 pt-5 text-xs font-bold text-[var(--ink-soft)] transition group-hover:text-[var(--copper)]">
+                                    <h3 className="display-font mt-2.5 text-xl leading-tight">{course.title}</h3>
+                                    {course.description && <p className="mt-2.5 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{course.description}</p>}
+                                    <div className="mt-auto flex items-center gap-2 pt-4 text-xs font-bold text-[var(--ink-soft)] transition group-hover:text-[var(--copper)]">
                                         <span className="eyebrow">Explorar curso</span>
                                         <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1.5">→</span>
                                     </div>

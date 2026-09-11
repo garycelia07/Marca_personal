@@ -104,19 +104,19 @@ export function HomeProjects() {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-6">
+                <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-5 sm:py-6">
                   {project.tagline && (
                     <p className="eyebrow">{project.tagline}</p>
                   )}
-                  <h3 className="display-font mt-3 text-xl leading-tight sm:text-2xl">
+                  <h3 className="display-font mt-2.5 text-lg leading-tight sm:text-2xl">
                     {project.name || "Proyecto"}
                   </h3>
                   {project.description && (
-                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">
+                    <p className="mt-2.5 line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">
                       {project.description}
                     </p>
                   )}
-                  <div className="mt-auto flex items-center gap-2 pt-5 text-xs font-bold text-[var(--ink-soft)] transition group-hover:text-[var(--copper)]">
+                  <div className="mt-auto flex items-center gap-2 pt-4 text-xs font-bold text-[var(--ink-soft)] transition group-hover:text-[var(--copper)]">
                     <span>{project.link ? "Conocer más" : "Ver proyecto"}</span>
                     <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1.5">→</span>
                   </div>

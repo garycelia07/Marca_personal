@@ -137,14 +137,14 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {pageItems.map((project) => (
             <button
               key={project.slug ?? project.name ?? coverOf(project)}
               type="button"
               onClick={() => setSelected(project)}
               aria-label={`Ver el proyecto ${project.name ?? "sin título"}`}
-              className="group flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left transition duration-300 hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-xl"
+              className="group shrink-0 w-[270px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left transition duration-300 hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-xl"
             >
               <div className="relative aspect-[16/11] overflow-hidden bg-[var(--line)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

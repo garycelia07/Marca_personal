@@ -15,25 +15,25 @@ export function ServicesGrid({ items }: { items: ServiceItem[] }) {
     }
     return (
         <>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 lg:grid-cols-4">
                 {items.map((service, index) => {
                     const src = (service.coverUrl && service.coverUrl.trim()) ? service.coverUrl.trim() : serviceCoverUrl(service.name ?? "");
                     return (
-                        <article key={service.slug ?? service.name ?? index} className="flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
+                        <article key={service.slug ?? service.name ?? index} className="group shrink-0 w-[270px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
                             <div className="relative aspect-[4/3] overflow-hidden bg-[var(--line)]">
                                 {src ? (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img src={src} alt={service.name ?? "Servicio"} loading="lazy" className="h-full w-full object-cover" />
                                 ) : null}
                             </div>
-                            <div className="flex flex-1 flex-col px-5 py-6 sm:px-6 sm:py-7">
+                            <div className="flex flex-1 flex-col px-4 py-4 sm:px-6 sm:py-7">
                                 <p className="eyebrow">Servicio</p>
-                                <h2 className="display-font mt-3 text-3xl leading-tight">{service.name}</h2>
-                                <p className="mt-3 line-clamp-4 text-sm leading-6 text-[var(--ink-soft)]">{service.description ?? ""}</p>
+                                <h2 className="display-font mt-2.5 text-2xl leading-tight">{service.name}</h2>
+                                <p className="mt-2.5 line-clamp-4 text-sm leading-6 text-[var(--ink-soft)]">{service.description ?? ""}</p>
                                 <button
                                     type="button"
                                     onClick={() => setOpen(service)}
-                                    className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-[var(--copper)] px-5 py-2.5 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-105"
+                                    className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-[var(--copper)] px-5 py-2.5 text-sm font-bold text-[var(--forest-deep)] transition hover:brightness-105"
                                 >
                                     Solicitar servicio →
                                 </button>
