@@ -14,7 +14,7 @@ import { listAdminCourses, type Course } from "@/lib/api/courses";
 import { MaterialFormModal } from "@/components/admin/material-form-modal";
 import { buildPageList } from "@/components/admin/students-utils";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 type ToastVariant = "success" | "error";
 type Toast = { id: number; variant: ToastVariant; message: string };

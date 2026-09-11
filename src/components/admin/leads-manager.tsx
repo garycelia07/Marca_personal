@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { listLeads, type LeadPagination } from "@/lib/api/leads";
 import { buildPageList } from "@/components/admin/students-utils";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 type ToastVariant = "success" | "error";
 type Toast = { id: number; variant: ToastVariant; message: string };

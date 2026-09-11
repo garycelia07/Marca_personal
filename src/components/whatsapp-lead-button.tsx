@@ -13,7 +13,7 @@ export function WhatsAppLeadButton() {
             className="whatsapp-float group fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center transition hover:scale-110 sm:bottom-8 sm:right-8"
         >
             <span className="whatsapp-float-ring" aria-hidden="true" />
-            <span className="whatsapp-float-hand" aria-hidden="true">☝</span>
+            <span className="whatsapp-float-hand" aria-hidden="true" />
             {/* Glifo oficial de WhatsApp en verde, sin fondo */}
             <svg
                 aria-hidden="true"

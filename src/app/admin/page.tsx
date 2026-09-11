@@ -64,7 +64,7 @@ export default async function AdminDashboard() {
         { label: "Contactos de la web", value: metrics.leads?.total ?? 0, icon: MailIcon },
     ];
 
-    const recent = (metrics.leads?.recent ?? []).map((lead) => ({
+    const recent = (metrics.leads?.recent ?? []).slice(0, 5).map((lead) => ({
         key: lead.id,
         who: lead.name || lead.email || "Contacto",
         what: (lead.message || "Solicitó información").slice(0, 60),

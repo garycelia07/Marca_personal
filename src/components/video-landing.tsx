@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { siteConfig, whatsappHref } from "@/lib/site";
+import { VideoShareButton } from "@/components/video-share-button";
 
 type VideoKind =
   | { type: "youtube"; src: string }
@@ -34,7 +35,7 @@ function resolveVideo(url?: string): VideoKind | null {
 
 export function VideoLanding({ title = "Video exclusivo", videoUrl, whatsappMessage }: VideoLandingConfig) {
   const video = resolveVideo(videoUrl);
-  const message = whatsappMessage ?? `Hola, quiero unirme después de ver el video de ${siteConfig.brand}.`;
+  const message = whatsappMessage ?? `Hola, quiero ser parte después de ver el video de ${siteConfig.brand}.`;
 
   return (
     <main className="min-h-screen bg-[#10100e] px-4 py-8 text-white sm:px-6 lg:px-8">
@@ -74,9 +75,9 @@ export function VideoLanding({ title = "Video exclusivo", videoUrl, whatsappMess
             href={whatsappHref(message)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-8 py-3.5 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
+            className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:brightness-110"
           >
-            Quiero unirme
+            Quiero ser parte
           </a>
           <Link
             href="/"
@@ -84,6 +85,7 @@ export function VideoLanding({ title = "Video exclusivo", videoUrl, whatsappMess
           >
             Conocer más
           </Link>
+          <VideoShareButton title={title} />
         </div>
       </section>
     </main>

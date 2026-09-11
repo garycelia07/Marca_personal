@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { VideoLanding } from "@/components/video-landing";
-import { VIDEO_PRESETS } from "@/lib/video-presets";
+import { fetchAllContent, pickSection } from "@/lib/cms";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 };
 
 type PageProps = {
-  params: Promise<{ slug: string }>;
   searchParams?: Promise<{
     v?: string;
     title?: string;
@@ -18,16 +17,17 @@ type PageProps = {
   }>;
 };
 
-export default async function VideoBySlugPage({ params, searchParams }: PageProps) {
-  const { slug } = await params;
+export default async function ReproducirPage({ searchParams }: PageProps) {
   const query = await searchParams;
-  const preset = VIDEO_PRESETS[slug] ?? {};
+  const blocks = await fetchAllContent();
+  const hero = pickSection(blocks, "HERO");
+  const heroData = (hero?.data ?? {}) as { homeVideoUrl?: string };
 
   return (
     <VideoLanding
-      title={query?.title || preset.title || "Video exclusivo"}
-      videoUrl={query?.v || preset.videoUrl}
-      whatsappMessage={query?.msg || preset.whatsappMessage}
+      title={query?.title || "Video exclusivo"}
+      videoUrl={query?.v || heroData.homeVideoUrl}
+      whatsappMessage={query?.msg}
     />
   );
 }

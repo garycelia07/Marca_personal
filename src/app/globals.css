@@ -204,16 +204,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .whatsapp-float {
   isolation: isolate;
+  overflow: visible;
 }
 
 .whatsapp-float-icon {
-  animation: whatsapp-pulse 1.8s ease-in-out infinite;
+  animation: whatsapp-pulse 2.4s ease-in-out infinite;
   position: relative;
   z-index: 2;
 }
 
 .whatsapp-float-ring {
-  animation: whatsapp-ring 1.8s ease-out infinite;
+  animation: whatsapp-ring 2.4s ease-out infinite;
   border: 2px solid rgba(37, 211, 102, 0.58);
   border-radius: 9999px;
   inset: 0.25rem;
@@ -223,59 +224,104 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .whatsapp-float-hand {
   animation: whatsapp-hand-point 2.4s ease-in-out infinite;
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
-  font-size: 1.5rem;
-  line-height: 1;
+  background: #ffd3a3;
+  border: 2px solid rgba(85, 55, 27, 0.18);
+  border-radius: 999px 999px 0.65rem 0.65rem;
+  box-shadow:
+    inset -0.1rem -0.12rem 0 rgba(155, 96, 41, 0.16),
+    0 0.45rem 0.9rem rgba(0, 0, 0, 0.22);
+  height: 1.35rem;
+  left: 50%;
   pointer-events: none;
   position: absolute;
-  right: 2.75rem;
-  top: -0.15rem;
-  transform-origin: 70% 85%;
+  top: -4.25rem;
+  transform-origin: 50% 100%;
+  width: 1.55rem;
   z-index: 3;
+}
+
+.whatsapp-float-hand::before,
+.whatsapp-float-hand::after {
+  content: "";
+  position: absolute;
+}
+
+.whatsapp-float-hand::before {
+  background: #ffd3a3;
+  border: 2px solid rgba(85, 55, 27, 0.18);
+  border-radius: 999px;
+  box-shadow: inset -0.08rem -0.1rem 0 rgba(155, 96, 41, 0.16);
+  height: 2.85rem;
+  left: 50%;
+  top: 0.85rem;
+  transform: translateX(-50%);
+  width: 0.55rem;
+}
+
+.whatsapp-float-hand::after {
+  background: #f0f4ff;
+  border-radius: 0.25rem;
+  bottom: -0.35rem;
+  height: 0.45rem;
+  left: 0.12rem;
+  right: 0.12rem;
 }
 
 .whatsapp-float:hover .whatsapp-float-icon,
 .whatsapp-float:focus-visible .whatsapp-float-icon {
-  animation-duration: 900ms;
+  animation-duration: 1.2s;
 }
 
 @keyframes whatsapp-pulse {
-  0%, 100% {
+  0%, 24%, 72%, 100% {
     filter: brightness(1) drop-shadow(0 10px 16px rgba(37, 211, 102, 0.25));
     transform: scale(1);
   }
-  45% {
-    filter: brightness(1.22) drop-shadow(0 12px 22px rgba(37, 211, 102, 0.5));
-    transform: scale(1.08);
+  40%, 52% {
+    filter: brightness(1.35) drop-shadow(0 12px 26px rgba(37, 211, 102, 0.62));
+    transform: scale(1.1);
+  }
+  46% {
+    filter: brightness(1.6) drop-shadow(0 12px 30px rgba(37, 211, 102, 0.78));
+    transform: scale(1.14);
   }
 }
 
 @keyframes whatsapp-ring {
-  0% {
-    opacity: 0.55;
+  0%, 28% {
+    opacity: 0;
     transform: scale(0.88);
   }
-  70% {
-    opacity: 0;
-    transform: scale(1.45);
+  36% {
+    opacity: 0.55;
+    transform: scale(0.9);
   }
-  100% {
+  68%, 100% {
     opacity: 0;
     transform: scale(1.45);
   }
 }
 
 @keyframes whatsapp-hand-point {
-  0%, 100% {
-    opacity: 0.72;
-    transform: translate(-0.1rem, 0.2rem) rotate(22deg) scale(0.96);
+  0%, 18%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -1.7rem) scale(0.94);
   }
-  42% {
+  30% {
     opacity: 1;
-    transform: translate(0.35rem, 0.45rem) rotate(14deg) scale(1.03);
+    transform: translate(-50%, -0.55rem) scale(1);
   }
-  58% {
-    transform: translate(0.24rem, 0.35rem) rotate(18deg) scale(0.98);
+  44% {
+    opacity: 1;
+    transform: translate(-50%, 0.15rem) scale(1.03);
+  }
+  52% {
+    opacity: 1;
+    transform: translate(-50%, -0.05rem) scale(0.98);
+  }
+  72% {
+    opacity: 0;
+    transform: translate(-50%, -1.35rem) scale(0.94);
   }
 }
 

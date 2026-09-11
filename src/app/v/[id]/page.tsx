@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 type PageProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{
     v?: string;
     title?: string;
@@ -18,10 +18,10 @@ type PageProps = {
   }>;
 };
 
-export default async function VideoBySlugPage({ params, searchParams }: PageProps) {
-  const { slug } = await params;
+export default async function ShortVideoPage({ params, searchParams }: PageProps) {
+  const { id } = await params;
   const query = await searchParams;
-  const preset = VIDEO_PRESETS[slug] ?? {};
+  const preset = VIDEO_PRESETS[id] ?? {};
 
   return (
     <VideoLanding
