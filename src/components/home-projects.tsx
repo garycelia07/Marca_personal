@@ -104,7 +104,7 @@ export function HomeProjects() {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-5 sm:py-6">
+                <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-4 sm:py-5">
                   {project.tagline && (
                     <p className="eyebrow">{project.tagline}</p>
                   )}
