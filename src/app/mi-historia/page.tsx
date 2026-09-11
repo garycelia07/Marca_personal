@@ -50,7 +50,7 @@ export default function MiHistoria() {
         <div className="sticky top-0 z-0 flex h-[85vh] sm:h-screen w-full flex-col justify-center overflow-hidden border-b border-[var(--line)] px-5 py-12 text-center sm:px-12 sm:py-28 lg:py-36">
           <div className="absolute inset-0 -z-10 h-full w-full">
             <Image
-              src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y29uZmVyZW5jaWElMjBhY2FkJUMzJUE5bWljYXxlbnwwfHwwfHx8MA%3D%3D"
+              src="/historia.png"
               alt="Fondo Mi Historia"
               fill
               priority

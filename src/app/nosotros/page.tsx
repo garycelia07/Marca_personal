@@ -49,7 +49,7 @@ export default function AboutPage() {
               <div className="relative rounded-3xl bg-[var(--copper)] p-4 sm:p-6 shadow-2xl">
                 <div className="relative aspect-square w-full overflow-hidden rounded-2xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80"
+                    src="/nosotros.png"
                     alt="Persona de la plataforma"
                     fill
                     priority
