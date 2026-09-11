@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { projectCoverUrl, projectVideoUrl, whatsappHref, siteConfig } from "@/lib/site";
 import type { ProjectItemExt } from "@/lib/cms";
 import { LeadForm } from "@/components/lead-form";
+import { WhatsAppIcon } from "@/components/ui-icons";
 
 const TOTAL_SLOTS = 5;
 
@@ -298,9 +299,10 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
                                     href={whatsappHref(waMessage)}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]"
+                                    className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110"
                                 >
-                                    💬 Contáctame por WhatsApp
+                                    <WhatsAppIcon />
+                                    Contáctame por WhatsApp
                                 </a>
                                 <button
                                     type="button"

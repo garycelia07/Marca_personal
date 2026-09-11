@@ -5,6 +5,7 @@ import { PageHero } from "@/components/page-hero";
 import { siteConfig, whatsappHref } from "@/lib/site";
 import { fetchAllContent, pickSection, serviceItems } from "@/lib/cms";
 import { ServicesGrid } from "@/components/services-grid";
+import { WhatsAppIcon } from "@/components/ui-icons";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,7 @@ export default async function Servicios() {
           </div>
           <div className="flex flex-wrap gap-3">
             <a href={whatsappHref()} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-105">
+              <WhatsAppIcon />
               Pedir información por WhatsApp
             </a>
             <Link href="/nosotros" className="rounded-full border hairline px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]">

@@ -115,7 +115,7 @@ export default function Home() {
                     rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
                     className="group flex items-center gap-3 text-[var(--foreground)] transition-colors hover:text-[var(--copper)]"
                   >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper)] text-[var(--copper)] shadow-sm transition-transform duration-200 group-hover:scale-105 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:fill-current">
+                    <span className={`flex h-10 w-10 items-center justify-center rounded-full border ${item.icon === "whatsapp" ? "border-[#25D366]/50 bg-[#25D366]/15 text-[#25D366]" : "border-[var(--line)] bg-[var(--paper)] text-[var(--copper)]"} shadow-sm transition-transform duration-200 group-hover:scale-105 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:fill-current`}>
                       <SocialIcon name={item.icon} />
                     </span>
                     <span>{item.value}</span>

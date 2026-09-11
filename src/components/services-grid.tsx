@@ -82,7 +82,7 @@ function ServiceModal({ service, onClose }: { service: ServiceItem; onClose: () 
                         <button type="button" onClick={() => setShowForm(true)} className="rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]">
                             <UserPlusIcon /> Dejar mis datos
                         </button>
-                        <a href={whatsappHref(waMsg)} target="_blank" rel="noreferrer" className="rounded-full border hairline px-6 py-3 text-sm font-semibold text-[var(--copper)] transition hover:border-[var(--copper)]">
+                        <a href={whatsappHref(waMsg)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-105">
                             <WhatsAppIcon />
                             Contactarme por WhatsApp
                         </a>

@@ -381,7 +381,7 @@ function Modal({ project, onClose }: { project: ProjectItemExt; onClose: () => v
                   <a
                     href={whatsappHref(waMessage)}
                     target="_blank"
-                    className="inline-flex items-center gap-2 rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:brightness-110"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110"
                   >
                     <WhatsAppIcon />
                     Contáctame por WhatsApp
