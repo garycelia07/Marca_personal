@@ -34,11 +34,11 @@ export default function AboutPage() {
             {/* Columna Izquierda: Contenido puro */}
             <div className="flex flex-col lg:col-span-6 xl:col-span-7">
               <h1 className="display-font mt-6 text-5xl leading-[0.95] tracking-tight sm:text-7xl lg:text-7xl xl:text-8xl text-[var(--foreground)]">
-                Diseñar futuro con <em className="script-font text-[var(--copper)] font-normal">criterio.</em>
+                Patrimonio que abre <em className="script-font text-[var(--copper)] font-normal">caminos.</em>
               </h1>
 
               <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--ink-soft)] lg:text-lg">
-                Acompañamos a quienes quieren convertir visión, decisiones y patrimonio en una forma concreta de libertad.
+                Acompañamos a personas que quieren ordenar sus decisiones, multiplicar oportunidades y construir una libertad que se note en su vida, no solo en sus números.
               </p>
             </div>
             <div className="relative lg:col-span-6 xl:col-span-5">

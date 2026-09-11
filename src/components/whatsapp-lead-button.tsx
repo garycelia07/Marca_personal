@@ -13,7 +13,33 @@ export function WhatsAppLeadButton() {
             className="whatsapp-float group fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center transition hover:scale-110 sm:bottom-8 sm:right-8"
         >
             <span className="whatsapp-float-ring" aria-hidden="true" />
-            <span className="whatsapp-float-hand" aria-hidden="true" />
+            <span className="whatsapp-float-hand" aria-hidden="true">
+                <svg viewBox="0 0 64 64" role="img" focusable="false" className="h-12 w-12">
+                    <path
+                        fill="#ffd6a6"
+                        d="M30.4 6.8c-2.4 0-4.3 1.9-4.3 4.3v25.2l-3.5-4.2a4.5 4.5 0 0 0-6.7-.3 4.7 4.7 0 0 0-.4 6.1l10.6 14.4a12.2 12.2 0 0 0 9.8 5h6.5c6.5 0 11.8-5.3 11.8-11.8V29.1a4.1 4.1 0 0 0-7.2-2.7 4.1 4.1 0 0 0-7-2.2 4.1 4.1 0 0 0-6.9-2V11.1c0-2.4-1.9-4.3-4.3-4.3Z"
+                    />
+                    <path
+                        fill="none"
+                        stroke="#9b6029"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        d="M30.4 6.8c-2.4 0-4.3 1.9-4.3 4.3v25.2l-3.5-4.2a4.5 4.5 0 0 0-6.7-.3 4.7 4.7 0 0 0-.4 6.1l10.6 14.4a12.2 12.2 0 0 0 9.8 5h6.5c6.5 0 11.8-5.3 11.8-11.8V29.1a4.1 4.1 0 0 0-7.2-2.7 4.1 4.1 0 0 0-7-2.2 4.1 4.1 0 0 0-6.9-2V11.1c0-2.4-1.9-4.3-4.3-4.3Z"
+                    />
+                    <path
+                        fill="none"
+                        stroke="#9b6029"
+                        strokeLinecap="round"
+                        strokeWidth="3"
+                        d="M33.1 22.4v14.7M40.1 24.2v12.9M47.1 26.5v10.6"
+                    />
+                    <path
+                        fill="#ffffff"
+                        d="M23.2 57.2h28.5v5H23.2z"
+                    />
+                </svg>
+            </span>
             {/* Glifo oficial de WhatsApp en verde, sin fondo */}
             <svg
                 aria-hidden="true"
