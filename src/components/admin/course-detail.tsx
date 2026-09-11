@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
     addLesson,
     addModule,
     getCourse,
-    updateCourse,
     deleteCourse,
     uploadLessonVideo,
     deleteLessonVideo,
@@ -32,6 +32,7 @@ function nextOrder(items: ({ order?: number } | undefined)[]): number {
 }
 
 export function CourseDetail({ courseId }: { courseId: string }) {
+    const router = useRouter();
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
     const [busy, setBusy] = useState(false);
@@ -259,7 +260,9 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                     </button>
                 </div>
             </div>
-<div className="mt-10 border-t hairline pt-8">
+            <div className="mt-10 grid gap-8 xl:grid-cols-[minmax(0,1fr)_390px] xl:items-start">
+                <div className="min-w-0">
+<div className="border-t hairline pt-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p className="eyebrow">Módulos</p>
@@ -404,7 +407,7 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                             onClick={() => {
                                 if (window.confirm(`¿Eliminar el curso "${course.title}" y todo su contenido?`)) {
                                     void deleteCourse(course.id)
-                                        .then(() => { window.location.href = "/admin/cursos"; })
+                                        .then(() => { router.push("/admin/cursos"); })
                                         .catch(() => pushToast("error", "No se pudo eliminar el curso."));
                                 }
                             }}
@@ -415,7 +418,14 @@ export function CourseDetail({ courseId }: { courseId: string }) {
                 </div>
             </div>
 
-            <CourseEnrollments courseId={course.id} />
+                </div>
+                <aside className="xl:sticky xl:top-24">
+                    <CourseEnrollments
+                        courseId={course.id}
+                        className="rounded-2xl border hairline bg-[var(--paper)] p-5 shadow-sm"
+                    />
+                </aside>
+            </div>
 
             {addingMaterial ? (
                 <MaterialFormModal

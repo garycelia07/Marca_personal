@@ -9,6 +9,7 @@ import {
     type EnrollmentPagination,
 } from "@/lib/api/enrollments";
 import { listStudents } from "@/lib/api/students";
+import { buildPageList } from "@/components/admin/students-utils";
 
 const PAGE_SIZE = 10;
 
@@ -42,7 +43,26 @@ function inputDate(iso: string | null | undefined): string {
     return `${year}-${month}-${day}`;
 }
 
-export function CourseEnrollments({ courseId }: { courseId: string }) {
+function Pagination({ page, totalPages, onPage }: { page: number; totalPages: number; onPage: (page: number) => void }) {
+    if (totalPages <= 1) return null;
+    const pages = buildPageList(page, totalPages);
+
+    return (
+        <nav className="flex flex-wrap items-center gap-2" aria-label="Paginación de matrículas">
+            <button type="button" onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Página anterior" className="rounded-full border hairline px-3 py-1.5 text-sm disabled:opacity-40">←</button>
+            {pages.map((entry) =>
+                entry === "…" ? (
+                    <span key={`gap-${entry}`} className="px-1 text-[var(--ink-soft)]">…</span>
+                ) : (
+                    <button key={entry} type="button" onClick={() => onPage(entry)} aria-label={`Página ${entry}`} aria-current={entry === page ? "page" : undefined} className={`h-9 w-9 rounded-full text-sm ${entry === page ? "bg-[var(--forest)] text-[var(--background)]" : "border hairline text-[var(--ink-soft)] transition hover:border-[var(--copper)]"}`}>{entry}</button>
+                )
+            )}
+            <button type="button" onClick={() => onPage(page + 1)} disabled={page >= totalPages} aria-label="Página siguiente" className="rounded-full border hairline px-3 py-1.5 text-sm disabled:opacity-40">→</button>
+        </nav>
+    );
+}
+
+export function CourseEnrollments({ courseId, className }: { courseId: string; className?: string }) {
     const [pagination, setPagination] = useState<EnrollmentPagination>({ items: [], page: 1, limit: PAGE_SIZE, total: 0, totalPages: 1 });
     const [loading, setLoading] = useState(true);
     const [busy, setBusy] = useState(false);
@@ -154,7 +174,7 @@ export function CourseEnrollments({ courseId }: { courseId: string }) {
         }
     }
 return (
-        <div className="mt-10 border-t hairline pt-8">
+        <div className={className ?? "mt-10 border-t hairline pt-8"}>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p className="eyebrow">Estudiantes inscritos</p>
@@ -225,6 +245,11 @@ return (
                 )}
             </ul>
             {rowError && <p role="alert" className="mt-3 text-xs text-[var(--danger)]">{rowError}</p>}
+
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs text-[var(--ink-soft)]">Mostrando {pagination.items.length} de {pagination.total}</p>
+                <Pagination page={pagination.page} totalPages={pagination.totalPages} onPage={(page) => { void refresh(page); }} />
+            </div>
 
             <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-3">
                 {toasts.map((toast) => (

@@ -41,11 +41,13 @@ function HomeVideoEditor({
     busy,
     onSave,
     onUpload,
+    onShareLink,
 }: {
     value: string;
     busy: boolean;
     onSave: (url: string) => void;
     onUpload: (file: File) => void;
+    onShareLink: () => void;
 }) {
     const [draft, setDraft] = useState(value);
 
@@ -54,7 +56,7 @@ function HomeVideoEditor({
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">
                 Actualizar video Home
             </p>
-            <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto_auto] lg:items-center">
+            <div className="mt-4 grid gap-3 xl:grid-cols-[1fr_auto_auto_auto] xl:items-center">
                 <input
                     type="url"
                     value={draft}
@@ -85,6 +87,13 @@ function HomeVideoEditor({
                         }}
                     />
                 </label>
+                <button
+                    type="button"
+                    onClick={onShareLink}
+                    className="rounded-full bg-[var(--copper)] px-5 py-2.5 text-sm font-bold text-[var(--forest-deep)] shadow-sm transition hover:brightness-110"
+                >
+                    Compartir link de video
+                </button>
             </div>
             {value ? (
                 <p className="mt-3 truncate text-xs text-[var(--ink-soft)]">
@@ -206,6 +215,16 @@ export function ContentManager() {
         }
     }
 
+    async function copyVideoShareLink() {
+        const shareUrl = `${window.location.origin}/reproducir`;
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            pushToast("success", "¡Link de video copiado!");
+        } catch {
+            pushToast("error", "No fue posible copiar el link de video.");
+        }
+    }
+
     const isCardsSection = section === "PROJECTS" || section === "SERVICES";
 
     if (isCardsSection) {
@@ -281,6 +300,7 @@ return (
                                         busy={videoBusy}
                                         onSave={(url) => void saveHomeVideoUrl(url)}
                                         onUpload={(file) => void uploadHomeVideo(file)}
+                                        onShareLink={() => void copyVideoShareLink()}
                                     />
                                 </div>
                             </div>
