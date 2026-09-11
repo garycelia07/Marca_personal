@@ -9,7 +9,7 @@ export function CoursesHero() {
                 {/* Imagen a la izquierda — mismo tamaño que el contenido */}
                 <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl border hairline bg-[#171713]">
                     <Image
-                        src="/cursos.png"
+                        src="/curso.png"
                         alt="Cursos de Gary Mayhua"
                         fill
                         priority
@@ -20,11 +20,7 @@ export function CoursesHero() {
 
                 {/* Contenido a la derecha */}
                 <div className="flex flex-col items-start justify-center">
-                    <span className="eyebrow inline-flex self-start items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--paper)] px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--copper)]">
-                        Formación
-                    </span>
-
-                    <h1 className="display-font mt-6 text-4xl leading-[0.98] tracking-tight sm:text-5xl lg:text-6xl text-[var(--foreground)]">
+                    <h1 className="display-font mt-4 text-4xl leading-[0.98] tracking-tight sm:text-5xl lg:text-6xl text-[var(--foreground)]">
                         Cursos que transforman <em className="script-font text-[var(--copper)] font-normal">tu perspectiva.</em>
                     </h1>
 
@@ -39,12 +35,6 @@ export function CoursesHero() {
                         >
                             Explorar cursos
                             <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-                        </Link>
-                        <Link
-                            href="/iniciar-sesion"
-                            className="inline-flex items-center gap-2 rounded-full border hairline px-7 py-3.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
-                        >
-                            Iniciar sesión
                         </Link>
                         <a
                             href={whatsappHref()}
