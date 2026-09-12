@@ -74,7 +74,7 @@ export function CoursesGrid() {
                             className="group relative aspect-[5/4] block w-full overflow-hidden bg-[#171713]"
                         >
                             {course.coverImageUrl ? (
-                                <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-contain object-center transition duration-500 group-hover:scale-[1.02]" />
+                                <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-cover object-center transition duration-500 group-hover:scale-[1.02]" />
                             ) : (
                                 <span className="flex h-full w-full items-center justify-center bg-[#171713]">
                                     <span className="display-font text-5xl text-[var(--background)]">

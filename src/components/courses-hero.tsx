@@ -14,7 +14,7 @@ export function CoursesHero() {
                         fill
                         priority
                         sizes="(max-width: 1024px) 100vw, 50vw"
-                        className="object-contain object-center"
+                        className="object-cover object-center"
                     />
                 </div>
 
