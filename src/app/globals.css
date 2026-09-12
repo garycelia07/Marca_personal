@@ -314,34 +314,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .video-whatsapp-hand {
   animation: video-whatsapp-point 1.8s ease-in-out infinite;
-  left: 1.55rem;
+  display: inline-flex;
+  flex: 0 0 auto;
   pointer-events: none;
-  position: absolute;
-  top: -2.25rem;
-  transform-origin: 50% 100%;
-  z-index: 2;
 }
 
 .video-whatsapp-hand svg {
   display: block;
   filter: drop-shadow(0 0.4rem 0.75rem rgba(0, 0, 0, 0.35));
-  transform: rotate(178deg);
+  transform: rotate(90deg);
   transform-origin: center;
 }
 
 @keyframes video-whatsapp-point {
   0%, 100% {
-    opacity: 0;
-    transform: translate(0, -0.45rem) scale(0.94);
-  }
-  28%, 68% {
-    opacity: 1;
+    transform: translateX(-0.2rem) scale(0.96);
   }
   44% {
-    transform: translate(0, 0.35rem) scale(1.02);
+    transform: translateX(0.28rem) scale(1.04);
   }
   58% {
-    transform: translate(0, 0.08rem) scale(0.98);
+    transform: translateX(0.08rem) scale(0.98);
   }
 }
 
