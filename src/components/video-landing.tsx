@@ -76,9 +76,26 @@ export function VideoLanding({ title = "Video exclusivo", videoUrl, whatsappMess
             href={whatsappHref(message)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex animate-[whatsapp-nudge_1.8s_ease-in-out_infinite] items-center justify-center gap-2 rounded-full bg-[#25D366] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:brightness-110"
+            className="video-whatsapp-cta relative inline-flex animate-[whatsapp-nudge_1.8s_ease-in-out_infinite] items-center justify-center gap-2 rounded-full bg-[#25D366] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:brightness-110"
           >
-            <WhatsAppIcon className="h-5 w-5 shrink-0" />
+            <span className="video-whatsapp-hand" aria-hidden="true">
+              <svg viewBox="0 0 64 64" focusable="false" className="h-10 w-10">
+                <path
+                  fill="#ffd6a6"
+                  d="M30.4 6.8c-2.4 0-4.3 1.9-4.3 4.3v25.2l-3.5-4.2a4.5 4.5 0 0 0-6.7-.3 4.7 4.7 0 0 0-.4 6.1l10.6 14.4a12.2 12.2 0 0 0 9.8 5h6.5c6.5 0 11.8-5.3 11.8-11.8V29.1a4.1 4.1 0 0 0-7.2-2.7 4.1 4.1 0 0 0-7-2.2 4.1 4.1 0 0 0-6.9-2V11.1c0-2.4-1.9-4.3-4.3-4.3Z"
+                />
+                <path
+                  fill="none"
+                  stroke="#9b6029"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="3"
+                  d="M30.4 6.8c-2.4 0-4.3 1.9-4.3 4.3v25.2l-3.5-4.2a4.5 4.5 0 0 0-6.7-.3 4.7 4.7 0 0 0-.4 6.1l10.6 14.4a12.2 12.2 0 0 0 9.8 5h6.5c6.5 0 11.8-5.3 11.8-11.8V29.1a4.1 4.1 0 0 0-7.2-2.7 4.1 4.1 0 0 0-7-2.2 4.1 4.1 0 0 0-6.9-2V11.1c0-2.4-1.9-4.3-4.3-4.3Z"
+                />
+                <path fill="none" stroke="#9b6029" strokeLinecap="round" strokeWidth="3" d="M33.1 22.4v14.7M40.1 24.2v12.9M47.1 26.5v10.6" />
+              </svg>
+            </span>
+            <WhatsAppIcon className="video-whatsapp-icon h-5 w-5 shrink-0" />
             Unirme por WhatsApp
           </a>
           <Link

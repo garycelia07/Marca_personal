@@ -304,6 +304,47 @@ button, a { -webkit-tap-highlight-color: transparent; }
   80% { transform: translateX(3px); }
 }
 
+.video-whatsapp-cta {
+  isolation: isolate;
+}
+
+.video-whatsapp-icon {
+  animation: whatsapp-pulse 2.4s ease-in-out infinite;
+}
+
+.video-whatsapp-hand {
+  animation: video-whatsapp-point 1.8s ease-in-out infinite;
+  left: 1.55rem;
+  pointer-events: none;
+  position: absolute;
+  top: -2.25rem;
+  transform-origin: 50% 100%;
+  z-index: 2;
+}
+
+.video-whatsapp-hand svg {
+  display: block;
+  filter: drop-shadow(0 0.4rem 0.75rem rgba(0, 0, 0, 0.35));
+  transform: rotate(178deg);
+  transform-origin: center;
+}
+
+@keyframes video-whatsapp-point {
+  0%, 100% {
+    opacity: 0;
+    transform: translate(0, -0.45rem) scale(0.94);
+  }
+  28%, 68% {
+    opacity: 1;
+  }
+  44% {
+    transform: translate(0, 0.35rem) scale(1.02);
+  }
+  58% {
+    transform: translate(0, 0.08rem) scale(0.98);
+  }
+}
+
 select,
 option {
   background-color: var(--paper);
@@ -356,6 +397,8 @@ html.dark select {
   .whatsapp-float-icon,
   .whatsapp-float-ring,
   .whatsapp-float-hand { animation: none; }
+  .video-whatsapp-icon,
+  .video-whatsapp-hand { animation: none; }
   .animate-\[whatsapp-nudge_1\.8s_ease-in-out_infinite\] { animation: none; }
 }
 
