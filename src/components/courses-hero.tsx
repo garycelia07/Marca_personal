@@ -4,17 +4,17 @@ import { whatsappHref } from "@/lib/site";
 
 export function CoursesHero() {
     return (
-        <section className="mx-auto max-w-[1440px] px-5 pt-8 sm:px-8 lg:px-12">
-            <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-2 lg:gap-12 lg:items-center">
+        <section className="mx-auto max-w-[1440px] overflow-hidden px-5 pt-8 sm:px-8 lg:px-12">
+            <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-12 lg:items-center">
                 {/* Imagen a la izquierda — mismo tamaño que el contenido */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border hairline bg-[#171713]">
+                <div className="relative aspect-[4/3] w-full max-w-[760px] overflow-hidden rounded-3xl border hairline bg-[#171713]">
                     <Image
                         src="/curso.png"
                         alt="Cursos de Gary Mayhua"
                         fill
                         priority
                         sizes="(max-width: 1024px) 100vw, 50vw"
-                        className="object-cover"
+                        className="object-contain object-center"
                     />
                 </div>
 

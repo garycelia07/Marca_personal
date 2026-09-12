@@ -7,6 +7,15 @@ import { WhatsAppIcon, UserPlusIcon } from "@/components/ui-icons";
 
 type ServiceItem = { name?: string; slug?: string; tagline?: string; description?: string; coverUrl?: string };
 
+function ServiceBadge() {
+    return (
+        <span className="inline-flex max-w-full items-center gap-1.5 whitespace-nowrap text-[0.68rem] font-bold uppercase tracking-[0.13em] text-[var(--copper)]">
+            <UserPlusIcon className="h-3.5 w-3.5 shrink-0" />
+            <span>Servicio</span>
+        </span>
+    );
+}
+
 export function ServicesGrid({ items }: { items: ServiceItem[] }) {
     const [open, setOpen] = useState<ServiceItem | null>(null);
 
@@ -27,8 +36,8 @@ export function ServicesGrid({ items }: { items: ServiceItem[] }) {
                                 ) : null}
                             </div>
                             <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-4 sm:py-5">
-                                <p className="eyebrow">Servicio</p>
-                                <h2 className="display-font mt-2 text-lg leading-tight">{service.name}</h2>
+                                <ServiceBadge />
+                                <h2 className="display-font mt-2 break-words text-lg leading-tight">{service.name}</h2>
                                 <p className="mt-2 line-clamp-3 text-sm leading-6 text-[var(--ink-soft)]">{service.description ?? ""}</p>
                                 <button
                                     type="button"
@@ -58,8 +67,8 @@ function ServiceModal({ service, onClose }: { service: ServiceItem; onClose: () 
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
             <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl border hairline bg-[var(--paper)] p-6 shadow-[0_24px_64px_-24px_rgba(0,0,0,0.8)] sm:p-8">
                 <button type="button" onClick={onClose} className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border hairline bg-[var(--paper)] text-sm font-bold hover:border-[var(--copper)] hover:text-[var(--copper)]" aria-label="Cerrar">✕</button>
-                <p className="eyebrow">Servicio</p>
-                <h3 className="display-font mt-2 text-3xl leading-tight">{service.name}</h3>
+                <ServiceBadge />
+                <h3 className="display-font mt-2 break-words text-3xl leading-tight">{service.name}</h3>
                 {service.description && <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[var(--ink-soft)]">{service.description}</p>}
 
                 {sent ? (
@@ -79,12 +88,13 @@ function ServiceModal({ service, onClose }: { service: ServiceItem; onClose: () 
                     </div>
                 ) : (
                     <div className="mt-6 flex flex-wrap items-center gap-3">
-                        <button type="button" onClick={() => setShowForm(true)} className="rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)]">
-                            <UserPlusIcon /> Dejar mis datos
+                        <button type="button" onClick={() => setShowForm(true)} className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[var(--forest)] px-6 py-3 text-sm font-semibold text-[var(--background)] transition hover:bg-[var(--copper)] sm:w-auto">
+                            <UserPlusIcon className="h-4 w-4 shrink-0" />
+                            <span>Dejar mis datos</span>
                         </button>
-                        <a href={whatsappHref(waMsg)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-105">
-                            <WhatsAppIcon />
-                            Contactarme por WhatsApp
+                        <a href={whatsappHref(waMsg)} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white transition hover:brightness-105 sm:w-auto">
+                            <WhatsAppIcon className="h-4 w-4 shrink-0" />
+                            <span>Contactarme por WhatsApp</span>
                         </a>
                     </div>
                 )}

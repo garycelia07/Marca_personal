@@ -67,16 +67,16 @@ export function CoursesGrid() {
         <>
             <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
                 {shown.map((course) => (
-                    <div key={course.id} className="card-pop shrink-0 w-[240px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition hover:border-[var(--copper)]">
+                    <div key={course.id} className="card-pop shrink-0 w-[240px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition hover:border-[var(--line)]">
                         <button
                             type="button"
                             onClick={() => setContactTitle(course.title)}
-                            className="group relative aspect-[5/4] block w-full overflow-hidden bg-[var(--forest)]"
+                            className="group relative aspect-[5/4] block w-full overflow-hidden bg-[#171713]"
                         >
                             {course.coverImageUrl ? (
-                                <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-contain transition duration-700 group-hover:scale-105" />
+                                <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-contain object-center transition duration-500 group-hover:scale-[1.02]" />
                             ) : (
-                                <span className="flex h-full w-full items-center justify-center bg-[var(--forest)]">
+                                <span className="flex h-full w-full items-center justify-center bg-[#171713]">
                                     <span className="display-font text-5xl text-[var(--background)]">
                                         {course.title.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("") || "C"}
                                     </span>
