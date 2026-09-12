@@ -11,9 +11,9 @@ export const dynamic = "force-dynamic";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     return (
         <SiteShell hideHeader>
-            <div className="flex">
+            <div className="flex flex-col lg:flex-row">
                 <AdminSidebar />
-                <div className="min-h-svh w-0 flex-1 px-5 py-10 sm:px-8 lg:px-12">
+                <div className="min-w-0 flex-1 px-5 py-6 sm:px-8 lg:px-12 lg:py-10">
                     {children}
                 </div>
             </div>

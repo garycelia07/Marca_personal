@@ -38,8 +38,6 @@ function youtubeThumb(url?: string): string | null {
   return m ? `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg` : null;
 }
 
-const ALL_LESSON_RE = /\.(mp4|webm|m4v|ogv|ogg)(\?|#|$)/i;
-
 function sortModules(modules: Module[] | undefined): Module[] {
   return [...(modules ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
@@ -51,6 +49,22 @@ function flatLessons(course: Course): Lesson[] {
 type SectionId = "cursos" | "materiales" | "progreso";
 type NavIcon = typeof BookIcon;
 type NavTab = { id: SectionId; label: string; icon: NavIcon };
+
+function MenuIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...props}>
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  );
+}
+
+function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...props}>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
 
 export function StudentPlatform({
   user,
@@ -64,6 +78,7 @@ export function StudentPlatform({
   materialsByCourse: Record<string, Material[]>;
 }) {
   const [section, setSection] = useState<SectionId>("cursos");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [progress, setProgress] = useState<string[]>(() => readDone());
   const [courseLoading, setCourseLoading] = useState<Record<string, Course | undefined>>({});
   const [buying, setBuying] = useState<string | null>(null);
@@ -190,37 +205,77 @@ export function StudentPlatform({
 
   return (
     <div className="min-h-screen bg-[var(--background)] lg:grid lg:grid-cols-[300px_1fr]">
-      {/* Barra lateral */}
-      <aside className="border-b hairline bg-[var(--paper)] lg:min-h-screen lg:border-b-0 lg:border-r lg:flex lg:flex-col">
-        <div className="flex items-center gap-3 px-5 py-5">
+      {/* Barra superior (solo móvil) con botón de menú */}
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b hairline bg-[var(--paper)] px-4 py-3 lg:hidden">
+        <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--forest)] font-bold text-[var(--background)]">
             {initials(user.fullName)}
           </span>
           <div className="min-w-0">
-            <p className="display-font text-base leading-tight">{user.fullName}</p>
+            <p className="display-font truncate text-base leading-tight">{user.fullName}</p>
             <p className="text-xs text-[var(--ink-soft)]">Estudiante</p>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+          className="flex h-10 w-10 items-center justify-center rounded-full border hairline text-[var(--forest)] transition hover:border-[var(--copper)] hover:text-[var(--copper)]"
+        >
+          <MenuIcon className="h-5 w-5" />
+        </button>
+      </div>
 
-        <nav className="flex gap-2 overflow-x-auto px-5 pb-4 lg:flex-col lg:gap-1 lg:overflow-visible">
+      {/* Overlay para cerrar el menú en móvil */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Barra lateral: drawer deslizante en móvil, columna fija en escritorio */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[84vw] transform-gpu flex-col overflow-y-auto border-r hairline bg-[var(--paper)] shadow-2xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:w-auto lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:shadow-none lg:min-h-screen lg:justify-start ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <div className="flex items-center gap-3 border-b hairline px-5 py-5">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--forest)] font-bold text-[var(--background)]">
+            {initials(user.fullName)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="display-font text-base leading-tight">{user.fullName}</p>
+            <p className="text-xs text-[var(--ink-soft)]">Estudiante</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Cerrar menú"
+            className="flex h-9 w-9 items-center justify-center rounded-full border hairline text-[var(--ink-soft)] transition hover:border-[var(--copper)] hover:text-[var(--copper)] lg:hidden"
+          >
+            <CloseIcon className="h-4 w-4" />
+          </button>
+        </div>
+
+        <nav className="flex flex-col gap-1 px-3 py-4">
           {NAV_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => {
                 setSection(tab.id);
+                setMenuOpen(false);
                 if (tab.id !== "cursos") {
                   setOpenCourseId(null);
                   setPlaying(null);
                 }
               }}
-              className={`flex shrink-0 items-center gap-3 rounded-full px-4 py-2.5 text-sm lg:rounded-xl ${
+              className={`flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${
                 section === tab.id
                   ? "bg-[var(--forest)] font-semibold text-[var(--background)]"
                   : "text-[var(--ink-soft)] hover:bg-[var(--lime)] hover:text-[var(--forest)]"
               }`}
             >
-              <span aria-hidden="true" className="h-[18px] w-[18px] shrink-0">
+              <span aria-hidden="true" className={`h-[18px] w-[18px] shrink-0 ${section === tab.id ? "text-[var(--background)]" : "text-[var(--copper)]"}`}>
                 <tab.icon />
               </span>
               {tab.label}
@@ -228,7 +283,7 @@ export function StudentPlatform({
           ))}
         </nav>
 
-        <div className="border-t hairline px-5 py-4 lg:mt-auto">
+        <div className="mt-auto border-t hairline px-5 py-4">
           <button
             type="button"
             onClick={() => { void handleLogout(); }}
@@ -274,7 +329,6 @@ export function StudentPlatform({
                 onToggle={toggleProgress}
                 onEnded={(l) => setPlaying(l)}
                 onBack={() => setPlaying(null)}
-                onExit={closeCourse}
               />
             )
           ) : (
@@ -324,7 +378,7 @@ function sectionHeading(section: SectionId): string {
   return "Mi progreso";
 }
 
-function coverFallback(title: string, withPad: number): string {
+function coverFallback(title: string): string {
   // Colores elegantes basados en el hash del título para cursos sin portada.
   const palette = ["#1f1a17", "#233a2b", "#8a6a06", "#3f3aa8", "#512030"];
   let h = 0;
@@ -430,7 +484,7 @@ function TargetIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 function CourseThumb({ img, title }: { img?: string | null; title: string }) {
-  const bg = coverFallback(title, 0);
+  const bg = coverFallback(title);
   return (
     <span className="relative block h-full w-full overflow-hidden bg-[#171713]">
       {img ? (
@@ -444,6 +498,26 @@ function CourseThumb({ img, title }: { img?: string | null; title: string }) {
           <span className="display-font text-3xl text-white/40">{title.slice(0, 2).toUpperCase()}</span>
         </span>
       )}
+    </span>
+  );
+}
+
+function LessonThumb({ src, title }: { src: string; title: string }) {
+  const thumb = youtubeThumb(src);
+  if (thumb) {
+    return <CourseThumb img={thumb} title={title} />;
+  }
+
+  return (
+    <span className="relative block h-full w-full overflow-hidden bg-black">
+      <video
+        src={src}
+        muted
+        playsInline
+        preload="metadata"
+        className="h-full w-full object-cover"
+        aria-label={`Vista previa del video: ${title}`}
+      />
     </span>
   );
 }
@@ -498,6 +572,7 @@ function CourseGrid({ course, detail, progress, onPlay, onBack }: CourseGridProp
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {lessons.map((lesson) => {
             const viewed = progress.includes(lesson.id);
+            const previewSrc = lessonVideoUrl(course, lesson);
             return (
               <button
                 key={lesson.id}
@@ -506,8 +581,8 @@ function CourseGrid({ course, detail, progress, onPlay, onBack }: CourseGridProp
                 className="group flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[var(--copper)] hover:shadow-2xl"
               >
                 <div className="relative aspect-video overflow-hidden bg-[#171713]">
-                  <CourseThumb img={youtubeThumb(lesson.videoUrl)} title={lesson.title} />
-                  <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+                  <LessonThumb src={previewSrc} title={lesson.title} />
+                  <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
                   <span className="absolute inset-0 flex items-center justify-center transition group-hover:bg-black/10">
                     <span className={`flex h-12 w-12 items-center justify-center rounded-full border-2 transition ${
                       viewed
@@ -557,10 +632,9 @@ type PlayerViewProps = {
   onToggle: (lessonId: string) => void;
   onEnded: (next: Lesson) => void;
   onBack: () => void; // vuelve a la grilla de lecciones
-  onExit: () => void; // vuelve a "mis cursos"
 };
 
-function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onBack, onExit }: PlayerViewProps) {
+function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onBack }: PlayerViewProps) {
   const [full, setFull] = useState(false);
   const index = all.findIndex((l) => l.id === lesson.id);
   const prevLesson = index > 0 ? all[index - 1] : null;
@@ -570,7 +644,6 @@ function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onB
   return (
     <div className={full ? "fixed inset-0 z-[70] flex flex-col bg-[#000]" : "flex flex-col"}>
       <div className={`${full ? "flex-1 overflow-hidden" : ""} bg-[#000] ${full ? "" : "aspect-video w-full overflow-hidden rounded-2xl border hairline"}`}>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           key={src}
           src={src}
