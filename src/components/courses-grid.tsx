@@ -71,10 +71,10 @@ export function CoursesGrid() {
                         <button
                             type="button"
                             onClick={() => setContactTitle(course.title)}
-                            className="group relative aspect-[5/4] block w-full overflow-hidden"
+                            className="group relative aspect-[5/4] block w-full overflow-hidden bg-[var(--forest)]"
                         >
                             {course.coverImageUrl ? (
-                                <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-cover transition duration-700 group-hover:scale-110" />
+                                <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 320px" className="object-contain transition duration-700 group-hover:scale-105" />
                             ) : (
                                 <span className="flex h-full w-full items-center justify-center bg-[var(--forest)]">
                                     <span className="display-font text-5xl text-[var(--background)]">
