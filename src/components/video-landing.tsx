@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { siteConfig, whatsappHref } from "@/lib/site";
 import { VideoShareButton } from "@/components/video-share-button";
+import { WhatsAppIcon } from "@/components/ui-icons";
 
 type VideoKind =
   | { type: "youtube"; src: string }
@@ -75,9 +76,10 @@ export function VideoLanding({ title = "Video exclusivo", videoUrl, whatsappMess
             href={whatsappHref(message)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:brightness-110"
+            className="inline-flex animate-[whatsapp-nudge_1.8s_ease-in-out_infinite] items-center justify-center gap-2 rounded-full bg-[#25D366] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:brightness-110"
           >
-            Quiero ser parte
+            <WhatsAppIcon className="h-5 w-5 shrink-0" />
+            Unirme por WhatsApp
           </a>
           <Link
             href="/"

@@ -297,6 +297,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
 }
 
+@keyframes whatsapp-nudge {
+  0%, 100% { transform: translateX(0); }
+  45% { transform: translateX(4px); }
+  65% { transform: translateX(0); }
+  80% { transform: translateX(3px); }
+}
+
 select,
 option {
   background-color: var(--paper);
@@ -349,6 +356,7 @@ html.dark select {
   .whatsapp-float-icon,
   .whatsapp-float-ring,
   .whatsapp-float-hand { animation: none; }
+  .animate-\[whatsapp-nudge_1\.8s_ease-in-out_infinite\] { animation: none; }
 }
 
 @keyframes slideFromTop {
