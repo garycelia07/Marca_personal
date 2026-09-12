@@ -82,6 +82,10 @@ export async function POST(request: Request) {
     }
 
     try {
+        if (body.durationHours !== undefined && (!Number.isInteger(body.durationHours) || body.durationHours < 1)) {
+            return NextResponse.json({ message: "Las horas del curso deben ser un numero entero mayor a 0." }, { status: 400 });
+        }
+
         const response = await backendFetch("/courses", {
             method: "POST",
             body: {
@@ -89,6 +93,7 @@ export async function POST(request: Request) {
                 slug: slugify(body.slug.trim()),
                 description: body.description?.trim() || undefined,
                 coverImageUrl: body.coverImageUrl?.trim() || undefined,
+                durationHours: body.durationHours,
                 isPublished: body.isPublished === true,
             },
         });

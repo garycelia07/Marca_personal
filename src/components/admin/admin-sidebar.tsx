@@ -2,10 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BookIcon, DashboardIcon, EditIcon, ExternalLinkIcon, MailIcon, UsersGroupIcon, AttachmentIcon } from "@/components/admin/admin-icons";
 
 type NavIcon = typeof DashboardIcon;
+
+function LogoutIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+        </svg>
+    );
+}
 
 function MenuIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -36,6 +44,7 @@ const adminLinks: { label: string; href: string; icon: NavIcon }[] = [
 
 export function AdminSidebar() {
     const pathname = usePathname();
+    const router = useRouter();
     const [open, setOpen] = useState(false);
 
     // Al cambiar de ruta, se cierra el menú en móvil.
@@ -56,6 +65,28 @@ export function AdminSidebar() {
     function isActive(href: string): boolean {
         if (href === "/admin") return pathname === "/admin";
         return pathname.startsWith(href);
+    }
+
+    async function handleLogout() {
+        const originalUrl = window.location.href;
+        try {
+            await fetch("/api/auth/logout", { method: "POST", cache: "no-store" });
+        } catch {
+            /* seguir igual aunque falle la petición */
+        }
+        try {
+            window.localStorage.removeItem("aurea_user");
+            window.localStorage.removeItem("aurea_access_token");
+        } catch {
+            /* ignorar */
+        }
+        setOpen(false);
+        if (originalUrl && new URL(originalUrl).pathname.startsWith("/admin")) {
+            window.location.href = "/iniciar-sesion";
+        } else {
+            router.push("/iniciar-sesion");
+            router.refresh();
+        }
     }
 
     return (
@@ -129,6 +160,16 @@ export function AdminSidebar() {
             </nav>
 
             <div className="border-t hairline px-3 py-3">
+                <button
+                    type="button"
+                    onClick={() => { void handleLogout(); }}
+                    className="group mb-2 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--danger)] transition hover:bg-[var(--danger)] hover:text-white"
+                >
+                    <span className="h-[18px] w-[18px] shrink-0 transition group-hover:text-white">
+                        <LogoutIcon />
+                    </span>
+                    <span>Cerrar sesión</span>
+                </button>
                 <Link href="/" onClick={() => setOpen(false)} className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--ink-soft)] transition hover:bg-[var(--lime)] hover:text-[var(--forest)]">
                     <span className="h-[18px] w-[18px] shrink-0 text-[var(--copper)] transition group-hover:text-[var(--forest)]">
                         <ExternalLinkIcon />

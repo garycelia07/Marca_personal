@@ -25,12 +25,13 @@ export default async function EstudianteDashboard() {
     }
     try {
         const resp = await backendFetch("/courses?page=1&limit=100");
-        const json = await resp.json().catch(() => null) as { data?: { id: string; title: string; description?: string | null; coverImageUrl?: string | null; modules?: { lessons?: unknown[] }[] }[] };
+        const json = await resp.json().catch(() => null) as { data?: { id: string; title: string; description?: string | null; coverImageUrl?: string | null; durationHours?: number | null; modules?: { lessons?: unknown[] }[] }[] };
         cat = (json?.data ?? []).map((c) => ({
             id: c.id,
             title: c.title,
             description: c.description ?? "",
             coverImageUrl: c.coverImageUrl ?? null,
+            durationHours: c.durationHours ?? null,
             lessons: (c.modules ?? []).reduce((n, m) => n + (Array.isArray(m.lessons) ? m.lessons.length : 0), 0),
         }));
     } catch {

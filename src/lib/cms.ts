@@ -8,7 +8,8 @@ export type ContentSection =
     | "STORY"
     | "PROJECTS"
     | "SERVICES"
-    | "SOCIAL_LINKS";
+    | "SOCIAL_LINKS"
+    | "CERTIFICATE";
 
 export type ContentBlock = {
     id: string;
@@ -32,6 +33,7 @@ export type ItemData = { name?: string; description?: string };
 export type ProjectsData = { title?: string; items?: ItemData[] };
 export type ServicesData = { title?: string; items?: ItemData[] };
 export type SocialLinksData = Record<string, string>;
+export type CertificateData = { mentorName?: string; slogan?: string; institutionName?: string; website?: string };
 
 export type LeadInput = {
     name?: string;
@@ -115,6 +117,9 @@ export function servicesData(block?: ContentBlock): ServicesData {
 }
 export function socialLinksData(block?: ContentBlock): SocialLinksData {
     return as<SocialLinksData>(block?.data);
+}
+export function certificateData(block?: ContentBlock): CertificateData {
+    return as<CertificateData>(block?.data);
 }
 
 /* Permite seleccionar sobre el contenido ya descargado sin token. */

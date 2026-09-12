@@ -25,6 +25,7 @@ export type Course = {
     slug: string;
     description?: string;
     coverImageUrl?: string;
+    durationHours?: number | null;
     isPublished?: boolean;
     isActive?: boolean;
     modules?: Module[];
@@ -45,6 +46,7 @@ export type CreateCourseInput = {
     slug: string;
     description?: string;
     coverImageUrl?: string;
+    durationHours?: number;
     isPublished?: boolean;
 };
 
@@ -53,6 +55,7 @@ export type UpdateCourseInput = {
     slug?: string;
     description?: string;
     coverImageUrl?: string;
+    durationHours?: number;
     isActive?: boolean;
     isPublished?: boolean;
 };

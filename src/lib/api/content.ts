@@ -1,4 +1,4 @@
-export const CONTENT_SECTIONS = ["HERO", "ABOUT", "STORY", "PROJECTS", "SERVICES", "SOCIAL_LINKS"] as const;
+export const CONTENT_SECTIONS = ["HERO", "ABOUT", "STORY", "PROJECTS", "SERVICES", "SOCIAL_LINKS", "CERTIFICATE"] as const;
 
 export type ContentSection = (typeof CONTENT_SECTIONS)[number];
 

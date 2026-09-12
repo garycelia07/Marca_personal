@@ -1,19 +1,32 @@
 "use client";
 
-import { useEffect, useState, type ReactNode, type SVGProps } from "react";
+import { useEffect, useRef, useState, type ReactNode, type SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { getCourse, type Course, type Lesson, type Module } from "@/lib/api/courses";
 import { materialFileUrl, materialDownloadUrl, type Material } from "@/lib/api/materials";
 import { createLead } from "@/lib/api/leads";
 import { publicBackendOrigin } from "@/lib/site";
 import { getMyProgress, markLessonDone } from "@/lib/api/progress";
+import { getContentSection } from "@/lib/api/content";
 import { RatingSection } from "@/components/rating-section";
 import { BookIcon, AttachmentIcon, ChartIcon, UsersIcon } from "@/components/admin/admin-icons";
 
 export type StudentUser = { id: string; email: string; fullName: string };
-export type CatCourse = { id: string; title: string; description?: string; coverImageUrl?: string | null; lessons: number };
+export type CatCourse = { id: string; title: string; description?: string; coverImageUrl?: string | null; durationHours?: number | null; lessons: number };
+type CertificateSettings = {
+  mentorName: string;
+  slogan: string;
+  institutionName: string;
+  website: string;
+};
 
 const LS_KEY = "mp-student-progress-v1";
+const DEFAULT_CERTIFICATE_SETTINGS: CertificateSettings = {
+  mentorName: "Gary Mayhua",
+  slogan: "Por la constancia, la disciplina y la vision que transforman vidas.",
+  institutionName: "Gary Mayhua",
+  website: "www.garymayhua.com",
+};
 
 function readDone(): string[] {
   if (typeof window === "undefined") return [];
@@ -46,7 +59,7 @@ function flatLessons(course: Course): Lesson[] {
   return sortModules(course.modules).flatMap((m) => [...(m.lessons ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
 }
 
-type SectionId = "cursos" | "materiales" | "progreso";
+type SectionId = "cursos" | "materiales" | "progreso" | "certificados";
 type NavIcon = typeof BookIcon;
 type NavTab = { id: SectionId; label: string; icon: NavIcon };
 
@@ -84,6 +97,7 @@ export function StudentPlatform({
   const [buying, setBuying] = useState<string | null>(null);
   const [openCourseId, setOpenCourseId] = useState<string | null>(null);
   const [playing, setPlaying] = useState<Lesson | null>(null);
+  const [certificateSettings, setCertificateSettings] = useState<CertificateSettings>(DEFAULT_CERTIFICATE_SETTINGS);
   const router = useRouter();
 
   async function handleLogout() {
@@ -108,6 +122,24 @@ export function StudentPlatform({
   // Precarga el detalle (módulos/lecciones) de cada curso propio para poder
   // contar avance y mostrar métricas sin obligar a abrirlo primero.
   // Sincroniza el visto guardado en el backend (entre dispositivos) con la UI.
+  useEffect(() => {
+    let cancelled = false;
+    void getContentSection("CERTIFICATE")
+      .then((data) => {
+        if (cancelled) return;
+        setCertificateSettings({
+          mentorName: data.mentorName?.trim() || DEFAULT_CERTIFICATE_SETTINGS.mentorName,
+          slogan: data.slogan?.trim() || DEFAULT_CERTIFICATE_SETTINGS.slogan,
+          institutionName: data.institutionName?.trim() || DEFAULT_CERTIFICATE_SETTINGS.institutionName,
+          website: data.website?.trim() || DEFAULT_CERTIFICATE_SETTINGS.website,
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     void getMyProgress()
@@ -352,6 +384,10 @@ export function StudentPlatform({
         {section === "progreso" ? (
           <ProgressOverview mine={mine} stats={mineStats} totalWatched={progress.length} />
         ) : null}
+
+        {section === "certificados" ? (
+          <CertificatesView mine={mine} stats={mineStats} user={user} settings={certificateSettings} />
+        ) : null}
       </main>
     </div>
   );
@@ -361,7 +397,18 @@ const NAV_TABS: NavTab[] = [
   { id: "cursos", label: "Mis cursos", icon: BookIcon },
   { id: "materiales", label: "Materiales", icon: AttachmentIcon },
   { id: "progreso", label: "Mi progreso", icon: ChartIcon },
+  { id: "certificados", label: "Certificados", icon: AwardIcon },
 ];
+
+function AwardIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="8.5" r="5" />
+      <path d="M9 13 7.5 21l4.5-2.5L16.5 21 15 13" />
+      <path d="M12 8v.01" />
+    </svg>
+  );
+}
 
 function initials(fullName: string): string {
   return (fullName || "A")
@@ -375,6 +422,7 @@ function initials(fullName: string): string {
 function sectionHeading(section: SectionId): string {
   if (section === "cursos") return "Mis cursos";
   if (section === "materiales") return "Materiales";
+  if (section === "certificados") return "Mis certificados";
   return "Mi progreso";
 }
 
@@ -636,6 +684,8 @@ type PlayerViewProps = {
 
 function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onBack }: PlayerViewProps) {
   const [full, setFull] = useState(false);
+  // Segundos realmente reproducidos (para evitar que se marque una lección saltándose el video).
+  const watchedRef = useRef(new Set<number>());
   const index = all.findIndex((l) => l.id === lesson.id);
   const prevLesson = index > 0 ? all[index - 1] : null;
   const nextLesson = index >= 0 && index < all.length - 1 ? all[index + 1] : null;
@@ -653,11 +703,24 @@ function PlayerView({ course, lesson, src, all, progress, onToggle, onEnded, onB
           preload="metadata"
           controlsList="nodownload"
           className="h-full w-full"
-          onEnded={() => {
-            if (!progress.includes(lesson.id)) {
-              onToggle(lesson.id); // suma al llegar al final (no lo desmarca)
+          onTimeUpdate={(e) => {
+            const v = e.currentTarget;
+            if (v && !v.paused && Number.isFinite(v.currentTime)) {
+              const s = Math.floor(v.currentTime);
+              if (s >= 0) watchedRef.current.add(s);
             }
-            void markLessonDone(lesson.id); // solo al terminar: persiste en el backend
+          }}
+          onEnded={(e) => {
+            const v = e.currentTarget;
+            const seen = watchedRef.current.size;
+            const duration = Number.isFinite(v.duration) ? v.duration : 0;
+            // Solo cuenta si se reprodujo de verdad: al menos el 90% (o si no se puede medir la duración).
+            const measured = Number.isFinite(v.duration) && v.duration > 0 && v.duration !== Infinity;
+            const watchedEnough = !measured || (duration > 0 && seen / duration >= 0.9);
+            if (watchedEnough && !progress.includes(lesson.id)) {
+              onToggle(lesson.id); // suma al llegar al final (no lo desmarca)
+              void markLessonDone(lesson.id); // solo al terminar: persiste en el backend
+            }
             if (nextLesson) onEnded(nextLesson);
           }}
         >
@@ -1098,6 +1161,312 @@ function MaterialPreview({ material, src, onClose }: { material: Material; src: 
 
 
 
+/* ============================== CERTIFICADOS ============================== */
+
+const CERT_MENTOR = "Gary Mayhua";
+const CERT_SLOGAN = "Por la constancia, la disciplina y la visión que transforman vidas.";
+function certDateLong(): string {
+  try {
+    return new Intl.DateTimeFormat("es", { day: "numeric", month: "long", year: "numeric" }).format(new Date());
+  } catch {
+    return new Date().toLocaleDateString("es");
+  }
+}
+
+function escapeHtml(value: string): string {
+  return (value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+/** Construye un diploma A4 horizontal en una ventana nueva y lo manda a imprimir / guardar como PDF. */
+function printDiploma(courseTitle: string, studentName: string) {
+  const course = escapeHtml(courseTitle);
+  const student = escapeHtml(studentName);
+  const mentor = escapeHtml(CERT_MENTOR);
+  const slogan = escapeHtml(CERT_SLOGAN);
+  const date = escapeHtml(certDateLong());
+  const html = `<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Certificado — ${course}</title>
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sheet { width: 1123px; height: 794px; position: relative; overflow: hidden; background: #fdfcf8; }
+  .frame1 { position: absolute; left: 32px; top: 32px; right: 32px; bottom: 32px; border: 4px solid #c9a227; border-radius: 18px; }
+  .frame2 { position: absolute; left: 46px; top: 46px; right: 46px; bottom: 46px; border: 1px solid #b3921f; border-radius: 12px; }
+  .content { position: absolute; left: 64px; top: 56px; right: 64px; bottom: 56px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; font-family: Georgia, 'Times New Roman', serif; color: #2d2c27; }
+  .kicker { font-family: 'Trebuchet MS', sans-serif; letter-spacing: .42em; text-transform: uppercase; font-size: 19px; color: #6b685e; }
+  .title { font-size: 58px; letter-spacing: .06em; color: #2d2c27; }
+  .ribbon { width: 300px; height: 24px; margin-top: 16px; background: linear-gradient(to right,#c9a227,#8a6a06,#c9a227); border-radius: 12px; }
+  .award { margin-top: 18px; font-size: 19px; color: #6b685e; }
+  .label { font-size: 20px; color: #6b685e; }
+  .student { margin-top: 4px; font-size: 54px; color: #2d2c27; }
+  .for { margin-top: 16px; font-size: 19px; color: #6b685e; }
+  .course { margin-top: 2px; font-size: 38px; font-style: italic; color: #8a6a06; }
+  .slogan { margin-top: 18px; font-size: 20px; font-style: italic; color: #6b685e; }
+  .row { position: absolute; left: 64px; right: 64px; bottom: 40px; display: flex; justify-content: space-between; }
+  .blk { width: 320px; text-align: center; }
+  .sign { margin: 0 auto 2px; width: 200px; height: 48px; border-bottom: 1px solid #8a6a06; text-align: center; color: #2d2c27; }
+  .sign small { display: block; font-size: 12px; color: #6b685e; }
+  .foot { font-family: 'Trebuchet MS', sans-serif; font-size: 13px; color: #6b685e; }
+</style></head>
+<body>
+<div class="sheet">
+  <div class="frame1"></div>
+  <div class="frame2"></div>
+  <div class="content">
+    <div class="kicker">Gary Mayhua</div>
+    <div class="title">Certificado</div>
+    <div class="ribbon"></div>
+    <div class="award">Este diploma certifica que</div>
+    <div class="student">${student}</div>
+    <div class="for">ha completado satisfactoriamente el curso</div>
+    <div class="course">${course}</div>
+    <div class="slogan">${slogan}</div>
+  </div>
+  <div class="row">
+    <div class="blk"><div class="sign" style="opacity:0"></div><div class="foot">${date}</div></div>
+    <div class="blk">
+      <div class="sign"><span style="font-family: 'Brush Script MT','Segoe Script',cursive; font-size: 24px">${mentor}</span><small>Mentor</small></div>
+      <div class="foot">www.garymayhua.com</div>
+    </div>
+    <div class="blk"><div class="sign" style="opacity:0"></div><div class="foot">Firma</div></div>
+  </div>
+</div>
+</body></html>`;
+  const win = window.open("", "_blank");
+  if (!win) return;
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  try {
+    win.onafterprint = () => win.close();
+  } catch {
+    /* no disponible en algunos navegadores */
+  }
+  win.print();
+}
+/** Vista previa elegante y responsiva del diploma dentro del panel. */
+function Diploma({ courseTitle, studentName }: { courseTitle: string; studentName: string }) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl bg-[var(--paper)]" style={{ aspectRatio: "1123 / 794" }}>
+      <div className="absolute inset-3 rounded-xl border-4 border-[var(--copper)]" />
+      <div className="absolute inset-[11px] rounded-lg border border-[var(--copper)]/70" />
+      <div className="absolute inset-[17px] flex flex-col items-center justify-center px-6 text-center">
+        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--ink-soft)]">Gary Mayhua</p>
+        <h3 className="display-font mt-1.5 text-2xl leading-none text-[var(--foreground)]">Certificado</h3>
+        <div className="mt-1.5 h-1.5 w-16 rounded-full bg-gradient-to-r from-[var(--copper)] via-[var(--forest)] to-[var(--copper)]" />
+        <p className="mt-2 text-[9px] text-[var(--ink-soft)]">Este diploma certifica que</p>
+        <p className="display-font mt-1 text-3xl leading-none text-[var(--foreground)]">{studentName}</p>
+        <p className="mt-2 text-[9px] text-[var(--ink-soft)]">ha completado satisfactoriamente el curso</p>
+        <p className="display-font mt-1 text-2xl italic leading-tight text-[var(--copper)]">{courseTitle}</p>
+        <p className="mt-2 text-[9px] italic text-[var(--ink-soft)]">{CERT_SLOGAN}</p>
+        <div className="mt-2 flex items-end justify-between gap-6 text-[8px] text-[var(--ink-soft)]">
+          <span>{certDateLong()}</span>
+          <span className="script-font text-sm leading-none text-[var(--foreground)]">{CERT_MENTOR}<span className="block text-center text-[8px]">Mentor</span></span>
+          <span>Firma</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function certificateHoursText(hours?: number | null): string {
+  return Number.isInteger(hours) && (hours ?? 0) > 0 ? `${hours} horas de duracion` : "horas registradas";
+}
+
+function printCertificate(courseTitle: string, studentName: string, durationHours: number | null | undefined, settings: CertificateSettings) {
+  const course = escapeHtml(courseTitle);
+  const student = escapeHtml(studentName);
+  const mentor = escapeHtml(settings.mentorName);
+  const slogan = escapeHtml(settings.slogan);
+  const institution = escapeHtml(settings.institutionName);
+  const website = escapeHtml(settings.website);
+  const duration = escapeHtml(certificateHoursText(durationHours));
+  const date = escapeHtml(certDateLong());
+  const year = escapeHtml(String(new Date().getFullYear()));
+  const html = `<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Certificado - ${course}</title>
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sheet { width: 1123px; height: 794px; position: relative; overflow: hidden; background: #fbfaf6; font-family: Georgia, 'Times New Roman', serif; color: #151515; }
+  .shade { position: absolute; inset: 0; background: radial-gradient(circle at 72% 64%, rgba(255,255,255,.9), rgba(245,244,240,.75) 34%, rgba(255,255,255,.65) 62%, rgba(235,233,226,.35)); }
+  .black { position: absolute; left: -170px; top: -120px; width: 520px; height: 920px; background: linear-gradient(130deg,#101010,#343434 54%,#0f0f0f); border-radius: 0 0 92% 0; transform: rotate(11deg); transform-origin: top left; }
+  .gold1 { position: absolute; left: -80px; top: -70px; width: 1030px; height: 190px; background: linear-gradient(100deg,#f9df62,#c37a21 44%,#f3cf51); border-radius: 0 0 100% 24%; transform: rotate(-12deg); }
+  .gold2 { position: absolute; left: -75px; top: 14px; width: 830px; height: 120px; background: linear-gradient(100deg,#d78d24,#f8db67 46%,#b96a19); border-radius: 0 0 100% 18%; transform: rotate(-18deg); opacity: .92; }
+  .content { position: absolute; left: 255px; right: 135px; top: 145px; text-align: center; }
+  .title { font-size: 69px; letter-spacing: .07em; text-transform: uppercase; line-height: 1; }
+  .label { margin-top: 24px; font-size: 23px; color: #42404a; }
+  .student { margin: 30px auto 8px; max-width: 650px; border-bottom: 3px solid #1e1e1e; padding-bottom: 12px; font-family: 'Brush Script MT','Segoe Script',cursive; font-size: 66px; line-height: .9; }
+  .copy { margin: 0 auto; max-width: 690px; font-size: 23px; line-height: 1.25; }
+  .course { margin-top: 10px; color: #7d5a10; font-size: 28px; font-weight: 700; }
+  .slogan { margin-top: 14px; color: #5f5a4d; font-size: 18px; font-style: italic; }
+  .seal { position: absolute; right: 80px; top: 86px; width: 138px; height: 166px; display: grid; place-items: center; color: #fff; }
+  .seal::before { content: ""; position: absolute; inset: 0; clip-path: polygon(50% 0,63% 9%,79% 9%,88% 25%,100% 34%,95% 52%,98% 70%,83% 80%,76% 96%,58% 95%,50% 100%,42% 95%,24% 96%,17% 80%,2% 70%,5% 52%,0 34%,12% 25%,21% 9%,37% 9%); background: linear-gradient(135deg,#f8dd66,#8a6215 34%,#ffe071 52%,#68450c); }
+  .seal::after { content: ""; position: absolute; inset: 12px; clip-path: polygon(50% 0,63% 9%,79% 9%,88% 25%,100% 34%,95% 52%,98% 70%,83% 80%,76% 96%,58% 95%,50% 100%,42% 95%,24% 96%,17% 80%,2% 70%,5% 52%,0 34%,12% 25%,21% 9%,37% 9%); background: linear-gradient(135deg,#0f0f0f,#323225); }
+  .seal span { position: relative; z-index: 1; width: 88px; text-align: center; font-size: 14px; line-height: 1.15; }
+  .seal b { display: block; margin-bottom: 5px; font-size: 22px; letter-spacing: .08em; }
+  .signs { position: absolute; left: 195px; right: 170px; bottom: 108px; display: flex; align-items: end; justify-content: space-between; }
+  .sign { width: 245px; text-align: center; }
+  .script { border-bottom: 2px solid #151515; font-family: 'Brush Script MT','Segoe Script',cursive; font-size: 32px; line-height: 1.1; }
+  .sign small { display: block; margin-top: 8px; font-size: 16px; }
+  .medal { position: absolute; left: 527px; bottom: 68px; width: 118px; height: 118px; border-radius: 50%; background: radial-gradient(circle at 38% 34%,#fff2a5,#d8a934 56%,#94651a); border: 5px solid #e0b648; box-shadow: 0 8px 20px rgba(75,48,5,.24); display: grid; place-items: center; text-align: center; color: #7a5718; font-family: Arial, sans-serif; font-weight: 800; text-transform: uppercase; }
+  .medal::before, .medal::after { content: ""; position: absolute; bottom: -58px; border-left: 26px solid transparent; border-right: 26px solid transparent; border-top: 68px solid #d99b28; z-index: -1; }
+  .medal::before { left: 10px; transform: rotate(10deg); }
+  .medal::after { right: 10px; transform: rotate(-10deg); }
+  .medal small { display: block; font-size: 13px; font-weight: 600; }
+</style></head>
+<body>
+<div class="sheet">
+  <div class="shade"></div><div class="gold1"></div><div class="gold2"></div><div class="black"></div>
+  <div class="seal"><span><b>GM</b>${institution}</span></div>
+  <div class="content">
+    <div class="title">Certificado</div>
+    <div class="label">Reconocimiento para:</div>
+    <div class="student">${student}</div>
+    <div class="copy">Ha cumplido con el respectivo plan de estudios, aprobando el curso <strong>${course}</strong> realizado con ${duration}.</div>
+    <div class="course">${course}</div>
+    <div class="slogan">${slogan}</div>
+  </div>
+  <div class="signs">
+    <div class="sign"><div class="script">${date}</div><small>Fecha de emision</small></div>
+    <div class="sign"><div class="script">${mentor}</div><small>Mentor</small></div>
+  </div>
+  <div class="medal">Curso<small>${year}</small></div>
+  <div style="position:absolute;right:80px;bottom:42px;font:14px Arial,sans-serif;color:#6b6558">${website}</div>
+</div>
+</body></html>`;
+  const win = window.open("", "_blank");
+  if (!win) return;
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  try {
+    win.onafterprint = () => win.close();
+  } catch {
+    /* no disponible en algunos navegadores */
+  }
+  win.print();
+}
+
+function CertificatePreview({ courseTitle, studentName, durationHours, settings }: { courseTitle: string; studentName: string; durationHours?: number | null; settings: CertificateSettings }) {
+  return (
+    <div className="relative overflow-hidden rounded-lg border hairline bg-[#fbfaf6] text-[#151515]" style={{ aspectRatio: "1123 / 794" }}>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_64%,rgba(255,255,255,.9),rgba(245,244,240,.75)_34%,rgba(255,255,255,.65)_62%,rgba(235,233,226,.35))]" />
+      <div className="absolute -left-[15%] -top-[15%] h-[116%] w-[46%] rotate-[11deg] rounded-br-[92%] bg-gradient-to-br from-[#101010] via-[#343434] to-[#0f0f0f]" />
+      <div className="absolute -left-[7%] -top-[9%] h-[24%] w-[92%] -rotate-[12deg] rounded-b-[100%] bg-gradient-to-r from-[#f9df62] via-[#c37a21] to-[#f3cf51]" />
+      <div className="absolute -left-[7%] top-[2%] h-[15%] w-[74%] -rotate-[18deg] rounded-b-[100%] bg-gradient-to-r from-[#d78d24] via-[#f8db67] to-[#b96a19] opacity-90" />
+      <div className="absolute right-[7%] top-[11%] grid h-[16%] w-[12%] place-items-center rounded-[36%] border-[5px] border-[#d6a943] bg-[#161615] text-center text-[clamp(7px,1vw,14px)] leading-tight text-white shadow-md">
+        <span><b className="block text-[clamp(12px,1.8vw,22px)]">GM</b>{settings.institutionName}</span>
+      </div>
+      <div className="absolute left-[23%] right-[12%] top-[18%] text-center">
+        <h3 className="font-serif text-[clamp(24px,6vw,66px)] uppercase leading-none tracking-[0.07em]">Certificado</h3>
+        <p className="mt-[3%] text-[clamp(10px,2vw,23px)] text-[#42404a]">Reconocimiento para:</p>
+        <p className="mx-auto mt-[4%] max-w-[78%] border-b-[2px] border-[#1e1e1e] pb-[1.8%] font-[cursive] text-[clamp(22px,6vw,64px)] leading-none">{studentName}</p>
+        <p className="mx-auto mt-[1.6%] max-w-[82%] text-[clamp(9px,1.9vw,22px)] leading-tight">
+          Ha cumplido con el respectivo plan de estudios, aprobando el curso realizado con {certificateHoursText(durationHours)}.
+        </p>
+        <p className="mt-[1.8%] font-serif text-[clamp(11px,2.4vw,28px)] font-bold text-[#7d5a10]">{courseTitle}</p>
+        <p className="mt-[1.8%] text-[clamp(8px,1.6vw,17px)] italic text-[#5f5a4d]">{settings.slogan}</p>
+      </div>
+      <div className="absolute bottom-[13%] left-[19%] right-[15%] flex items-end justify-between text-center text-[clamp(8px,1.4vw,15px)]">
+        <span className="w-[30%] border-t-2 border-[#151515] pt-1">{certDateLong()}</span>
+        <span className="w-[30%] border-t-2 border-[#151515] pt-1 font-[cursive] text-[clamp(15px,2.6vw,30px)] leading-none">{settings.mentorName}<small className="block font-sans text-[clamp(7px,1vw,13px)]">Mentor</small></span>
+      </div>
+      <div className="absolute bottom-[8%] left-[47%] grid h-[15%] w-[11%] place-items-center rounded-full border-[4px] border-[#e0b648] bg-[radial-gradient(circle_at_38%_34%,#fff2a5,#d8a934_56%,#94651a)] text-center text-[clamp(7px,1.2vw,14px)] font-extrabold uppercase text-[#7a5718] shadow-md">
+        Curso<small className="block text-[clamp(6px,1vw,11px)] font-semibold">{new Date().getFullYear()}</small>
+      </div>
+      <p className="absolute bottom-[5%] right-[7%] text-[clamp(7px,1.1vw,13px)] text-[#6b6558]">{settings.website}</p>
+    </div>
+  );
+}
+
+type CertRow = { course: CatCourse; total: number; done: number; pct: number; completed: boolean };
+
+function CertificatesView({ mine, stats, user, settings }: {
+  mine: CatCourse[];
+  stats: { course: CatCourse; total: number; done: number; pct: number }[];
+  user: StudentUser;
+  settings: CertificateSettings;
+}) {
+  const rows: CertRow[] = mine.map((c) => {
+    const s = stats.find((x) => x.course.id === c.id);
+    const total = s?.total ?? 0;
+    const done = s?.done ?? 0;
+    return { course: c, total, done, pct: s?.pct ?? 0, completed: total > 0 && done === total };
+  });
+
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-2xl border hairline bg-[var(--paper)] px-6 py-16 text-center">
+        <p className="eyebrow">Certificados</p>
+        <h2 className="display-font mt-4 text-3xl leading-tight">Aún no tienes cursos inscritos.</h2>
+        <p className="mt-3 max-w-md text-sm leading-6 text-[var(--ink-soft)]">
+          Cuando completes un curso podrás generar y descargar tu diploma de finalización aquí.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="eyebrow">Logros</p>
+          <h2 className="display-font mt-2 text-3xl leading-tight">Tus certificados</h2>
+        </div>
+        <p className="text-sm text-[var(--ink-soft)]">Se desbloquean al completar cada curso.</p>
+      </div>
+
+      <div className="mt-8 space-y-5">
+        {rows.map((row) => (
+          <div key={row.course.id} className="rounded-2xl border hairline bg-[var(--paper)] p-5 sm:p-6">
+            <div className="flex flex-wrap items-center gap-4">
+              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${row.completed ? "bg-[var(--forest)] text-[var(--background)]" : "border hairline text-[var(--ink-soft)]"}`}>
+                {row.completed ? <AwardIcon className="h-6 w-6" /> : <PadlockIcon className="h-5 w-5" />}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="eyebrow">{row.completed ? "Diploma disponible" : "En curso"}</p>
+                <h3 className="display-font mt-1 text-xl leading-tight">{row.course.title}</h3>
+                <p className="mt-0.5 text-xs text-[var(--ink-soft)]">
+                  {row.completed
+                    ? "¡Felicidades! Completaste todas las lecciones."
+                    : row.total === 0
+                      ? "Este curso aún no tiene lecciones para completar."
+                      : `${row.done} de ${row.total} lecciones vistas · ${row.pct}%`}
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={!row.completed}
+                onClick={() => printCertificate(row.course.title, user.fullName, row.course.durationHours, settings)}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-45 ${row.completed ? "bg-[var(--copper)] text-[var(--forest-deep)] shadow-[0_10px_24px_rgba(244,197,66,0.3)] hover:brightness-110" : "border hairline text-[var(--ink-soft)]"}`}
+              >
+                <AwardIcon className="h-4 w-4" />
+                {row.completed ? "Descargar / imprimir certificado" : "Bloqueado"}
+              </button>
+            </div>
+
+            {row.completed && (
+              <div className="mt-5">
+                <CertificatePreview courseTitle={row.course.title} studentName={user.fullName} durationHours={row.course.durationHours} settings={settings} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 function ProgressOverview({
   mine,
   stats,

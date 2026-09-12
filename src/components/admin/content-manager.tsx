@@ -20,6 +20,12 @@ const SECTION_SLOT: Partial<Record<ContentSection, "hero" | "proyectos" | "servi
 
 type ToastVariant = "success" | "error";
 type Toast = { id: number; variant: ToastVariant; message: string };
+const CERTIFICATE_DEFAULT_FIELDS = [
+    { key: "mentorName", value: "Gary Mayhua" },
+    { key: "slogan", value: "Por la constancia, la disciplina y la vision que transforman vidas." },
+    { key: "institutionName", value: "Gary Mayhua" },
+    { key: "website", value: "www.garymayhua.com" },
+];
 
 function errorMessage(error: unknown, fallback: string): string {
     if (error && typeof error === "object" && "message" in error) {
@@ -132,9 +138,10 @@ export function ContentManager() {
         setLoading(true);
         try {
             const data = await getContentSection(target);
-            setFields(Object.entries(data).map(([key, value]) => ({ key, value: String(value) })));
+            const entries = Object.entries(data).map(([key, value]) => ({ key, value: String(value) }));
+            setFields(target === "CERTIFICATE" && entries.length === 0 ? CERTIFICATE_DEFAULT_FIELDS : entries);
         } catch (error) {
-            setFields([]);
+            setFields(target === "CERTIFICATE" ? CERTIFICATE_DEFAULT_FIELDS : []);
             pushToast("error", errorMessage(error, "No fue posible cargar el contenido de la sección."));
         } finally {
             setLoading(false);

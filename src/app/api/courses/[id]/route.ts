@@ -7,6 +7,7 @@ type Context = { params: Promise<{ id: string }> };
 function validateUpdate(body: UpdateCourseInput): string | null {
     if (body.title !== undefined && !body.title.trim()) return "El título no puede estar vacío.";
     if (body.slug !== undefined && !body.slug.trim()) return "El slug no puede estar vacío.";
+    if (body.durationHours !== undefined && (!Number.isInteger(body.durationHours) || body.durationHours < 1)) return "Las horas del curso deben ser un numero entero mayor a 0.";
     return null;
 }
 
@@ -58,6 +59,7 @@ export async function PATCH(request: Request, { params }: Context) {
         if (body.slug !== undefined) cleanBody.slug = slugify(body.slug.trim());
         if (body.description !== undefined) cleanBody.description = body.description.trim() || undefined;
         if (body.coverImageUrl !== undefined) cleanBody.coverImageUrl = body.coverImageUrl.trim() || undefined;
+        if (body.durationHours !== undefined) cleanBody.durationHours = body.durationHours;
         if (body.isActive !== undefined) cleanBody.isActive = Boolean(body.isActive);
         if (body.isPublished !== undefined) cleanBody.isPublished = Boolean(body.isPublished);
 

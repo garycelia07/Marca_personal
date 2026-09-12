@@ -23,6 +23,7 @@ export function CourseFormModal({
     const [slug, setSlug] = useState(initial?.slug ?? "");
     const [description, setDescription] = useState(initial?.description ?? "");
     const [coverImageUrl, setCoverImageUrl] = useState(initial?.coverImageUrl ?? "");
+    const [durationHours, setDurationHours] = useState(initial?.durationHours ? String(initial.durationHours) : "");
     const [isPublished, setIsPublished] = useState(initial?.isPublished ?? false);
     const [fieldError, setFieldError] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -36,6 +37,13 @@ export function CourseFormModal({
             setFieldError("El slug es obligatorio.");
             return false;
         }
+        if (durationHours.trim()) {
+            const parsed = Number(durationHours);
+            if (!Number.isInteger(parsed) || parsed < 1) {
+                setFieldError("Las horas deben ser un numero entero mayor a 0.");
+                return false;
+            }
+        }
         setFieldError(null);
         return true;
     }
@@ -48,6 +56,7 @@ export function CourseFormModal({
             slug: slug.trim(),
             description: description.trim() || undefined,
             coverImageUrl: coverImageUrl.trim() || undefined,
+            durationHours: durationHours.trim() ? Number(durationHours) : undefined,
             isPublished,
         });
     }
@@ -60,6 +69,22 @@ export function CourseFormModal({
                 <h3 className="display-font mt-4 text-3xl leading-none">{title}</h3>
 
                 <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate>
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold">Horas del curso <span className="text-xs text-[var(--ink-soft)]">(para el certificado)</span></span>
+                        <input
+                            type="number"
+                            min={1}
+                            step={1}
+                            value={durationHours}
+                            onChange={(event) => {
+                                setDurationHours(event.target.value);
+                                setFieldError(null);
+                            }}
+                            className="w-full border-b border-[var(--forest)] bg-transparent px-0 py-3 text-base outline-none transition placeholder:text-[var(--ink-soft)] focus:border-[var(--copper)]"
+                            placeholder="100"
+                        />
+                    </label>
+
                     <label className="block">
                         <span className="mb-2 block text-sm font-semibold">Título</span>
                         <input
