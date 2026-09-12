@@ -161,12 +161,15 @@ export function ProjectsView({ items }: { items: ProjectItemExt[] }) {
                 </span>
               </div>
               <div className="flex flex-1 flex-col px-3 py-3.5 sm:px-4 sm:py-5">
-                <h3 className="display-font text-lg leading-tight">{project.name}</h3>
-                {project.tagline ? (
-                  <p className="mt-1 line-clamp-3 text-xs text-[var(--ink-soft)]">{project.tagline}</p>
+                <p className="eyebrow">Proyecto</p>
+                <h3 className="display-font mt-2 text-lg leading-tight">{project.name}</h3>
+                {project.description ? (
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-[var(--ink-soft)]">{project.description}</p>
+                ) : project.tagline ? (
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-[var(--ink-soft)]">{project.tagline}</p>
                 ) : null}
-                <span className="mt-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--copper)] transition group-hover:gap-3">
-                  Ver proyecto <span>→</span>
+                <span className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-[var(--copper)] px-4 py-2 text-xs font-bold text-[var(--forest-deep)] transition group-hover:brightness-105">
+                  Ver proyecto <span aria-hidden="true">→</span>
                 </span>
               </div>
             </button>

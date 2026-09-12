@@ -45,7 +45,7 @@ export function FeaturedCourses() {
                 {loading ? (
                     <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
                         {[1, 2, 3, 4, 5].map((item) => (
-                            <div key={item} className="animate-pulse shrink-0 w-[240px] snap-start rounded-2xl border hairline bg-[var(--paper)]">
+                            <div key={item} className="animate-pulse shrink-0 w-[72vw] max-w-[330px] snap-start rounded-2xl border hairline bg-[var(--paper)] sm:w-auto">
                                 <div className="aspect-[4/3] rounded-t-2xl bg-[var(--line)]" />
                                 <div className="space-y-3 p-5">
                                     <div className="h-3 w-20 rounded bg-[var(--line)]" />
@@ -58,7 +58,7 @@ export function FeaturedCourses() {
                 ) : (
                     <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
                         {courses.map((course) => (
-                            <Link key={course.id} href="/cursos" className="group card-pop shrink-0 w-[240px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]">
+                            <Link key={course.id} href="/cursos" className="group card-pop shrink-0 w-[72vw] max-w-[330px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)] sm:w-auto">
                                 <div className="relative aspect-[4/3] overflow-hidden">
                                     {course.coverImageUrl ? (
                                         <Image src={course.coverImageUrl} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 480px" className="object-cover transition duration-700 group-hover:scale-110" />

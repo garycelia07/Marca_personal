@@ -59,7 +59,7 @@ export function HomeProjects() {
       {loading ? (
         <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 lg:gap-x-3">
           {[1, 2, 3, 4, 5].map((n) => (
-            <div key={n} className="animate-pulse shrink-0 w-[240px] snap-start overflow-hidden rounded-2xl border hairline bg-[var(--paper)]">
+            <div key={n} className="animate-pulse shrink-0 w-[72vw] max-w-[330px] snap-start overflow-hidden rounded-2xl border hairline bg-[var(--paper)] sm:w-auto">
               <div className="aspect-[4/3] bg-[var(--line)]" />
               <div className="space-y-3 p-5">
                 <div className="h-3 w-24 rounded bg-[var(--line)]" />
@@ -84,7 +84,7 @@ export function HomeProjects() {
               <Link
                 key={project.slug || project.name || index}
                 href={href}
-                className="group card-pop shrink-0 w-[240px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)]"
+                className="group card-pop shrink-0 w-[72vw] max-w-[330px] snap-start flex flex-col overflow-hidden rounded-2xl border hairline bg-[var(--paper)] transition duration-500 hover:-translate-y-1.5 hover:border-[var(--copper)] sm:w-auto"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-[var(--line)]">
                   {cover ? (
