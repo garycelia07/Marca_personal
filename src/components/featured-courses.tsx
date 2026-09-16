@@ -36,8 +36,8 @@ export function FeaturedCourses() {
             <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
                 <div className="mb-8 flex flex-col gap-6 border-b hairline pb-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p className="eyebrow">Aprendizaje</p>
-                        <h2 className="display-font mt-5 max-w-2xl text-4xl leading-[0.98] sm:text-6xl">Cursos que transforman <em className="script-font text-[var(--copper)]">tu perspectiva.</em></h2>
+                        <p className="eyebrow">Escuela de Liderazgo</p>
+                        <h2 className="display-font mt-3 max-w-2xl text-xl leading-snug sm:text-2xl">Cursos que transforman <em className="script-font text-[var(--copper)]">tu perspectiva.</em></h2>
                     </div>
                     <Link href="/cursos" className="group inline-flex shrink-0 items-center gap-2.5 rounded-full bg-[var(--copper)] px-6 py-3.5 text-base font-bold text-[var(--forest-deep)] shadow-[0_10px_24px_rgba(244,197,66,0.35)] transition hover:brightness-110 hover:-translate-y-0.5">Ver todos los cursos<span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">→</span></Link>
                 </div>

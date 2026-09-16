@@ -2,14 +2,18 @@
 
 import { whatsappHref } from "@/lib/site";
 
+/** Mensaje que se precarga en el chat de WhatsApp al pulsar el botón flotante. */
+export const WHATSAPP_FLOAT_MESSAGE =
+    "Hola, quiero ser parte de la Escuela de Liderazgo. ¿Me puedes dar más información?";
+
 export function WhatsAppLeadButton() {
     return (
         <a
-            href={whatsappHref()}
+            href={whatsappHref(WHATSAPP_FLOAT_MESSAGE)}
             target="_blank"
             rel="noreferrer"
-            aria-label="Escribir por WhatsApp"
-            title="Escribir por WhatsApp"
+            aria-label="Escribir por WhatsApp: quiero ser parte de la Escuela de Liderazgo"
+            title="Quiero ser parte de la Escuela de Liderazgo"
             className="whatsapp-float group fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center transition hover:scale-110 sm:bottom-8 sm:right-8"
         >
             <span className="whatsapp-float-ring" aria-hidden="true" />
